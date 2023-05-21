@@ -38,6 +38,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     public static final String DATA_VOLUME_NAME = "ds-data";
     public static final String DATA_DIR_PATH = "/debezium/data";
     public static final int DEFAULT_HTTP_PORT = 8080;
+    private static final String CONFIG_MD5_ANNOTATION = "debezium.io/server-config-md5";
 
     @ConfigProperty(name = "debezium.image", defaultValue = DEFAULT_IMAGE)
     String defaultImage;
@@ -52,6 +53,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var image = primary.getSpec().getImage();
         var taggedImage = (image != null) ? image : defaultImage + ":" + primary.getSpec().getVersion();
         var labels = Map.of("app", name);
+        var annotations = Map.of(CONFIG_MD5_ANNOTATION, primary.asConfiguration().md5Sum());
         var dataVolume = desiredDataVolume(primary);
 
         return new DeploymentBuilder()
@@ -59,6 +61,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                         .withNamespace(primary.getMetadata().getNamespace())
                         .withName(name)
                         .withLabels(labels)
+                        .withAnnotations(annotations)
                         .build())
                 .withSpec(new DeploymentSpecBuilder()
                         .withSelector(new LabelSelectorBuilder()
@@ -67,6 +70,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                         .withTemplate(new PodTemplateSpecBuilder()
                                 .withMetadata(new ObjectMetaBuilder()
                                         .withLabels(labels)
+                                        .withAnnotations(annotations)
                                         .build())
                                 .withSpec(new PodSpecBuilder()
                                         .addToVolumes(new VolumeBuilder()
