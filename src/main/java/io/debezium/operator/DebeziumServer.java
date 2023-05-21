@@ -8,7 +8,7 @@ package io.debezium.operator;
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 import io.debezium.operator.model.DebeziumServerSpec;
-import io.debezium.operator.model.DebeziumServerStatus;
+import io.debezium.operator.model.status.DebeziumServerStatus;
 import io.fabric8.kubernetes.api.model.Namespaced;
 import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.model.annotation.Group;
@@ -23,11 +23,6 @@ public class DebeziumServer
     @Override
     protected DebeziumServerSpec initSpec() {
         return new DebeziumServerSpec();
-    }
-
-    @Override
-    protected DebeziumServerStatus initStatus() {
-        return new DebeziumServerStatus();
     }
 
     public ConfigMapping asConfiguration() {
