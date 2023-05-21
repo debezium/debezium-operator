@@ -7,6 +7,8 @@ package io.debezium.operator.config;
 
 import static java.util.function.Predicate.not;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -104,6 +106,26 @@ public final class ConfigMapping {
                 .filter(Objects::nonNull)
                 .filter(not(String::isBlank))
                 .collect(Collectors.joining("."));
+    }
+
+    public String md5Sum() {
+        byte[] digest = new byte[0];
+        try {
+            var md = MessageDigest.getInstance("MD5");
+            digest = md.digest(getAsString().getBytes());
+        }
+        catch (NoSuchAlgorithmException e) {
+            // This will never happen
+        }
+        return toHex(digest);
+    }
+
+    private String toHex(byte[] bytes) {
+        var hex = new StringBuilder();
+        for (byte b : bytes) {
+            hex.append(String.format("%02x", b));
+        }
+        return hex.toString();
     }
 
     @Override
