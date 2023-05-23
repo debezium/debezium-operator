@@ -14,11 +14,14 @@ import io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EmptyDirVolumeSourceBuilder;
+import io.fabric8.kubernetes.api.model.HTTPGetActionBuilder;
+import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.LabelSelectorBuilder;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaimVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.PodSpecBuilder;
 import io.fabric8.kubernetes.api.model.PodTemplateSpecBuilder;
+import io.fabric8.kubernetes.api.model.ProbeBuilder;
 import io.fabric8.kubernetes.api.model.Volume;
 import io.fabric8.kubernetes.api.model.VolumeBuilder;
 import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
@@ -56,6 +59,9 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var annotations = Map.of(CONFIG_MD5_ANNOTATION, primary.asConfiguration().md5Sum());
         var dataVolume = desiredDataVolume(primary);
 
+        var quarkus = primary.getSpec().getQuarkus();
+        var probePort = quarkus.getProps().getOrDefault("http.port", 8080);
+
         return new DeploymentBuilder()
                 .withMetadata(new ObjectMetaBuilder()
                         .withNamespace(primary.getMetadata().getNamespace())
@@ -83,6 +89,18 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                                         .addToContainers(new ContainerBuilder()
                                                 .withName(name)
                                                 .withImage(taggedImage)
+                                                .withLivenessProbe(new ProbeBuilder()
+                                                        .withHttpGet(new HTTPGetActionBuilder()
+                                                                .withPath("/q/health/live")
+                                                                .withPort(new IntOrString(probePort))
+                                                                .build())
+                                                        .build())
+                                                .withReadinessProbe(new ProbeBuilder()
+                                                        .withHttpGet(new HTTPGetActionBuilder()
+                                                                .withPath("/q/health/ready")
+                                                                .withPort(new IntOrString(probePort))
+                                                                .build())
+                                                        .build())
                                                 .withPorts(new ContainerPortBuilder()
                                                         .withName("http")
                                                         .withProtocol("TCP")
