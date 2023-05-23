@@ -7,11 +7,14 @@ package io.debezium.operator;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import io.debezium.operator.dependent.ConfigMapDependent;
 import io.debezium.operator.dependent.DeploymentDependent;
 import io.debezium.operator.dependent.ServiceDependent;
+import io.debezium.operator.dependent.conditions.DeploymentReady;
 import io.debezium.operator.model.status.Condition;
+import io.debezium.operator.model.status.DebeziumServerStatus;
 import io.javaoperatorsdk.operator.api.reconciler.Constants;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.api.reconciler.ControllerConfiguration;
@@ -21,8 +24,8 @@ import io.javaoperatorsdk.operator.api.reconciler.dependent.Dependent;
 import io.quarkus.logging.Log;
 
 @ControllerConfiguration(namespaces = Constants.WATCH_CURRENT_NAMESPACE, name = "debeziumserver", dependents = {
-        @Dependent(type = ConfigMapDependent.class),
-        @Dependent(type = DeploymentDependent.class),
+        @Dependent(name = "config", type = ConfigMapDependent.class),
+        @Dependent(type = DeploymentDependent.class, dependsOn = "config", readyPostcondition = DeploymentReady.class),
         @Dependent(type = ServiceDependent.class)
 })
 public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
@@ -34,26 +37,42 @@ public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
                 .map(result -> {
                     if (result.allDependentResourcesReady()) {
                         Log.infof("Server %s is ready", name);
-                        addReadyCondition(debeziumServer);
+                        initializeReadyStatus(debeziumServer);
                         return UpdateControl.patchStatus(debeziumServer);
                     }
                     else {
                         var delay = Duration.ofSeconds(10);
                         Log.infof("Server %s not ready yet, rescheduling after %ds", name, delay.toSeconds());
-                        return UpdateControl.<DebeziumServer> noUpdate().rescheduleAfter(delay);
+                        initializeNotReadyStatus(debeziumServer);
+                        return UpdateControl.patchStatus(debeziumServer).rescheduleAfter(delay);
                     }
                 }).orElseThrow();
     }
 
-    private void addReadyCondition(DebeziumServer debeziumServer) {
-        var readyCondition = new Condition();
-        readyCondition.setType("Ready");
-        readyCondition.setStatus("True");
-        readyCondition.setMessage("Server %s is ready".formatted(debeziumServer.getMetadata().getName()));
+    private void initializeReadyStatus(DebeziumServer debeziumServer) {
+        var condition = new Condition();
+        condition.setType("Ready");
+        condition.setStatus("True");
+        condition.setMessage("Server %s is ready".formatted(debeziumServer.getMetadata().getName()));
 
-        var conditions = new ArrayList<Condition>();
-        conditions.add(readyCondition);
+        initializeConditions(debeziumServer, condition);
+    }
 
-        debeziumServer.getStatus().setConditions(conditions);
+    private void initializeNotReadyStatus(DebeziumServer debeziumServer) {
+        var condition = new Condition();
+        condition.setType("Ready");
+        condition.setStatus("False");
+        condition.setMessage("Server %s deployment in progress".formatted(debeziumServer.getMetadata().getName()));
+
+        initializeConditions(debeziumServer, condition);
+    }
+
+    private void initializeConditions(DebeziumServer debeziumServer, Condition... conditions) {
+        var list = new ArrayList<>(Arrays.asList(conditions));
+
+        var status = new DebeziumServerStatus();
+        status.setConditions(list);
+
+        debeziumServer.setStatus(status);
     }
 }
