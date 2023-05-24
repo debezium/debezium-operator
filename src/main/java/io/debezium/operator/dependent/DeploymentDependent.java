@@ -39,7 +39,8 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     public static final String CONFIG_FILE_PATH = "/debezium/conf/" + CONFIG_FILE_NAME;
 
     public static final String DATA_VOLUME_NAME = "ds-data";
-    public static final String DATA_DIR_PATH = "/debezium/data";
+    public static final String DATA_VOLUME_PATH = "/debezium/data";
+    public static final String EXTERNAL_VOLUME_PATH = "/debezium/external-configuration/%s";
     public static final int DEFAULT_HTTP_PORT = 8080;
     private static final String CONFIG_MD5_ANNOTATION = "debezium.io/server-config-md5";
 
@@ -62,7 +63,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var quarkus = primary.getSpec().getQuarkus();
         var probePort = quarkus.getProps().getOrDefault("http.port", 8080);
 
-        return new DeploymentBuilder()
+        var deployment = new DeploymentBuilder()
                 .withMetadata(new ObjectMetaBuilder()
                         .withNamespace(primary.getMetadata().getNamespace())
                         .withName(name)
@@ -113,13 +114,41 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                                                         .build())
                                                 .addToVolumeMounts(new VolumeMountBuilder()
                                                         .withName(DATA_VOLUME_NAME)
-                                                        .withMountPath(DATA_DIR_PATH)
+                                                        .withMountPath(DATA_VOLUME_PATH)
                                                         .build())
                                                 .build())
                                         .build())
                                 .build())
                         .build())
                 .build();
+
+        addExternalEnvVariables(primary, deployment);
+        addExternalVolumes(primary, deployment);
+        return deployment;
+    }
+
+    private void addExternalEnvVariables(DebeziumServer primary, Deployment deployment) {
+        var config = primary.getSpec().getExternalConfiguration();
+        var containers = deployment.getSpec().getTemplate().getSpec().getContainers();
+
+        containers.forEach(container -> container.getEnvFrom().addAll(config.getEnv()));
+    }
+
+    private void addExternalVolumes(DebeziumServer primary, Deployment deployment) {
+        var config = primary.getSpec().getExternalConfiguration();
+        var volumes = deployment.getSpec().getTemplate().getSpec().getVolumes();
+
+        var containers = deployment.getSpec().getTemplate().getSpec().getContainers();
+        var volumeMounts = config.getVolumes().stream()
+                .map(volume -> new VolumeMountBuilder()
+                        .withName(volume.getName())
+                        .withMountPath(EXTERNAL_VOLUME_PATH.formatted(volume.getName()))
+                        .withReadOnly()
+                        .build())
+                .toList();
+
+        volumes.addAll(config.getVolumes());
+        containers.forEach(container -> container.getVolumeMounts().addAll(volumeMounts));
     }
 
     private Volume desiredDataVolume(DebeziumServer primary) {
@@ -127,13 +156,11 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var builder = new VolumeBuilder().withName(DATA_VOLUME_NAME);
 
         switch (storageConfig.getType()) {
-            case EPHEMERAL ->
-                builder.withEmptyDir(new EmptyDirVolumeSourceBuilder()
-                        .build());
-            case PERSISTENT ->
-                builder.withPersistentVolumeClaim(new PersistentVolumeClaimVolumeSourceBuilder()
-                        .withClaimName(storageConfig.getClaimName())
-                        .build());
+            case EPHEMERAL -> builder.withEmptyDir(new EmptyDirVolumeSourceBuilder()
+                    .build());
+            case PERSISTENT -> builder.withPersistentVolumeClaim(new PersistentVolumeClaimVolumeSourceBuilder()
+                    .withClaimName(storageConfig.getClaimName())
+                    .build());
         }
 
         return builder.build();

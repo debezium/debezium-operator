@@ -13,12 +13,12 @@ import io.debezium.operator.config.ConfigMapping;
 public class DebeziumServerSpec implements ConfigMappable {
     private String image;
     private String version;
-
     private Storage storage;
     private Sink sink;
     private Source source;
     private Format format;
     private Quarkus quarkus;
+    private ExternalConfiguration externalConfiguration;
     private List<Transformation> transforms;
     private List<Predicate> predicates;
 
@@ -28,6 +28,7 @@ public class DebeziumServerSpec implements ConfigMappable {
         this.source = new Source();
         this.format = new Format();
         this.quarkus = new Quarkus();
+        this.externalConfiguration = new ExternalConfiguration();
         this.transforms = List.of();
         this.predicates = List.of();
     }
@@ -78,6 +79,14 @@ public class DebeziumServerSpec implements ConfigMappable {
 
     public void setQuarkus(Quarkus quarkus) {
         this.quarkus = quarkus;
+    }
+
+    public ExternalConfiguration getExternalConfiguration() {
+        return externalConfiguration;
+    }
+
+    public void setExternalConfiguration(ExternalConfiguration externalConfiguration) {
+        this.externalConfiguration = externalConfiguration;
     }
 
     public Format getFormat() {
