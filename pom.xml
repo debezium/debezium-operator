@@ -29,6 +29,7 @@
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.0.1.Final</quarkus.platform.version>
+        <quarkus.operator.sdk.version>6.1.0</quarkus.operator.sdk.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.0.0</surefire-plugin.version>
     </properties>
@@ -51,12 +52,12 @@
         <dependency>
             <groupId>io.quarkiverse.operatorsdk</groupId>
             <artifactId>quarkus-operator-sdk</artifactId>
-            <version>6.0.1</version>
+            <version>${quarkus.operator.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.operatorsdk</groupId>
             <artifactId>quarkus-operator-sdk-bundle-generator</artifactId>
-            <version>6.0.1</version>
+            <version>${quarkus.operator.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

@@ -11,6 +11,8 @@ import java.util.Arrays;
 
 import io.debezium.operator.dependent.ConfigMapDependent;
 import io.debezium.operator.dependent.DeploymentDependent;
+import io.debezium.operator.dependent.RoleBindingDependent;
+import io.debezium.operator.dependent.ServiceAccountDependent;
 import io.debezium.operator.dependent.ServiceDependent;
 import io.debezium.operator.dependent.conditions.DeploymentReady;
 import io.debezium.operator.model.status.Condition;
@@ -24,9 +26,14 @@ import io.javaoperatorsdk.operator.api.reconciler.dependent.Dependent;
 import io.quarkus.logging.Log;
 
 @ControllerConfiguration(namespaces = Constants.WATCH_CURRENT_NAMESPACE, name = "debeziumserver", dependents = {
+        @Dependent(name = "service-account", type = ServiceAccountDependent.class),
+        @Dependent(name = "role-binding", type = RoleBindingDependent.class, dependsOn = { "service-account" }),
         @Dependent(name = "config", type = ConfigMapDependent.class),
-        @Dependent(type = DeploymentDependent.class, dependsOn = "config", readyPostcondition = DeploymentReady.class),
-        @Dependent(type = ServiceDependent.class)
+        @Dependent(name = "deployment", type = DeploymentDependent.class, dependsOn = {
+                "config",
+                "role-binding"
+        }, readyPostcondition = DeploymentReady.class),
+        @Dependent(type = ServiceDependent.class, dependsOn = { "deployment" })
 })
 public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
 
