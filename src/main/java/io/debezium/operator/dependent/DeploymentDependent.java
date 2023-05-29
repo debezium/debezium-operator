@@ -22,6 +22,7 @@ import io.fabric8.kubernetes.api.model.PersistentVolumeClaimVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.PodSpecBuilder;
 import io.fabric8.kubernetes.api.model.PodTemplateSpecBuilder;
 import io.fabric8.kubernetes.api.model.ProbeBuilder;
+import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.Volume;
 import io.fabric8.kubernetes.api.model.VolumeBuilder;
 import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
@@ -59,6 +60,9 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var labels = Map.of("app", name);
         var annotations = Map.of(CONFIG_MD5_ANNOTATION, primary.asConfiguration().md5Sum());
         var dataVolume = desiredDataVolume(primary);
+        var sa = context.getSecondaryResource(ServiceAccount.class)
+                .map(r -> r.getMetadata().getName())
+                .orElseThrow();
 
         var quarkus = primary.getSpec().getQuarkus();
         var probePort = quarkus.getProps().getOrDefault("http.port", 8080);
@@ -80,6 +84,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                                         .withAnnotations(annotations)
                                         .build())
                                 .withSpec(new PodSpecBuilder()
+                                        .withServiceAccountName(sa)
                                         .addToVolumes(new VolumeBuilder()
                                                 .withName(CONFIG_VOLUME_NAME)
                                                 .withConfigMap(new ConfigMapVolumeSourceBuilder()
