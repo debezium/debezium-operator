@@ -61,6 +61,10 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-container-image-jib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
         <dependency>
@@ -69,6 +73,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -85,6 +90,16 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <systemProperties>
+                        <quarkus.kubernetes.idempotent>true</quarkus.kubernetes.idempotent>
+                        <quarkus.kubernetes.output-directory>k8</quarkus.kubernetes.output-directory>
+                        <quarkus.operator-sdk.crd.output-directory>../k8</quarkus.operator-sdk.crd.output-directory>
+                        <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
+                        <quarkus.operator-sdk.bundle.package-name>debezium-operator</quarkus.operator-sdk.bundle.package-name>
+                        <quarkus.operator-sdk.bundle.channels>alpha</quarkus.operator-sdk.bundle.channels>
+                    </systemProperties>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
