@@ -44,18 +44,6 @@ rules:
   - apiGroups:
       - ""
     resources:
-      - services
-    verbs:
-      - get
-      - list
-      - watch
-      - create
-      - patch
-      - update
-      - delete
-  - apiGroups:
-      - ""
-    resources:
       - configmaps
     verbs:
       - get

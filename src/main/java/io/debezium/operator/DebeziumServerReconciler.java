@@ -13,7 +13,6 @@ import io.debezium.operator.dependent.ConfigMapDependent;
 import io.debezium.operator.dependent.DeploymentDependent;
 import io.debezium.operator.dependent.RoleBindingDependent;
 import io.debezium.operator.dependent.ServiceAccountDependent;
-import io.debezium.operator.dependent.ServiceDependent;
 import io.debezium.operator.dependent.conditions.DeploymentReady;
 import io.debezium.operator.model.status.Condition;
 import io.debezium.operator.model.status.DebeziumServerStatus;
@@ -33,7 +32,6 @@ import io.quarkus.logging.Log;
                 "config",
                 "role-binding"
         }, readyPostcondition = DeploymentReady.class),
-        @Dependent(type = ServiceDependent.class, dependsOn = { "deployment" })
 })
 public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
 
