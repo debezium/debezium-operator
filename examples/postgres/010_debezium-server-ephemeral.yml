@@ -1,0 +1,32 @@
+apiVersion: debezium.io/v1alpha1
+kind: DebeziumServer
+metadata:
+  name: my-debezium
+spec:
+  image: quay.io/jcechace/debezium-server:latest
+  storage:
+    type: ephemeral
+  quarkus:
+    log.console.json: false
+    kubernetes-config.enabled: true
+    kubernetes-config.secrets: postgresql-credentials
+  sink:
+    type: kafka
+    producer.bootstrap.servers: dbz-kafka-kafka-bootstrap:9092
+    producer.key.serializer: org.apache.kafka.common.serialization.StringSerializer
+    producer.value.serializer: org.apache.kafka.common.serialization.StringSerializer
+  source:
+    class: io.debezium.connector.postgresql.PostgresConnector
+    tasks.max: 
+    offset.storage.file.filename: /debezium/data/offsets.dat
+    database.history: io.debezium.relational.history.FileDatabaseHistory
+    database.hostname: postgresql
+    database.port: 5432
+    database.user: ${POSTGRES_USER}
+    database.password: ${POSTGRES_PASSWORD}
+    database.dbname: ${POSTGRES_DB}
+    topic.prefix: inventory
+    schema.include.list: inventory 
+
+    
+   
