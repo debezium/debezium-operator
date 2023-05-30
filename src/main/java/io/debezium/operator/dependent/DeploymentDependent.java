@@ -35,6 +35,7 @@ import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernete
 public class DeploymentDependent extends CRUDKubernetesDependentResource<Deployment, DebeziumServer> {
 
     public static final String DEFAULT_IMAGE = "quay.io/debezium/server";
+    public static final String DEFAULT_VERSION = "latest";
     public static final String CONFIG_VOLUME_NAME = "ds-config";
     public static final String CONFIG_FILE_NAME = "application.properties";
     public static final String CONFIG_FILE_PATH = "/debezium/conf/" + CONFIG_FILE_NAME;
@@ -48,15 +49,29 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     @ConfigProperty(name = "debezium.image", defaultValue = DEFAULT_IMAGE)
     String defaultImage;
 
+    @ConfigProperty(name = "debezium.version", defaultValue = DEFAULT_VERSION)
+    String defaultVersion;
+
     public DeploymentDependent() {
         super(Deployment.class);
+    }
+
+    private String getTaggedImage(DebeziumServer primary) {
+        var image = primary.getSpec().getImage();
+
+        if (image == null) {
+            var version = primary.getSpec().getVersion();
+            var tag = (version != null) ? version : defaultVersion;
+            image = defaultImage + ":" + tag;
+        }
+
+        return image;
     }
 
     @Override
     protected Deployment desired(DebeziumServer primary, Context<DebeziumServer> context) {
         var name = primary.getMetadata().getName();
-        var image = primary.getSpec().getImage();
-        var taggedImage = (image != null) ? image : defaultImage + ":" + primary.getSpec().getVersion();
+        var image = getTaggedImage(primary);
         var labels = Map.of("app", name);
         var annotations = Map.of(CONFIG_MD5_ANNOTATION, primary.asConfiguration().md5Sum());
         var dataVolume = desiredDataVolume(primary);
@@ -94,7 +109,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                                         .addToVolumes(dataVolume)
                                         .addToContainers(new ContainerBuilder()
                                                 .withName(name)
-                                                .withImage(taggedImage)
+                                                .withImage(image)
                                                 .withLivenessProbe(new ProbeBuilder()
                                                         .withHttpGet(new HTTPGetActionBuilder()
                                                                 .withPath("/q/health/live")
