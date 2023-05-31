@@ -17,75 +17,7 @@ spec:
         properties:
           spec:
             properties:
-              transforms:
-                items:
-                  properties:
-                    negate:
-                      type: boolean
-                    predicate:
-                      type: string
-                    name:
-                      type: string
-                    type:
-                      type: string
-                    props:
-                      additionalProperties:
-                        type: object
-                      type: object
-                      x-kubernetes-preserve-unknown-fields: true
-                  type: object
-                  x-kubernetes-preserve-unknown-fields: true
-                type: array
-              sink:
-                properties:
-                  type:
-                    type: string
-                  props:
-                    additionalProperties:
-                      type: object
-                    type: object
-                    x-kubernetes-preserve-unknown-fields: true
-                type: object
-                x-kubernetes-preserve-unknown-fields: true
-              predicates:
-                items:
-                  properties:
-                    name:
-                      type: string
-                    type:
-                      type: string
-                    props:
-                      additionalProperties:
-                        type: object
-                      type: object
-                      x-kubernetes-preserve-unknown-fields: true
-                  type: object
-                  x-kubernetes-preserve-unknown-fields: true
-                type: array
-              storage:
-                properties:
-                  claimName:
-                    type: string
-                  type:
-                    enum:
-                    - persistent
-                    - ephemeral
-                    type: string
-                type: object
-              version:
-                type: string
-              image:
-                type: string
-              quarkus:
-                properties:
-                  props:
-                    additionalProperties:
-                      type: object
-                    type: object
-                    x-kubernetes-preserve-unknown-fields: true
-                type: object
-                x-kubernetes-preserve-unknown-fields: true
-              externalConfiguration:
+              runtime:
                 properties:
                   volumes:
                     items:
@@ -758,6 +690,77 @@ spec:
                       type: object
                     type: array
                 type: object
+              transforms:
+                items:
+                  properties:
+                    negate:
+                      type: boolean
+                    predicate:
+                      type: string
+                    name:
+                      type: string
+                    type:
+                      type: string
+                    props:
+                      additionalProperties:
+                        type: object
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                type: array
+              sink:
+                properties:
+                  type:
+                    type: string
+                  config:
+                    properties:
+                      props:
+                        additionalProperties:
+                          type: object
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                type: object
+              predicates:
+                items:
+                  properties:
+                    name:
+                      type: string
+                    type:
+                      type: string
+                    props:
+                      additionalProperties:
+                        type: object
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                type: array
+              storage:
+                properties:
+                  claimName:
+                    type: string
+                  type:
+                    enum:
+                    - persistent
+                    - ephemeral
+                    type: string
+                type: object
+              version:
+                type: string
+              image:
+                type: string
+              quarkus:
+                properties:
+                  props:
+                    additionalProperties:
+                      type: object
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               source:
                 properties:
                   class:

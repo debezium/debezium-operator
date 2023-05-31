@@ -23,38 +23,39 @@ kubectl create -f examples/postgres/ -n $NAMESPACE
 ## DebeziumServerSpec Reference
 ```yaml
 spec:
-    version: String 
-    image: String # exclusive with version
-    storage:
-      type: persistent | ephemeral  # enum
-      claimName: String # only valid and required for persistent
-    runtime:
-      env: EnvFromSource array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#envfromsource-v1-core
-      volumes: Volume array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#volume-v1-core
-    quarkus:
-      # quarkus properties 
-    format:
-      value:
-        type: String
-        # other format properties
-      key:
-        type: String
-      header:
-        type: String 
-    transforms:
-      - name: String
-        type: String
-        predicate: String
-        negate: Boolean
-        # other transformation properties
-    predicates: 
-      - name: String
-        type: String
-        # other preticate properties
-    sink:
+  version: String
+  image: String # exclusive with version
+  storage:
+    type: persistent | ephemeral  # enum
+    claimName: String # only valid and required for persistent
+  runtime:
+    env: EnvFromSource array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#envfromsource-v1-core
+    volumes: Volume array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#volume-v1-core
+  quarkus:
+  # quarkus properties 
+  format:
+    value:
       type: String
+      # other format properties
+    key:
+      type: String
+    header:
+      type: String
+  transforms:
+    - name: String
+      type: String
+      predicate: String
+      negate: Boolean
+      # other transformation properties
+  predicates:
+    - name: String
+      type: String
+      # other preticate properties
+  sink:
+    type: String
+    config:
       # other sink properties
-    source:
-      class: String
-      # other source connector properties
+  source:
+    class: String
+    # other source connector properties
 ```
