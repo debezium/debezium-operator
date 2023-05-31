@@ -12,9 +12,10 @@ spec:
     kubernetes-config.secrets: postgresql-credentials
   sink:
     type: kafka
-    producer.bootstrap.servers: dbz-kafka-kafka-bootstrap:9092
-    producer.key.serializer: org.apache.kafka.common.serialization.StringSerializer
-    producer.value.serializer: org.apache.kafka.common.serialization.StringSerializer
+    config:
+      producer.bootstrap.servers: dbz-kafka-kafka-bootstrap:9092
+      producer.key.serializer: org.apache.kafka.common.serialization.StringSerializer
+      producer.value.serializer: org.apache.kafka.common.serialization.StringSerializer
   source:
     class: io.debezium.connector.postgresql.PostgresConnector
     tasks.max: 

@@ -5,19 +5,17 @@
  */
 package io.debezium.operator.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
 public class Sink implements ConfigMappable {
 
     private String type;
-    private Map<String, Object> props = new HashMap<>(0);
+    private ConfigProperties config;
+
+    public Sink() {
+        this.config = new ConfigProperties();
+    }
 
     public String getType() {
         return type;
@@ -27,20 +25,19 @@ public class Sink implements ConfigMappable {
         this.type = type;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getProps() {
-        return props;
+    public ConfigProperties getConfig() {
+        return config;
     }
 
-    @JsonAnySetter
-    public void setProps(String name, Object value) {
-        getProps().put(name, value);
+    public void setConfig(ConfigProperties config) {
+        this.config = config;
     }
 
     @Override
     public ConfigMapping asConfiguration() {
         var config = ConfigMapping.empty();
-        config.put("type", type, props);
+        config.put("type", type);
+        config.put(type, this.config);
         return config;
     }
 }

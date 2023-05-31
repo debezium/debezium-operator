@@ -81,11 +81,6 @@ public final class ConfigMapping {
         props.forEach((subKey, value) -> putInternal(value, key, subKey));
     }
 
-    public void put(String key, String valueKey, Map<String, ?> props) {
-        put(key, valueKey);
-        put(valueKey, props);
-    }
-
     public <T extends ConfigMappable> void put(String key, Collection<T> items, Function<T, String> nameExtractor) {
         items.stream()
                 .map(nameExtractor)
