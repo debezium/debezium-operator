@@ -18,7 +18,7 @@ public class DebeziumServerSpec implements ConfigMappable {
     private Source source;
     private Format format;
     private Quarkus quarkus;
-    private ExternalConfiguration externalConfiguration;
+    private Runtime runtime;
     private List<Transformation> transforms;
     private List<Predicate> predicates;
 
@@ -28,7 +28,7 @@ public class DebeziumServerSpec implements ConfigMappable {
         this.source = new Source();
         this.format = new Format();
         this.quarkus = new Quarkus();
-        this.externalConfiguration = new ExternalConfiguration();
+        this.runtime = new Runtime();
         this.transforms = List.of();
         this.predicates = List.of();
     }
@@ -81,12 +81,12 @@ public class DebeziumServerSpec implements ConfigMappable {
         this.quarkus = quarkus;
     }
 
-    public ExternalConfiguration getExternalConfiguration() {
-        return externalConfiguration;
+    public Runtime getRuntime() {
+        return runtime;
     }
 
-    public void setExternalConfiguration(ExternalConfiguration externalConfiguration) {
-        this.externalConfiguration = externalConfiguration;
+    public void setRuntime(Runtime runtime) {
+        this.runtime = runtime;
     }
 
     public Format getFormat() {

@@ -148,14 +148,14 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     }
 
     private void addExternalEnvVariables(DebeziumServer primary, Deployment deployment) {
-        var config = primary.getSpec().getExternalConfiguration();
+        var config = primary.getSpec().getRuntime();
         var containers = deployment.getSpec().getTemplate().getSpec().getContainers();
 
         containers.forEach(container -> container.getEnvFrom().addAll(config.getEnv()));
     }
 
     private void addExternalVolumes(DebeziumServer primary, Deployment deployment) {
-        var config = primary.getSpec().getExternalConfiguration();
+        var config = primary.getSpec().getRuntime();
         var volumes = deployment.getSpec().getTemplate().getSpec().getVolumes();
 
         var containers = deployment.getSpec().getTemplate().getSpec().getContainers();
