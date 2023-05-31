@@ -11,13 +11,13 @@ import java.util.List;
 import io.fabric8.kubernetes.api.model.EnvFromSource;
 import io.fabric8.kubernetes.api.model.Volume;
 
-public class ExternalConfiguration {
+public class Runtime {
 
     private List<EnvFromSource> env;
 
     private List<Volume> volumes;
 
-    public ExternalConfiguration() {
+    public Runtime() {
         this.env = new ArrayList<>();
         this.volumes = new ArrayList<>();
     }

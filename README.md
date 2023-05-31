@@ -28,7 +28,7 @@ spec:
     storage:
       type: persistent | ephemeral  # enum
       claimName: String # only valid and required for persistent
-    externalConfiguration:
+    runtime:
       env: EnvFromSource array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#envfromsource-v1-core
       volumes: Volume array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#volume-v1-core
     quarkus:
