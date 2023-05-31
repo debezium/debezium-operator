@@ -57,5 +57,6 @@ spec:
       # other sink properties
   source:
     class: String
-    # other source connector properties
+    config:
+      # other source connector properties
 ```

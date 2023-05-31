@@ -5,11 +5,6 @@
  */
 package io.debezium.operator.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.debezium.operator.config.ConfigMappable;
@@ -18,7 +13,11 @@ import io.debezium.operator.config.ConfigMapping;
 public class Source implements ConfigMappable {
 
     private String sourceClass;
-    private Map<String, Object> props = new HashMap<>(0);
+    private ConfigProperties config;
+
+    public Source() {
+        this.config = new ConfigProperties();
+    }
 
     @JsonProperty("class")
     public String getSourceClass() {
@@ -29,20 +28,19 @@ public class Source implements ConfigMappable {
         this.sourceClass = clazz;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getProps() {
-        return props;
+    public ConfigProperties getConfig() {
+        return config;
     }
 
-    @JsonAnySetter
-    public void setProps(String name, Object value) {
-        getProps().put(name, value);
+    public void setConfig(ConfigProperties config) {
+        this.config = config;
     }
 
     @Override
     public ConfigMapping asConfiguration() {
-        var config = ConfigMapping.from(props);
+        var config = ConfigMapping.empty();
         config.put("connector.class", sourceClass);
+        config.put(this.config);
         return config;
     }
 }
