@@ -32,6 +32,9 @@
         <quarkus.operator.sdk.version>6.1.0</quarkus.operator.sdk.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.0.0</surefire-plugin.version>
+
+        <!-- Operator and Image configuration -->
+        <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
     </properties>
 
     <dependencyManagement>
@@ -90,16 +93,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <systemProperties>
-                        <quarkus.kubernetes.idempotent>true</quarkus.kubernetes.idempotent>
-                        <quarkus.kubernetes.output-directory>k8</quarkus.kubernetes.output-directory>
-                        <quarkus.operator-sdk.crd.output-directory>../k8</quarkus.operator-sdk.crd.output-directory>
-                        <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
-                        <quarkus.operator-sdk.bundle.package-name>debezium-operator</quarkus.operator-sdk.bundle.package-name>
-                        <quarkus.operator-sdk.bundle.channels>alpha</quarkus.operator-sdk.bundle.channels>
-                    </systemProperties>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -142,6 +135,7 @@
             </plugin>
         </plugins>
     </build>
+
     <profiles>
         <profile>
             <id>native</id>
@@ -153,6 +147,19 @@
             <properties>
                 <skipITs>false</skipITs>
                 <quarkus.package.type>native</quarkus.package.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>assembly</id>
+            <properties>
+                <quarkus.container-image.build>true</quarkus.container-image.build>
+                <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
+                <quarkus.container-image.group>debezium</quarkus.container-image.group>
+                <quarkus.kubernetes.idempotent>true</quarkus.kubernetes.idempotent>
+                <quarkus.kubernetes.output-directory>k8</quarkus.kubernetes.output-directory>
+                <quarkus.operator-sdk.crd.output-directory>../k8</quarkus.operator-sdk.crd.output-directory>
+                <quarkus.operator-sdk.bundle.package-name>debezium-operator</quarkus.operator-sdk.bundle.package-name>
+                <quarkus.operator-sdk.bundle.channels>alpha</quarkus.operator-sdk.bundle.channels>
             </properties>
         </profile>
     </profiles>
