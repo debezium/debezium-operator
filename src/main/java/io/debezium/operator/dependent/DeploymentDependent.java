@@ -7,9 +7,12 @@ package io.debezium.operator.dependent;
 
 import java.util.Map;
 
+import jakarta.inject.Inject;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.debezium.operator.DebeziumServer;
+import io.debezium.operator.VersionProvider;
 import io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -35,7 +38,6 @@ import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernete
 public class DeploymentDependent extends CRUDKubernetesDependentResource<Deployment, DebeziumServer> {
 
     public static final String DEFAULT_IMAGE = "quay.io/debezium/server";
-    public static final String DEFAULT_VERSION = "latest";
     public static final String CONFIG_VOLUME_NAME = "ds-config";
     public static final String CONFIG_FILE_NAME = "application.properties";
     public static final String CONFIG_FILE_PATH = "/debezium/conf/" + CONFIG_FILE_NAME;
@@ -49,8 +51,8 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     @ConfigProperty(name = "debezium.image", defaultValue = DEFAULT_IMAGE)
     String defaultImage;
 
-    @ConfigProperty(name = "debezium.version", defaultValue = DEFAULT_VERSION)
-    String defaultVersion;
+    @Inject
+    VersionProvider version;
 
     public DeploymentDependent() {
         super(Deployment.class);
@@ -60,9 +62,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var image = primary.getSpec().getImage();
 
         if (image == null) {
-            var version = primary.getSpec().getVersion();
-            var tag = (version != null) ? version : defaultVersion;
-            image = defaultImage + ":" + tag;
+            image = defaultImage + ":" + version.getImageVersion(primary);
         }
 
         return image;
