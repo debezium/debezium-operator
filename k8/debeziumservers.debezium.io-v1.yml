@@ -701,13 +701,16 @@ spec:
                       type: string
                     type:
                       type: string
-                    props:
-                      additionalProperties:
-                        type: object
+                    config:
+                      properties:
+                        props:
+                          additionalProperties:
+                            type: object
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
                       type: object
                       x-kubernetes-preserve-unknown-fields: true
                   type: object
-                  x-kubernetes-preserve-unknown-fields: true
                 type: array
               sink:
                 properties:
@@ -730,13 +733,16 @@ spec:
                       type: string
                     type:
                       type: string
-                    props:
-                      additionalProperties:
-                        type: object
+                    config:
+                      properties:
+                        props:
+                          additionalProperties:
+                            type: object
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
                       type: object
                       x-kubernetes-preserve-unknown-fields: true
                   type: object
-                  x-kubernetes-preserve-unknown-fields: true
                 type: array
               storage:
                 properties:
@@ -758,9 +764,7 @@ spec:
                     additionalProperties:
                       type: object
                     type: object
-                    x-kubernetes-preserve-unknown-fields: true
                 type: object
-                x-kubernetes-preserve-unknown-fields: true
               source:
                 properties:
                   class:
@@ -781,35 +785,44 @@ spec:
                     properties:
                       type:
                         type: string
-                      props:
-                        additionalProperties:
-                          type: object
+                      config:
+                        properties:
+                          props:
+                            additionalProperties:
+                              type: object
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
                         type: object
                         x-kubernetes-preserve-unknown-fields: true
                     type: object
-                    x-kubernetes-preserve-unknown-fields: true
                   value:
                     properties:
                       type:
                         type: string
-                      props:
-                        additionalProperties:
-                          type: object
+                      config:
+                        properties:
+                          props:
+                            additionalProperties:
+                              type: object
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
                         type: object
                         x-kubernetes-preserve-unknown-fields: true
                     type: object
-                    x-kubernetes-preserve-unknown-fields: true
                   header:
                     properties:
                       type:
                         type: string
-                      props:
-                        additionalProperties:
-                          type: object
+                      config:
+                        properties:
+                          props:
+                            additionalProperties:
+                              type: object
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
                         type: object
                         x-kubernetes-preserve-unknown-fields: true
                     type: object
-                    x-kubernetes-preserve-unknown-fields: true
                 type: object
             type: object
           status:

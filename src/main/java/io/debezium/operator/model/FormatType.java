@@ -5,12 +5,6 @@
  */
 package io.debezium.operator.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
@@ -18,21 +12,19 @@ public class FormatType implements ConfigMappable {
 
     private String type;
 
-    private final Map<String, Object> props;
+    private ConfigProperties config;
 
     public FormatType() {
         type = "json";
-        props = new HashMap<>(0);
+        this.config = new ConfigProperties();
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getProps() {
-        return props;
+    public ConfigProperties getConfig() {
+        return config;
     }
 
-    @JsonAnySetter
-    public void setProps(String name, Object value) {
-        getProps().put(name, value);
+    public void setConfig(ConfigProperties config) {
+        this.config = config;
     }
 
     public String getType() {
@@ -45,7 +37,8 @@ public class FormatType implements ConfigMappable {
 
     @Override
     public ConfigMapping asConfiguration() {
-        var config = ConfigMapping.from(props);
+        var config = ConfigMapping.empty();
+        config.put(this.config);
         config.rootValue(type);
         return config;
     }
