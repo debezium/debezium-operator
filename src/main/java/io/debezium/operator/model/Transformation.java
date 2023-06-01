@@ -5,12 +5,6 @@
  */
 package io.debezium.operator.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
@@ -20,7 +14,7 @@ public class Transformation implements ConfigMappable {
     private String type;
     private String predicate;
     private boolean negate = false;
-    private Map<String, Object> props = new HashMap<>(0);
+    private ConfigProperties config;
 
     public String getName() {
         return name;
@@ -28,10 +22,6 @@ public class Transformation implements ConfigMappable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setProps(Map<String, Object> props) {
-        this.props = props;
     }
 
     public String getType() {
@@ -58,22 +48,21 @@ public class Transformation implements ConfigMappable {
         this.negate = negate;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getProps() {
-        return props;
+    public ConfigProperties getConfig() {
+        return config;
     }
 
-    @JsonAnySetter
-    public void setProps(String name, Object value) {
-        getProps().put(name, value);
+    public void setConfig(ConfigProperties config) {
+        this.config = config;
     }
 
     @Override
     public ConfigMapping asConfiguration() {
-        var config = ConfigMapping.from(props);
-        config.rootValue(type);
+        var config = ConfigMapping.empty();
+        config.put("type", type);
         config.put("predicate", predicate);
         config.put("negate", negate);
+        config.put(this.config);
         return config;
     }
 }

@@ -5,31 +5,28 @@
  */
 package io.debezium.operator.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
 public class Quarkus implements ConfigMappable {
+    private ConfigProperties config;
 
-    private Map<String, Object> props = new HashMap<>(0);
-
-    @JsonAnyGetter
-    public Map<String, Object> getProps() {
-        return props;
+    public Quarkus() {
+        this.config = new ConfigProperties();
     }
 
-    @JsonAnySetter
-    public void setProps(String name, Object value) {
-        getProps().put(name, value);
+    public ConfigProperties getConfig() {
+        return config;
+    }
+
+    public void setConfig(ConfigProperties config) {
+        this.config = config;
     }
 
     @Override
     public ConfigMapping asConfiguration() {
-        return ConfigMapping.from(props);
+        var config =  ConfigMapping.empty();
+        config.putAll(this.config);
+        return config;
     }
 }

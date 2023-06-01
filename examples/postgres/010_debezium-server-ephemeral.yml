@@ -7,9 +7,10 @@ spec:
   storage:
     type: ephemeral
   quarkus:
-    log.console.json: false
-    kubernetes-config.enabled: true
-    kubernetes-config.secrets: postgresql-credentials
+    config:
+      log.console.json: false
+      kubernetes-config.enabled: true
+      kubernetes-config.secrets: postgresql-credentials
   sink:
     type: kafka
     config:
@@ -29,6 +30,10 @@ spec:
       database.dbname: ${POSTGRES_DB}
       topic.prefix: inventory
       schema.include.list: inventory
-
-    
-   
+  format:
+    value:
+      type: json
+      config:
+        schemas.enable: false
+    key:
+      type: json

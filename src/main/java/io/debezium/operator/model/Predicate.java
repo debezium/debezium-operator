@@ -5,12 +5,6 @@
  */
 package io.debezium.operator.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
@@ -18,7 +12,11 @@ public class Predicate implements ConfigMappable {
 
     private String name;
     private String type;
-    private Map<String, Object> props = new HashMap<>(0);
+    private ConfigProperties config;
+
+    public Predicate() {
+        this.config = new ConfigProperties();
+    }
 
     public String getName() {
         return name;
@@ -36,20 +34,20 @@ public class Predicate implements ConfigMappable {
         this.type = type;
     }
 
-    @JsonAnyGetter
-    public Map<String, Object> getProps() {
-        return props;
+    public ConfigProperties getConfig() {
+        return config;
     }
 
-    @JsonAnySetter
-    public void setProps(String name, Object value) {
-        getProps().put(name, value);
+    public void setConfig(ConfigProperties config) {
+        this.config = config;
     }
 
     @Override
     public ConfigMapping asConfiguration() {
-        var config = ConfigMapping.from(props);
-        config.rootValue(type);
+        var config = ConfigMapping.prefixed(name);
+        config.put("type", type);
+        config.put(this.config);
         return config;
+
     }
 }

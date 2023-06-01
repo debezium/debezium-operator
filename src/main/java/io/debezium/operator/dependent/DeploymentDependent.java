@@ -80,7 +80,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                 .orElseThrow();
 
         var quarkus = primary.getSpec().getQuarkus();
-        var probePort = quarkus.getProps().getOrDefault("http.port", 8080);
+        var probePort = quarkus.getConfig().getProps().getOrDefault("http.port", 8080);
 
         var deployment = new DeploymentBuilder()
                 .withMetadata(new ObjectMetaBuilder()
