@@ -697,8 +697,6 @@ spec:
                       type: boolean
                     predicate:
                       type: string
-                    name:
-                      type: string
                     type:
                       type: string
                     config:
@@ -726,24 +724,6 @@ spec:
                     type: object
                     x-kubernetes-preserve-unknown-fields: true
                 type: object
-              predicates:
-                items:
-                  properties:
-                    name:
-                      type: string
-                    type:
-                      type: string
-                    config:
-                      properties:
-                        props:
-                          additionalProperties:
-                            type: object
-                          type: object
-                          x-kubernetes-preserve-unknown-fields: true
-                      type: object
-                      x-kubernetes-preserve-unknown-fields: true
-                  type: object
-                type: array
               storage:
                 properties:
                   claimName:
@@ -760,10 +740,31 @@ spec:
                 type: string
               quarkus:
                 properties:
-                  props:
-                    additionalProperties:
-                      type: object
+                  config:
+                    properties:
+                      props:
+                        additionalProperties:
+                          type: object
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
                     type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                type: object
+              predicates:
+                additionalProperties:
+                  properties:
+                    type:
+                      type: string
+                    config:
+                      properties:
+                        props:
+                          additionalProperties:
+                            type: object
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                  type: object
                 type: object
               source:
                 properties:
