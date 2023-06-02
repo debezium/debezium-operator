@@ -32,38 +32,44 @@ spec:
   image: String # exclusive with version
   storage:
     type: persistent | ephemeral  # enum
-    claimName: String # only valid and required for persistent
+    claimName: String # only valid and required for "persistent" type
   runtime:
     env: EnvFromSource array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#envfromsource-v1-core
     volumes: Volume array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#volume-v1-core
   quarkus:
-  # quarkus properties 
+    config:
+      # quarkus properties 
   format:
     value:
       type: String
-      # other format properties
+      config:
+        # other format properties
     key:
       type: String
+      config:
+        # other format properties
     header:
       type: String
+      config:
+        # other format properties
   transforms:
     - type: String
       predicate: String
       negate: Boolean
       config:
-      # other transformation properties
+        # other transformation properties
   predicates:
     name:
       type: String
       config:
-      # other preticate properties
+        # other preticate properties
   sink:
     type: String
     config:
-    # other sink properties
+      # other sink properties
   source:
     class: String
     config:
-    # other source connector properties
+      # other source connector properties
 ```
 
