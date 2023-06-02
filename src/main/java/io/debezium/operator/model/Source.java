@@ -40,7 +40,7 @@ public class Source implements ConfigMappable {
     public ConfigMapping asConfiguration() {
         var config = ConfigMapping.empty();
         config.put("connector.class", sourceClass);
-        config.put(this.config);
+        config.putAll(this.config);
         return config;
     }
 }

@@ -25,7 +25,7 @@ public class Quarkus implements ConfigMappable {
 
     @Override
     public ConfigMapping asConfiguration() {
-        var config =  ConfigMapping.empty();
+        var config = ConfigMapping.empty();
         config.putAll(this.config);
         return config;
     }

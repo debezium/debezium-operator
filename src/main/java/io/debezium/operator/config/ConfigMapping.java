@@ -9,12 +9,12 @@ import static java.util.function.Predicate.not;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -27,7 +27,7 @@ public final class ConfigMapping {
 
     public static ConfigMapping from(Map<String, ?> properties) {
         var config = ConfigMapping.empty();
-        config.put(properties);
+        config.putAll(properties);
         return config;
     }
 
@@ -56,38 +56,62 @@ public final class ConfigMapping {
     }
 
     public void rootValue(Object value) {
-        put(null, value);
-    }
-
-    public void put(String key, ConfigMappable resource) {
-        var config = resource.asConfiguration();
-        put(key, config.getAsMap());
+        putInternal(value);
     }
 
     public void put(String key, Object value) {
         putInternal(value, key);
     }
 
-    public void put(ConfigMappable resource) {
-        var resourceConfig = resource.asConfiguration();
-        put(resourceConfig.getAsMap());
+    public void putAll(ConfigMappable resource) {
+        putAll(resource.asConfiguration());
     }
 
-    public void put(Map<String, ?> props) {
-        props.forEach(this::put);
+    public void putAll(String key, ConfigMappable resource) {
+        putAll(key, resource.asConfiguration());
     }
 
-    public void put(String key, Map<String, ?> props) {
-        props.forEach((subKey, value) -> putInternal(value, key, subKey));
+    public void putAll(ConfigMapping config) {
+        config.getAsMap().forEach((key, value) -> putInternal(value, key));
     }
 
-    public <T extends ConfigMappable> void put(String key, Collection<T> items, Function<T, String> nameExtractor) {
-        items.stream()
-                .map(nameExtractor)
+    public void putAll(String key, ConfigMapping config) {
+        config.getAsMap().forEach((subKey, value) -> putInternal(value, key, subKey));
+    }
+
+    public void putAll(Map<String, ?> props) {
+        props.forEach((key, value) -> putInternal(value, key));
+    }
+
+    public <T extends ConfigMappable> void putList(String key, List<T> items, String name) {
+        if (items.isEmpty()) {
+            return;
+        }
+
+        record NamedItem(String name, ConfigMappable item) {
+        }
+
+        var named = IntStream.
+                range(0, items.size())
+                .mapToObj(i -> new NamedItem(name + i, items.get(i)))
+                .toList();
+
+        named.stream()
+                .map(NamedItem::name)
                 .reduce((x, y) -> String.join(","))
                 .ifPresent(names -> put(key, names));
 
-        items.forEach(item -> put(key, item));
+
+        named.forEach(item -> putAll(key + "." + item.name, item.item));
+
+    }
+
+    public <T extends ConfigMappable> void putMap(String key, Map<String, T> items) {
+        items.keySet().stream()
+                .reduce((x, y) -> String.join(","))
+                .ifPresent(names -> put(key, names));
+
+        items.forEach((name, item) -> putAll(key + "." + name, item));
 
     }
 

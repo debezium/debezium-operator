@@ -37,7 +37,7 @@ public class Sink implements ConfigMappable {
     public ConfigMapping asConfiguration() {
         var config = ConfigMapping.empty();
         config.put("type", type);
-        config.put(type, this.config);
+        config.putAll(type, this.config);
         return config;
     }
 }

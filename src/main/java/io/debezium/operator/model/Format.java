@@ -47,9 +47,9 @@ public class Format implements ConfigMappable {
     @Override
     public ConfigMapping asConfiguration() {
         var config = ConfigMapping.empty();
-        config.put("key", key);
-        config.put("value", value);
-        config.put("header", header);
+        config.putAll("key", key);
+        config.putAll("value", value);
+        config.putAll("header", header);
         return config;
     }
 }
