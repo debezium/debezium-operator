@@ -3,14 +3,18 @@
 Debezium operator provides an easy way to run the Debezium Server on Kubernetes or Openshift.
 
 ## Installation steps
-The debezium operator currently support per namespace installation. To install the operator to your kubernetes cluster, simply create the descriptors available in the `k8` directory.
+
+The debezium operator currently support per namespace installation. To install the operator to your kubernetes cluster,
+simply create the descriptors available in the `k8` directory.
 
 ```bash
 kubectl create -f k8/ -n $NAMESPACE
 ```
 
 ### Quickstart Example
-The `exmaples/postgres` directory contains an example deployment of debezium server with PostgreSQL source and kafka sink.
+
+The `exmaples/postgres` directory contains an example deployment of debezium server with PostgreSQL source and kafka
+sink.
 
 ```bash
 # Install Strimzi Kafka operator
@@ -21,6 +25,7 @@ kubectl create -f examples/postgres/ -n $NAMESPACE
 ```
 
 ## DebeziumServerSpec Reference
+
 ```yaml
 spec:
   version: String
@@ -42,21 +47,23 @@ spec:
     header:
       type: String
   transforms:
-    - name: String
-      type: String
+    - type: String
       predicate: String
       negate: Boolean
+      config:
       # other transformation properties
   predicates:
-    - name: String
+    name:
       type: String
+      config:
       # other preticate properties
   sink:
     type: String
     config:
-      # other sink properties
+    # other sink properties
   source:
     class: String
     config:
-      # other source connector properties
+    # other source connector properties
 ```
+

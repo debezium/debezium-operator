@@ -10,19 +10,10 @@ import io.debezium.operator.config.ConfigMapping;
 
 public class Transformation implements ConfigMappable {
 
-    private String name;
     private String type;
     private String predicate;
     private boolean negate = false;
     private ConfigProperties config;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getType() {
         return type;
@@ -62,7 +53,7 @@ public class Transformation implements ConfigMappable {
         config.put("type", type);
         config.put("predicate", predicate);
         config.put("negate", negate);
-        config.put(this.config);
+        config.putAll(this.config);
         return config;
     }
 }

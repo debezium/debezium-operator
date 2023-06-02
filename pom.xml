@@ -35,6 +35,9 @@
 
         <!-- Operator and Image configuration -->
         <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
+
+        <!-- Formatting configuration -->
+        <format.imports.source.compliance>17</format.imports.source.compliance>
     </properties>
 
     <dependencyManagement>

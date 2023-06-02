@@ -10,20 +10,11 @@ import io.debezium.operator.config.ConfigMapping;
 
 public class Predicate implements ConfigMappable {
 
-    private String name;
     private String type;
     private ConfigProperties config;
 
     public Predicate() {
         this.config = new ConfigProperties();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getType() {
@@ -44,9 +35,9 @@ public class Predicate implements ConfigMappable {
 
     @Override
     public ConfigMapping asConfiguration() {
-        var config = ConfigMapping.prefixed(name);
+        var config = ConfigMapping.empty();
         config.put("type", type);
-        config.put(this.config);
+        config.putAll(this.config);
         return config;
 
     }

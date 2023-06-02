@@ -6,6 +6,7 @@
 package io.debezium.operator.model;
 
 import java.util.List;
+import java.util.Map;
 
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
@@ -20,7 +21,7 @@ public class DebeziumServerSpec implements ConfigMappable {
     private Quarkus quarkus;
     private Runtime runtime;
     private List<Transformation> transforms;
-    private List<Predicate> predicates;
+    private Map<String, Predicate> predicates;
 
     public DebeziumServerSpec() {
         this.storage = new Storage();
@@ -30,7 +31,7 @@ public class DebeziumServerSpec implements ConfigMappable {
         this.quarkus = new Quarkus();
         this.runtime = new Runtime();
         this.transforms = List.of();
-        this.predicates = List.of();
+        this.predicates = Map.of();
     }
 
     public String getImage() {
@@ -105,26 +106,26 @@ public class DebeziumServerSpec implements ConfigMappable {
         this.transforms = transforms;
     }
 
-    public List<Predicate> getPredicates() {
+    public Map<String, Predicate> getPredicates() {
         return predicates;
     }
 
-    public void setPredicates(List<Predicate> predicates) {
+    public void setPredicates(Map<String, Predicate> predicates) {
         this.predicates = predicates;
     }
 
     @Override
     public ConfigMapping asConfiguration() {
         var dbzConfig = ConfigMapping.prefixed("debezium");
-        dbzConfig.put("source", source);
-        dbzConfig.put("sink", sink);
-        dbzConfig.put("format", format);
-        dbzConfig.put("transforms", transforms, Transformation::getName);
-        dbzConfig.put("predicates", predicates, Predicate::getName);
+        dbzConfig.putAll("source", source);
+        dbzConfig.putAll("sink", sink);
+        dbzConfig.putAll("format", format);
+        dbzConfig.putList("transforms", transforms, "t");
+        dbzConfig.putMap("predicates", predicates);
 
         var config = ConfigMapping.empty();
-        config.put("quarkus", quarkus);
-        config.put(dbzConfig.getAsMap());
+        config.putAll("quarkus", quarkus);
+        config.putAll(dbzConfig);
 
         return config;
     }
