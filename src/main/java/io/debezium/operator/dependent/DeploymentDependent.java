@@ -62,7 +62,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var image = primary.getSpec().getImage();
 
         if (image == null) {
-            image = defaultImage + ":" + version.getImageVersion(primary);
+            image = defaultImage + ":" + version.getImageTag(primary);
         }
 
         return image;
