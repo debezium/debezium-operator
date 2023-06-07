@@ -36,6 +36,8 @@
 
         <!-- Operator and Image configuration -->
         <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
+        <quarkus.operator-sdk.bundle.package-name>${project.artifactId}</quarkus.operator-sdk.bundle.package-name>
+        <quarkus.operator-sdk.bundle.channels>alpha</quarkus.operator-sdk.bundle.channels>
 
         <!-- Formatting configuration -->
         <format.imports.source.compliance>17</format.imports.source.compliance>
@@ -165,17 +167,68 @@
             </properties>
         </profile>
         <profile>
-            <id>assembly</id>
+            <id>k8update</id>
             <properties>
-                <quarkus.container-image.build>true</quarkus.container-image.build>
                 <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
                 <quarkus.container-image.group>debezium</quarkus.container-image.group>
                 <quarkus.kubernetes.idempotent>true</quarkus.kubernetes.idempotent>
-                <quarkus.kubernetes.output-directory>k8</quarkus.kubernetes.output-directory>
-                <quarkus.operator-sdk.crd.output-directory>../k8</quarkus.operator-sdk.crd.output-directory>
-                <quarkus.operator-sdk.bundle.package-name>debezium-operator</quarkus.operator-sdk.bundle.package-name>
-                <quarkus.operator-sdk.bundle.channels>alpha</quarkus.operator-sdk.bundle.channels>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>${version.resources.plugin}</version>
+                        <configuration>
+                            <outputDirectory>${project.basedir}/k8</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/kubernetes</directory>
+                                    <include>*.yaml</include>
+                                </resource>
+                            </resources>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>copy-k8</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>assembly</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>${version.assembly.plugin}</version>
+                        <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <attach>true</attach>  <!-- we want attach & deploy these to Maven -->
+                            <descriptors>
+                                <descriptor>src/main/resources/assembly.xml</descriptor>
+                            </descriptors>
+                            <tarLongFileMode>posix</tarLongFileMode>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>distribution</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
