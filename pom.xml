@@ -10,18 +10,21 @@
         <version>2.3.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>io.debezium</groupId>
     <artifactId>debezium-operator</artifactId>
     <version>2.3.0-SNAPSHOT</version>
+    <name>Debezium Operator</name>
 
     <scm>
-        <connection>scm:git:git@github.com:debezium/debezium-server-operator.git</connection>
-        <developerConnection>scm:git:git@github.com:debezium/debezium-server-operator.git</developerConnection>
-        <url>https://github.com/debezium/debezium-server-operator</url>
+        <connection>scm:git:git@github.com:debezium/debezium-operator.git</connection>
+        <developerConnection>scm:git:git@github.com:debezium/debezium-operator.git</developerConnection>
+        <url>https://github.com/debezium/debezium-operator</url>
         <tag>HEAD</tag>
     </scm>
 
     <properties>
+        <!-- Debezium version -->
+        <version.debezium>${project.version}</version.debezium>
+
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
         <maven.compiler.release>17</maven.compiler.release>
         <maven.compiler.testRelease>17</maven.compiler.testRelease>
@@ -43,6 +46,22 @@
         <!-- Formatting configuration -->
         <format.imports.source.compliance>17</format.imports.source.compliance>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>oss</id>
+            <name>OSS Sonatype Nexus</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <dependencyManagement>
         <dependencies>

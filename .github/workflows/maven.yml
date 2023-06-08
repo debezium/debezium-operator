@@ -22,6 +22,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout core repository
+        uses: actions/checkout@v3
+        with:
+          repository: debezium/debezium
+          ref: main
+          path: core
       - name: Checkout Debezium Operator
         uses: actions/checkout@v3
         with:
@@ -37,6 +43,8 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Maven build Debezium Server
+      - name: Maven build core dependencies
+        run: ./operator/mvnw clean install -f core/pom.xml -DskipTests -DskipITs -Dformat.formatter.goal=validate -Dformat.imports.goal=check -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+      - name: Maven build Debezium Operator
         working-directory: operator
         run: ./mvnw clean install -fae -Dformat.formatter.goal=validate -Dformat.imports.goal=check -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 -DskipNonCore
