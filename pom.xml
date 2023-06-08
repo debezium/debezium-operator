@@ -191,7 +191,7 @@
         <profile>
             <id>stable</id>
             <properties>
-                <quarkus.container-image.tag>${project.version}</quarkus.container-image.tag>
+                <quarkus.container-image.tag>${project.parent.version}</quarkus.container-image.tag>
             </properties>
         </profile>
         <profile>
