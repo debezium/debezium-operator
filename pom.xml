@@ -42,7 +42,9 @@
         <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
         <quarkus.operator-sdk.bundle.package-name>${project.artifactId}</quarkus.operator-sdk.bundle.package-name>
         <quarkus.operator-sdk.bundle.channels>alpha</quarkus.operator-sdk.bundle.channels>
-
+        <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
+        <quarkus.container-image.group>debezium</quarkus.container-image.group>
+        <quarkus.container-image.tag>nightly</quarkus.container-image.tag>
         <!-- Formatting configuration -->
         <format.imports.source.compliance>17</format.imports.source.compliance>
     </properties>
@@ -187,10 +189,14 @@
             </properties>
         </profile>
         <profile>
+            <id>stable</id>
+            <properties>
+                <quarkus.container-image.tag>${project.version}</quarkus.container-image.tag>
+            </properties>
+        </profile>
+        <profile>
             <id>k8update</id>
             <properties>
-                <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
-                <quarkus.container-image.group>debezium</quarkus.container-image.group>
                 <quarkus.kubernetes.idempotent>true</quarkus.kubernetes.idempotent>
             </properties>
             <build>
@@ -204,7 +210,7 @@
                             <resources>
                                 <resource>
                                     <directory>${project.build.directory}/kubernetes</directory>
-                                    <include>*.yaml</include>
+                                    <include>*.yml</include>
                                 </resource>
                             </resources>
                         </configuration>
