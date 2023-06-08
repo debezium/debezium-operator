@@ -44,7 +44,9 @@
         <quarkus.operator-sdk.bundle.channels>alpha</quarkus.operator-sdk.bundle.channels>
         <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
         <quarkus.container-image.group>debezium</quarkus.container-image.group>
+        <quarkus.container-image.name>operator</quarkus.container-image.name>
         <quarkus.container-image.tag>nightly</quarkus.container-image.tag>
+        <quarkus.kubernetes.name>debezium-operator</quarkus.kubernetes.name>
         <!-- Formatting configuration -->
         <format.imports.source.compliance>17</format.imports.source.compliance>
     </properties>
