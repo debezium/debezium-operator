@@ -116,6 +116,9 @@ public final class ConfigMapping {
     }
 
     private void putInternal(Object value, String... keys) {
+        if (value == null) {
+            return;
+        }
         var key = prefix(keys);
         config.put(key, String.valueOf(value));
     }
