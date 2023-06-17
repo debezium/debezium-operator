@@ -47,6 +47,8 @@
         <quarkus.kubernetes.name>debezium-operator</quarkus.kubernetes.name>
         <!-- Formatting configuration -->
         <format.imports.source.compliance>17</format.imports.source.compliance>
+        <!-- Example properties -->
+        <examples.image.tag>${quarkus.container-image.tag}</examples.image.tag>
     </properties>
 
     <repositories>
@@ -205,22 +207,39 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
                         <version>${version.resources.plugin}</version>
-                        <configuration>
-                            <outputDirectory>${project.basedir}/k8</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.directory}/kubernetes</directory>
-                                    <include>*.yml</include>
-                                </resource>
-                            </resources>
-                        </configuration>
                         <executions>
+                            <execution>
+                                <id>copy-examples</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}/examples</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/main/examples</directory>
+                                            <include>**/*</include>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
                             <execution>
                                 <id>copy-k8</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}/k8</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}/kubernetes</directory>
+                                            <include>*.yml</include>
+                                        </resource>
+                                    </resources>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
