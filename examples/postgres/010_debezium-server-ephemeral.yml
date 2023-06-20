@@ -3,7 +3,7 @@ kind: DebeziumServer
 metadata:
   name: my-debezium
 spec:
-  image: quay.io/debezium/server:2.3.0.Final
+  image: quay.io/debezium/server:nightly
   quarkus:
     config:
       log.console.json: false
