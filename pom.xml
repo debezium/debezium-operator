@@ -22,6 +22,7 @@
     <properties>
         <!-- Debezium version -->
         <version.debezium>${project.version}</version.debezium>
+        <version.debezium.channel>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.x</version.debezium.channel>
 
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
         <maven.compiler.release>17</maven.compiler.release>
@@ -29,9 +30,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.0.1.Final</quarkus.platform.version>
-        <quarkus.operator.sdk.version>6.1.0</quarkus.operator.sdk.version>
+        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+        <quarkus.platform.version>3.2.4.Final</quarkus.platform.version>
+        <quarkus.operator.sdk.version>6.3.0</quarkus.operator.sdk.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.0.0</surefire-plugin.version>
         <version.assertj>3.24.2</version.assertj>
@@ -39,7 +40,6 @@
         <!-- Operator and Image configuration -->
         <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
         <quarkus.operator-sdk.bundle.package-name>${project.artifactId}</quarkus.operator-sdk.bundle.package-name>
-        <quarkus.operator-sdk.bundle.channels>alpha</quarkus.operator-sdk.bundle.channels>
         <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
         <quarkus.container-image.group>debezium</quarkus.container-image.group>
         <quarkus.container-image.name>operator</quarkus.container-image.name>
@@ -121,6 +121,20 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <id>parse-version</id>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
                 <version>${quarkus.platform.version}</version>
@@ -194,6 +208,15 @@
             <id>stable</id>
             <properties>
                 <quarkus.container-image.tag>${project.parent.version}</quarkus.container-image.tag>
+                <quarkus.operator-sdk.bundle.channels>debezium-${version.debezium.channel}</quarkus.operator-sdk.bundle.channels>
+            </properties>
+        </profile>
+        <profile>
+            <!-- This must be defined later than stable profile to ensure correct property resolution!!! -->
+            <!-- See: https://maven.apache.org/guides/introduction/introduction-to-profiles.html#profile-order -->
+            <id>olmStable</id>
+            <properties>
+                <quarkus.operator-sdk.bundle.channels>debezium-stable,debezium-${version.debezium.channel}</quarkus.operator-sdk.bundle.channels>
             </properties>
         </profile>
         <profile>

@@ -15,7 +15,7 @@ import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernete
 public class ServiceAccountDependent
         extends CRUDKubernetesDependentResource<ServiceAccount, DebeziumServer> {
 
-    public static final String SA_NAME = "%s-debezium-server";
+    public static final String SA_NAME = "%s-sa";
 
     public ServiceAccountDependent() {
         super(ServiceAccount.class);
