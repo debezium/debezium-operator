@@ -12,6 +12,7 @@ import java.util.Arrays;
 import io.debezium.operator.dependent.ConfigMapDependent;
 import io.debezium.operator.dependent.DeploymentDependent;
 import io.debezium.operator.dependent.RoleBindingDependent;
+import io.debezium.operator.dependent.RoleDependent;
 import io.debezium.operator.dependent.ServiceAccountDependent;
 import io.debezium.operator.dependent.conditions.DeploymentReady;
 import io.debezium.operator.model.status.Condition;
@@ -22,17 +23,23 @@ import io.javaoperatorsdk.operator.api.reconciler.ControllerConfiguration;
 import io.javaoperatorsdk.operator.api.reconciler.Reconciler;
 import io.javaoperatorsdk.operator.api.reconciler.UpdateControl;
 import io.javaoperatorsdk.operator.api.reconciler.dependent.Dependent;
+import io.quarkiverse.operatorsdk.bundle.runtime.CSVMetadata;
 import io.quarkus.logging.Log;
 
 @ControllerConfiguration(namespaces = Constants.WATCH_CURRENT_NAMESPACE, name = "debeziumserver", dependents = {
         @Dependent(name = "service-account", type = ServiceAccountDependent.class),
-        @Dependent(name = "role-binding", type = RoleBindingDependent.class, dependsOn = { "service-account" }),
+        @Dependent(name = "role", type = RoleDependent.class),
+        @Dependent(name = "role-binding", type = RoleBindingDependent.class, dependsOn = {
+                "service-account",
+                "role"
+        }),
         @Dependent(name = "config", type = ConfigMapDependent.class),
         @Dependent(name = "deployment", type = DeploymentDependent.class, dependsOn = {
                 "config",
                 "role-binding"
         }, readyPostcondition = DeploymentReady.class),
 })
+@CSVMetadata(name = DebeziumCsvMetadata.NAME)
 public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
 
     @Override
