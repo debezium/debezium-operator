@@ -23,13 +23,13 @@ jobs:
 
     steps:
       - name: Checkout core repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: debezium/debezium
           ref: main
           path: core
       - name: Checkout Debezium Operator
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: operator
       - name: Set up JDK
