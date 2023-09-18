@@ -20,22 +20,27 @@
     </scm>
 
     <properties>
-        <!-- Debezium version -->
-        <version.debezium>${project.version}</version.debezium>
-        <version.debezium.channel>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.x</version.debezium.channel>
-
-        <compiler-plugin.version>3.11.0</compiler-plugin.version>
-        <maven.compiler.release>17</maven.compiler.release>
-        <maven.compiler.testRelease>17</maven.compiler.testRelease>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.testRelease>17</maven.compiler.testRelease>
+
+        <!-- Debezium version -->
+        <version.debezium>${project.version}</version.debezium>
+
+        <!-- Plugin versions -->
+        <version.buildhelper.plugin>3.4.0</version.buildhelper.plugin>
+        <version.surefire.version>3.0.0</version.surefire.version>
+        <version.compiler.plugin>3.11.0</version.compiler.plugin>
+
+        <!-- Dependency versions -->
+        <version.assertj>3.24.2</version.assertj>
+
+        <!-- Quarkus configuration and versions-->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.version>3.2.4.Final</quarkus.platform.version>
         <quarkus.operator.sdk.version>6.3.0</quarkus.operator.sdk.version>
-        <skipITs>true</skipITs>
-        <surefire-plugin.version>3.0.0</surefire-plugin.version>
-        <version.assertj>3.24.2</version.assertj>
 
         <!-- Operator and Image configuration -->
         <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
@@ -45,6 +50,8 @@
         <quarkus.container-image.name>operator</quarkus.container-image.name>
         <quarkus.container-image.tag>nightly</quarkus.container-image.tag>
         <quarkus.kubernetes.name>debezium-operator</quarkus.kubernetes.name>
+        <!-- OLM configuration -->
+        <version.debezium.channel>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.x</version.debezium.channel>
         <!-- Formatting configuration -->
         <format.imports.source.compliance>17</format.imports.source.compliance>
         <!-- Example properties -->
@@ -123,7 +130,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>${version.buildhelper.plugin}</version>
                 <executions>
                     <execution>
                         <phase>initialize</phase>
@@ -151,7 +158,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${compiler-plugin.version}</version>
+                <version>${version.compiler.plugin}</version>
                 <configuration>
                     <compilerArgs>
                         <arg>-parameters</arg>
@@ -160,7 +167,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire-plugin.version}</version>
+                <version>${version.surefire.plugin}</version>
                 <configuration>
                     <systemPropertyVariables>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
@@ -170,7 +177,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${surefire-plugin.version}</version>
+                <version>${version.surefire.plugin}</version>
                 <executions>
                     <execution>
                         <goals>
