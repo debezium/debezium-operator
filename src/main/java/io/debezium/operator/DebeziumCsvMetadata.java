@@ -89,5 +89,5 @@ import io.quarkiverse.operatorsdk.bundle.runtime.SharedCSVMetadata;
                 "Start it up, point it at your databases, and your apps can start responding " +
                 "to all of the inserts, updates, and deletes that other apps commit to your databases")
 public class DebeziumCsvMetadata implements SharedCSVMetadata {
-    public static final String NAME = "debezium-operator";
+    public static final String NAME = "${olm.bundle.name}";
 }
