@@ -46,4 +46,5 @@ nb-configuration.xml
 kubernetes.json
 
 # OLM build workspace
-olm/
+olm/*
+!olm/bundles

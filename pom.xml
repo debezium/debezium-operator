@@ -24,6 +24,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.release>17</maven.compiler.release>
         <maven.compiler.testRelease>17</maven.compiler.testRelease>
+        <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
 
         <!-- Debezium version -->
         <version.debezium>${project.version}</version.debezium>
@@ -32,6 +33,9 @@
         <version.buildhelper.plugin>3.4.0</version.buildhelper.plugin>
         <version.surefire.version>3.0.0</version.surefire.version>
         <version.compiler.plugin>3.11.0</version.compiler.plugin>
+        <version.resources.plugin>3.3.1</version.resources.plugin>
+        <version.docker.maven.plugin>0.43.4</version.docker.maven.plugin>
+
 
         <!-- Dependency versions -->
         <version.assertj>3.24.2</version.assertj>
@@ -44,7 +48,6 @@
 
         <!-- Operator and Image configuration -->
         <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
-        <quarkus.operator-sdk.bundle.package-name>${project.artifactId}</quarkus.operator-sdk.bundle.package-name>
         <quarkus.container-image.registry>quay.io</quarkus.container-image.registry>
         <quarkus.container-image.group>debezium</quarkus.container-image.group>
         <quarkus.container-image.name>operator</quarkus.container-image.name>
@@ -52,6 +55,11 @@
         <quarkus.kubernetes.name>debezium-operator</quarkus.kubernetes.name>
         <!-- OLM configuration -->
         <version.debezium.channel>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.x</version.debezium.channel>
+        <olm.bundle.version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-nightly</olm.bundle.version>
+        <olm.bundle.name>debezium-operator.v${olm.bundle.version}</olm.bundle.name>
+        <olm.bundle.replaces></olm.bundle.replaces>
+        <olm.bundle.containerImage>${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}</olm.bundle.containerImage>
+        <olm.bundle.createdAt>${maven.build.timestamp}</olm.bundle.createdAt>
         <!-- Formatting configuration -->
         <format.imports.source.compliance>17</format.imports.source.compliance>
         <!-- Example properties -->
@@ -216,6 +224,7 @@
             <properties>
                 <quarkus.container-image.tag>${project.parent.version}</quarkus.container-image.tag>
                 <quarkus.operator-sdk.bundle.channels>debezium-${version.debezium.channel}</quarkus.operator-sdk.bundle.channels>
+                <olm.bundle.version>${project.parent.version}</olm.bundle.version>
             </properties>
         </profile>
         <profile>
@@ -225,6 +234,87 @@
             <properties>
                 <quarkus.operator-sdk.bundle.channels>debezium-stable,debezium-${version.debezium.channel}</quarkus.operator-sdk.bundle.channels>
             </properties>
+        </profile>
+        <profile>
+            <id>olmUpdate</id>
+            <properties>
+                <quarkus.kubernetes.idempotent>true</quarkus.kubernetes.idempotent>
+                <!-- Outputting dollar sign has to be done through property-->
+                <dollar>$$</dollar>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>${version.resources.plugin}</version>
+                        <executions>
+                            <execution>
+                                <id>copy-olm</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}/olm/bundles/${olm.bundle.version}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <!-- Outputting ${olm.bundle.name} without actually expanding the property -->
+                                            <directory>${project.build.directory}/bundle/${dollar}{olm.bundle.name}</directory>
+                                            <include>**/*</include>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                    <fileNameFiltering>true</fileNameFiltering>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                    <!-- Wire OLM target namespaces and QOSDK configuration together-->
+                    <!-- Required since QOSDK doesn't generate this!-->
+                    <!--    OLM standard is to set the olm.targetNamespaces annotation on operator deployments-->
+                    <!--    whereas QOSDK uses the QUARKUS_OPERATOR_SDK_NAMESPACES environment variable for the same purpose-->
+                    <!-- This runs yq container and adds the variable to operator deployment in generated CSV-->
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>${version.docker.maven.plugin}</version>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <alias>yq</alias>
+                                    <name>mikefarah/yq:latest</name>
+                                    <run>
+                                        <autoRemove>true</autoRemove>
+                                        <volumes>
+                                            <bind>
+                                                <volume>${project.basedir}/olm/bundles/${olm.bundle.version}:/workdir</volume>
+                                            </bind>
+                                        </volumes>
+                                        <cmd>
+                                            <exec>
+                                                <arg>ea</arg>
+                                                <arg>-i</arg>
+                                                <arg>.spec.install.spec.deployments[0].spec.template.spec.containers[0].env += [{"name": "QUARKUS_OPERATOR_SDK_NAMESPACES", "valueFrom": {"fieldRef": {"fieldPath": "metadata.annotations['olm.targetNamespaces']"}}}]</arg>
+                                                <arg>manifests/${olm.bundle.name}.clusterserviceversion.yaml</arg>
+                                            </exec>
+                                        </cmd>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>wire-olm</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>k8update</id>
