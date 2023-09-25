@@ -151,10 +151,6 @@ spec:
       port: 80
       protocol: TCP
       targetPort: 8080
-    - name: https
-      port: 443
-      protocol: TCP
-      targetPort: 8443
   selector:
     app.kubernetes.io/name: debezium-operator
   type: ClusterIP

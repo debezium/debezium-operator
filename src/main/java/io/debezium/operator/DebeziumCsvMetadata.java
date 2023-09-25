@@ -5,20 +5,19 @@
  */
 package io.debezium.operator;
 
-import io.quarkiverse.operatorsdk.bundle.runtime.CSVMetadata;
-import io.quarkiverse.operatorsdk.bundle.runtime.CSVMetadata.Annotations;
-import io.quarkiverse.operatorsdk.bundle.runtime.CSVMetadata.Icon;
-import io.quarkiverse.operatorsdk.bundle.runtime.CSVMetadata.InstallMode;
-import io.quarkiverse.operatorsdk.bundle.runtime.CSVMetadata.Link;
-import io.quarkiverse.operatorsdk.bundle.runtime.CSVMetadata.Maintainer;
-import io.quarkiverse.operatorsdk.bundle.runtime.CSVMetadata.Provider;
-import io.quarkiverse.operatorsdk.bundle.runtime.SharedCSVMetadata;
+import io.quarkiverse.operatorsdk.annotations.CSVMetadata;
+import io.quarkiverse.operatorsdk.annotations.CSVMetadata.Annotations;
+import io.quarkiverse.operatorsdk.annotations.CSVMetadata.Icon;
+import io.quarkiverse.operatorsdk.annotations.CSVMetadata.InstallMode;
+import io.quarkiverse.operatorsdk.annotations.CSVMetadata.Link;
+import io.quarkiverse.operatorsdk.annotations.CSVMetadata.Maintainer;
+import io.quarkiverse.operatorsdk.annotations.CSVMetadata.Provider;
+import io.quarkiverse.operatorsdk.annotations.SharedCSVMetadata;
 
 // @formatter:off
 @CSVMetadata(
         name = DebeziumCsvMetadata.NAME,
         displayName = "Debezium Operator",
-        version = "${olm.bundle.version}", replaces = "${olm.bundle.replaces}",
         icon = @Icon(fileName = "debezium-icon.svg"),
         provider = @Provider(name = "Debezium Authors", url = "https://debezium.io/"),
         maintainers = @Maintainer(name = "Debezium Authors", email = "debezium@googlegroups.com"),
