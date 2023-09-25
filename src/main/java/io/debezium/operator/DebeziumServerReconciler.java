@@ -23,7 +23,7 @@ import io.javaoperatorsdk.operator.api.reconciler.ControllerConfiguration;
 import io.javaoperatorsdk.operator.api.reconciler.Reconciler;
 import io.javaoperatorsdk.operator.api.reconciler.UpdateControl;
 import io.javaoperatorsdk.operator.api.reconciler.dependent.Dependent;
-import io.quarkiverse.operatorsdk.bundle.runtime.CSVMetadata;
+import io.quarkiverse.operatorsdk.annotations.CSVMetadata;
 import io.quarkus.logging.Log;
 
 @ControllerConfiguration(namespaces = Constants.WATCH_CURRENT_NAMESPACE, name = "debeziumserver", dependents = {
