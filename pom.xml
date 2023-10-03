@@ -9,14 +9,14 @@
     </parent>
 
     <artifactId>debezium-operator</artifactId>
-    <version>2.4.0-SNAPSHOT</version>
+    <version>2.4.0.Final</version>
     <name>Debezium Operator</name>
 
     <scm>
         <connection>scm:git:git@github.com:debezium/debezium-operator.git</connection>
         <developerConnection>scm:git:git@github.com:debezium/debezium-operator.git</developerConnection>
         <url>https://github.com/debezium/debezium-operator</url>
-        <tag>HEAD</tag>
+        <tag>v2.4.0.Final</tag>
     </scm>
 
     <properties>
@@ -43,7 +43,7 @@
         <olm.bundle.name>debezium-operator.v${olm.bundle.version}</olm.bundle.name>
         <olm.bundle.channels>alpha</olm.bundle.channels>
         <olm.bundle.version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-nightly</olm.bundle.version>
-        <olm.bundle.replaces></olm.bundle.replaces>
+        <olm.bundle.replaces />
         <olm.bundle.containerImage>${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}</olm.bundle.containerImage>
         <olm.bundle.createdAt>${maven.build.timestamp}</olm.bundle.createdAt>
         <olm.bundle.package.name>debezium-operator</olm.bundle.package.name>
