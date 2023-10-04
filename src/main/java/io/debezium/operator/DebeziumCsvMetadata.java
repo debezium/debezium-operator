@@ -29,7 +29,7 @@ import io.quarkiverse.operatorsdk.annotations.SharedCSVMetadata;
         links = {
             @Link(url = "https://debezium.io/", name = "Debezium"),
             @Link(url = "https://debezium.io/documentation/reference/stable/", name = "Documentation"),
-            @Link(url = "debezium.zulipchat.com", name = "Debezium Zulip Chat")},
+            @Link(url = "https://debezium.zulipchat.com", name = "Debezium Zulip Chat")},
         installModes = {
             @InstallMode(type = "OwnNamespace"),
             @InstallMode(type = "SingleNamespace"),
