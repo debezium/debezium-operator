@@ -28,6 +28,8 @@
 
         <!-- Debezium version -->
         <version.debezium>${project.version}</version.debezium>
+        <version.debezium.qualifier.prefix>-</version.debezium.qualifier.prefix>
+        <version.debezium.parsed>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</version.debezium.parsed>
 
         <!-- Plugin versions -->
         <version.buildhelper.plugin>3.4.0</version.buildhelper.plugin>
@@ -42,7 +44,7 @@
         <!-- OLM configuration -->
         <olm.bundle.name>debezium-operator.v${olm.bundle.version}</olm.bundle.name>
         <olm.bundle.channels>alpha</olm.bundle.channels>
-        <olm.bundle.version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-nightly</olm.bundle.version>
+        <olm.bundle.version>${version.debezium.parsed}-nightly</olm.bundle.version>
         <olm.bundle.replaces />
         <olm.bundle.containerImage>${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}</olm.bundle.containerImage>
         <olm.bundle.createdAt>${maven.build.timestamp}</olm.bundle.createdAt>
@@ -154,6 +156,10 @@
                         <goals>
                             <goal>parse-version</goal>
                         </goals>
+                        <configuration>
+                            <versionString>${project.parent.version}</versionString>
+                            <qualifierPrefix>${version.debezium.qualifier.prefix}</qualifierPrefix>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -256,9 +262,10 @@
         <profile>
             <id>stable</id>
             <properties>
+                <version.debezium.qualifier.prefix>.</version.debezium.qualifier.prefix>
                 <quarkus.container-image.tag>${project.parent.version}</quarkus.container-image.tag>
                 <quarkus.operator-sdk.bundle.channels>${olm.bundle.channels}</quarkus.operator-sdk.bundle.channels>
-                <olm.bundle.version>${project.parent.version}</olm.bundle.version>
+                <olm.bundle.version>${version.debezium.parsed}</olm.bundle.version>
                 <olm.bundle.channels>debezium-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.x</olm.bundle.channels>
             </properties>
         </profile>
