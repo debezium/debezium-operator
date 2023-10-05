@@ -36,6 +36,7 @@ import io.quarkiverse.operatorsdk.annotations.SharedCSVMetadata;
             @InstallMode(type = "AllNamespaces"),
             @InstallMode(type = "MultiNamespace")},
         annotations = @Annotations(
+                repository = "${olm.bundle.repository}",
                 capabilities = "Basic Install",
                 categories = "Big Data, Database, Integration & Delivery, Streaming & Messaging",
                 containerImage = "${olm.bundle.containerImage}",
