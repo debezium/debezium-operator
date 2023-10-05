@@ -49,6 +49,7 @@
         <olm.bundle.containerImage>${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}</olm.bundle.containerImage>
         <olm.bundle.createdAt>${maven.build.timestamp}</olm.bundle.createdAt>
         <olm.bundle.package.name>debezium-operator</olm.bundle.package.name>
+        <olm.bundle.repository>${project.scm.url}</olm.bundle.repository>
 
         <!-- Quarkus configuration and versions-->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
