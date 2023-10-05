@@ -3,6 +3,19 @@
 Debezium operator provides an easy way to run the Debezium Server on Kubernetes or Openshift.
 
 ## Installation steps
+
+Begin by creating a Kubernetes namespace for the Debezium Operator. Replace `my-namespace` with your preferred namespace name.
+
+```bash
+kubectl create namespace my-namespace
+```
+
+Export the namespace name as an environment variable for future use.
+
+```bash
+export NAMESPACE=my-namespace
+```
+
 The debezium operator currently support only per namespace installation unless installing via OLM. To install the operator to your kubernetes cluster,
 simply create the descriptors available in the `k8` directory.
 
