@@ -8,6 +8,8 @@ package io.debezium.operator.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
 import io.fabric8.kubernetes.api.model.EnvFromSource;
 import io.fabric8.kubernetes.api.model.Volume;
 
@@ -17,9 +19,13 @@ public class Runtime {
 
     private List<Volume> volumes;
 
+    @JsonPropertyDescription("Debezium Server resource templates.")
+    private Templates templates;
+
     public Runtime() {
         this.env = new ArrayList<>();
         this.volumes = new ArrayList<>();
+        this.templates = new Templates();
     }
 
     public List<EnvFromSource> getEnv() {
@@ -36,5 +42,13 @@ public class Runtime {
 
     public void setVolumes(List<Volume> volumes) {
         this.volumes = volumes;
+    }
+
+    public Templates getTemplates() {
+        return templates;
+    }
+
+    public void setTemplates(Templates templates) {
+        this.templates = templates;
     }
 }
