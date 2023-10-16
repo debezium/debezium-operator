@@ -15,8 +15,10 @@ import io.fabric8.kubernetes.api.model.Volume;
 
 public class Runtime {
 
+    @JsonPropertyDescription("Additional environment variables set from ConfigMaps or Secrets in containers.")
     private List<EnvFromSource> env;
 
+    @JsonPropertyDescription("Additional volumes mounted to containers.")
     private List<Volume> volumes;
 
     @JsonPropertyDescription("Debezium Server resource templates.")

@@ -8,19 +8,45 @@ package io.debezium.operator.model;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class DebeziumServerSpec implements ConfigMappable {
+
+    @JsonPropertyDescription("Image used for Debezium Server container. This property takes precedence over version.")
     private String image;
+
+    @JsonPropertyDescription("Version of Debezium Server to be used.")
     private String version;
+
+    @JsonPropertyDescription("Storage configuration to be used by this instance of Debezium Server.")
     private Storage storage;
+
+    @JsonPropertyDescription("Sink configuration.")
     private Sink sink;
+
+    @JsonPropertyDescription("Debezium source connector configuration.")
     private Source source;
+
+    @JsonPropertyDescription("Message output format configuration.")
     private Format format;
+
+    @JsonPropertyDescription("Quarkus configuration passed down to Debezium Server process.")
     private Quarkus quarkus;
+
+    @JsonPropertyDescription("Configuration allowing the modification of various aspects of Debezium Server runtime.")
     private Runtime runtime;
+
+    @JsonPropertyDescription("Single Message Transformations employed by this instance of Debezium Server.")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<Transformation> transforms;
+
+    @JsonPropertyDescription("Predicates employed by this instance of Debezium Server.")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private Map<String, Predicate> predicates;
 
     public DebeziumServerSpec() {
