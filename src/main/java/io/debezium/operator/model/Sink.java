@@ -5,12 +5,19 @@
  */
 package io.debezium.operator.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
 public class Sink implements ConfigMappable {
 
+    @JsonPropertyDescription("Sink type recognised by Debezium Server.")
+    @JsonProperty(required = true)
     private String type;
+
+    @JsonPropertyDescription("Sink configuration properties.")
     private ConfigProperties config;
 
     public Sink() {
