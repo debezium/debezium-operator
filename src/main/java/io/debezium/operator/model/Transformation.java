@@ -5,13 +5,22 @@
  */
 package io.debezium.operator.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
 public class Transformation implements ConfigMappable {
 
+    @JsonPropertyDescription("Fully qualified name of Java class implementing the transformation.")
+    @JsonProperty(required = true)
     private String type;
+
+    @JsonPropertyDescription("The name of the predicate to be applied to this transformation.")
     private String predicate;
+
+    @JsonPropertyDescription("Determines if the result of the applied predicate will be negated.")
     private boolean negate = false;
     private ConfigProperties config;
 

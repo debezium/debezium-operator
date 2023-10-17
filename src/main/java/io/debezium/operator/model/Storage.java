@@ -5,9 +5,14 @@
  */
 package io.debezium.operator.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
 public class Storage {
 
+    @JsonPropertyDescription("Storage type.")
     private StorageType type;
+
+    @JsonPropertyDescription("Name of persistent volume claim for persistent storage.")
     private String claimName;
 
     public Storage() {

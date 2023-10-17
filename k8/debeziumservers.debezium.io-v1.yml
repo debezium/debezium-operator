@@ -18,8 +18,11 @@ spec:
           spec:
             properties:
               runtime:
+                description: Configuration allowing the modification of various aspects
+                  of Debezium Server runtime.
                 properties:
                   volumes:
+                    description: Additional volumes mounted to containers.
                     items:
                       properties:
                         hostPath:
@@ -669,6 +672,8 @@ spec:
                       type: object
                     type: array
                   env:
+                    description: Additional environment variables set from ConfigMaps
+                      or Secrets in containers.
                     items:
                       properties:
                         prefix:
@@ -689,15 +694,406 @@ spec:
                           type: object
                       type: object
                     type: array
+                  templates:
+                    description: Debezium Server resource templates.
+                    properties:
+                      pod:
+                        description: Pod template.
+                        properties:
+                          affinity:
+                            description: Pod affinity rules
+                            properties:
+                              podAntiAffinity:
+                                properties:
+                                  requiredDuringSchedulingIgnoredDuringExecution:
+                                    items:
+                                      properties:
+                                        namespaces:
+                                          items:
+                                            type: string
+                                          type: array
+                                        topologyKey:
+                                          type: string
+                                        labelSelector:
+                                          properties:
+                                            matchExpressions:
+                                              items:
+                                                properties:
+                                                  key:
+                                                    type: string
+                                                  values:
+                                                    items:
+                                                      type: string
+                                                    type: array
+                                                  operator:
+                                                    type: string
+                                                type: object
+                                              type: array
+                                            matchLabels:
+                                              additionalProperties:
+                                                type: string
+                                              type: object
+                                          type: object
+                                        namespaceSelector:
+                                          properties:
+                                            matchExpressions:
+                                              items:
+                                                properties:
+                                                  key:
+                                                    type: string
+                                                  values:
+                                                    items:
+                                                      type: string
+                                                    type: array
+                                                  operator:
+                                                    type: string
+                                                type: object
+                                              type: array
+                                            matchLabels:
+                                              additionalProperties:
+                                                type: string
+                                              type: object
+                                          type: object
+                                      type: object
+                                    type: array
+                                  preferredDuringSchedulingIgnoredDuringExecution:
+                                    items:
+                                      properties:
+                                        podAffinityTerm:
+                                          properties:
+                                            namespaces:
+                                              items:
+                                                type: string
+                                              type: array
+                                            topologyKey:
+                                              type: string
+                                            labelSelector:
+                                              properties:
+                                                matchExpressions:
+                                                  items:
+                                                    properties:
+                                                      key:
+                                                        type: string
+                                                      values:
+                                                        items:
+                                                          type: string
+                                                        type: array
+                                                      operator:
+                                                        type: string
+                                                    type: object
+                                                  type: array
+                                                matchLabels:
+                                                  additionalProperties:
+                                                    type: string
+                                                  type: object
+                                              type: object
+                                            namespaceSelector:
+                                              properties:
+                                                matchExpressions:
+                                                  items:
+                                                    properties:
+                                                      key:
+                                                        type: string
+                                                      values:
+                                                        items:
+                                                          type: string
+                                                        type: array
+                                                      operator:
+                                                        type: string
+                                                    type: object
+                                                  type: array
+                                                matchLabels:
+                                                  additionalProperties:
+                                                    type: string
+                                                  type: object
+                                              type: object
+                                          type: object
+                                        weight:
+                                          type: integer
+                                      type: object
+                                    type: array
+                                type: object
+                              nodeAffinity:
+                                properties:
+                                  preferredDuringSchedulingIgnoredDuringExecution:
+                                    items:
+                                      properties:
+                                        weight:
+                                          type: integer
+                                        preference:
+                                          properties:
+                                            matchFields:
+                                              items:
+                                                properties:
+                                                  key:
+                                                    type: string
+                                                  values:
+                                                    items:
+                                                      type: string
+                                                    type: array
+                                                  operator:
+                                                    type: string
+                                                type: object
+                                              type: array
+                                            matchExpressions:
+                                              items:
+                                                properties:
+                                                  key:
+                                                    type: string
+                                                  values:
+                                                    items:
+                                                      type: string
+                                                    type: array
+                                                  operator:
+                                                    type: string
+                                                type: object
+                                              type: array
+                                          type: object
+                                      type: object
+                                    type: array
+                                  requiredDuringSchedulingIgnoredDuringExecution:
+                                    properties:
+                                      nodeSelectorTerms:
+                                        items:
+                                          properties:
+                                            matchFields:
+                                              items:
+                                                properties:
+                                                  key:
+                                                    type: string
+                                                  values:
+                                                    items:
+                                                      type: string
+                                                    type: array
+                                                  operator:
+                                                    type: string
+                                                type: object
+                                              type: array
+                                            matchExpressions:
+                                              items:
+                                                properties:
+                                                  key:
+                                                    type: string
+                                                  values:
+                                                    items:
+                                                      type: string
+                                                    type: array
+                                                  operator:
+                                                    type: string
+                                                type: object
+                                              type: array
+                                          type: object
+                                        type: array
+                                    type: object
+                                type: object
+                              podAffinity:
+                                properties:
+                                  requiredDuringSchedulingIgnoredDuringExecution:
+                                    items:
+                                      properties:
+                                        namespaces:
+                                          items:
+                                            type: string
+                                          type: array
+                                        topologyKey:
+                                          type: string
+                                        labelSelector:
+                                          properties:
+                                            matchExpressions:
+                                              items:
+                                                properties:
+                                                  key:
+                                                    type: string
+                                                  values:
+                                                    items:
+                                                      type: string
+                                                    type: array
+                                                  operator:
+                                                    type: string
+                                                type: object
+                                              type: array
+                                            matchLabels:
+                                              additionalProperties:
+                                                type: string
+                                              type: object
+                                          type: object
+                                        namespaceSelector:
+                                          properties:
+                                            matchExpressions:
+                                              items:
+                                                properties:
+                                                  key:
+                                                    type: string
+                                                  values:
+                                                    items:
+                                                      type: string
+                                                    type: array
+                                                  operator:
+                                                    type: string
+                                                type: object
+                                              type: array
+                                            matchLabels:
+                                              additionalProperties:
+                                                type: string
+                                              type: object
+                                          type: object
+                                      type: object
+                                    type: array
+                                  preferredDuringSchedulingIgnoredDuringExecution:
+                                    items:
+                                      properties:
+                                        podAffinityTerm:
+                                          properties:
+                                            namespaces:
+                                              items:
+                                                type: string
+                                              type: array
+                                            topologyKey:
+                                              type: string
+                                            labelSelector:
+                                              properties:
+                                                matchExpressions:
+                                                  items:
+                                                    properties:
+                                                      key:
+                                                        type: string
+                                                      values:
+                                                        items:
+                                                          type: string
+                                                        type: array
+                                                      operator:
+                                                        type: string
+                                                    type: object
+                                                  type: array
+                                                matchLabels:
+                                                  additionalProperties:
+                                                    type: string
+                                                  type: object
+                                              type: object
+                                            namespaceSelector:
+                                              properties:
+                                                matchExpressions:
+                                                  items:
+                                                    properties:
+                                                      key:
+                                                        type: string
+                                                      values:
+                                                        items:
+                                                          type: string
+                                                        type: array
+                                                      operator:
+                                                        type: string
+                                                    type: object
+                                                  type: array
+                                                matchLabels:
+                                                  additionalProperties:
+                                                    type: string
+                                                  type: object
+                                              type: object
+                                          type: object
+                                        weight:
+                                          type: integer
+                                      type: object
+                                    type: array
+                                type: object
+                            type: object
+                          metadata:
+                            description: Metadata applied to the resource.
+                            properties:
+                              labels:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                              annotations:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                            type: object
+                          securityContext:
+                            description: Pod-level security attributes and container
+                              settings
+                            properties:
+                              runAsGroup:
+                                type: integer
+                              runAsNonRoot:
+                                type: boolean
+                              windowsOptions:
+                                properties:
+                                  gmsaCredentialSpecName:
+                                    type: string
+                                  hostProcess:
+                                    type: boolean
+                                  gmsaCredentialSpec:
+                                    type: string
+                                  runAsUserName:
+                                    type: string
+                                type: object
+                              sysctls:
+                                items:
+                                  properties:
+                                    value:
+                                      type: string
+                                    name:
+                                      type: string
+                                  type: object
+                                type: array
+                              fsGroupChangePolicy:
+                                type: string
+                              seLinuxOptions:
+                                properties:
+                                  role:
+                                    type: string
+                                  type:
+                                    type: string
+                                  user:
+                                    type: string
+                                  level:
+                                    type: string
+                                type: object
+                              fsGroup:
+                                type: integer
+                              supplementalGroups:
+                                items:
+                                  type: integer
+                                type: array
+                              runAsUser:
+                                type: integer
+                              seccompProfile:
+                                properties:
+                                  type:
+                                    type: string
+                                  localhostProfile:
+                                    type: string
+                                type: object
+                            type: object
+                          imagePullSecrets:
+                            description: List of local references to secrets used
+                              for pulling any of the images used by this Pod.
+                            items:
+                              properties:
+                                name:
+                                  type: string
+                              type: object
+                            type: array
+                        type: object
+                    type: object
                 type: object
               transforms:
+                description: Single Message Transformations employed by this instance
+                  of Debezium Server.
                 items:
                   properties:
                     negate:
+                      description: Determines if the result of the applied predicate
+                        will be negated.
                       type: boolean
                     predicate:
+                      description: The name of the predicate to be applied to this
+                        transformation.
                       type: string
                     type:
+                      description: Fully qualified name of Java class implementing
+                        the transformation.
                       type: string
                     config:
                       properties:
@@ -711,10 +1107,13 @@ spec:
                   type: object
                 type: array
               sink:
+                description: Sink configuration.
                 properties:
                   type:
+                    description: Sink type recognised by Debezium Server.
                     type: string
                   config:
+                    description: Sink configuration properties.
                     properties:
                       props:
                         additionalProperties:
@@ -725,22 +1124,32 @@ spec:
                     x-kubernetes-preserve-unknown-fields: true
                 type: object
               storage:
+                description: Storage configuration to be used by this instance of
+                  Debezium Server.
                 properties:
                   claimName:
+                    description: Name of persistent volume claim for persistent storage.
                     type: string
                   type:
+                    description: Storage type.
                     enum:
                     - persistent
                     - ephemeral
                     type: string
                 type: object
               version:
+                description: Version of Debezium Server to be used.
                 type: string
               image:
+                description: Image used for Debezium Server container. This property
+                  takes precedence over version.
                 type: string
               quarkus:
+                description: Quarkus configuration passed down to Debezium Server
+                  process.
                 properties:
                   config:
+                    description: Quarkus configuration properties.
                     properties:
                       props:
                         additionalProperties:
@@ -754,8 +1163,11 @@ spec:
                 additionalProperties:
                   properties:
                     type:
+                      description: Fully qualified name of Java class implementing
+                        the predicate.
                       type: string
                     config:
+                      description: Predicate configuration properties.
                       properties:
                         props:
                           additionalProperties:
@@ -765,12 +1177,16 @@ spec:
                       type: object
                       x-kubernetes-preserve-unknown-fields: true
                   type: object
+                description: Predicates employed by this instance of Debezium Server.
                 type: object
               source:
+                description: Debezium source connector configuration.
                 properties:
                   class:
+                    description: Fully qualified name of source connector Java class.
                     type: string
                   config:
+                    description: Source connector configuration properties.
                     properties:
                       props:
                         additionalProperties:
@@ -781,12 +1197,16 @@ spec:
                     x-kubernetes-preserve-unknown-fields: true
                 type: object
               format:
+                description: Message output format configuration.
                 properties:
                   key:
+                    description: Message key format configuration.
                     properties:
                       type:
+                        description: Format type recognised by Debezium Server.
                         type: string
                       config:
+                        description: Format configuration properties.
                         properties:
                           props:
                             additionalProperties:
@@ -797,10 +1217,13 @@ spec:
                         x-kubernetes-preserve-unknown-fields: true
                     type: object
                   value:
+                    description: Message value format configuration.
                     properties:
                       type:
+                        description: Format type recognised by Debezium Server.
                         type: string
                       config:
+                        description: Format configuration properties.
                         properties:
                           props:
                             additionalProperties:
@@ -811,10 +1234,13 @@ spec:
                         x-kubernetes-preserve-unknown-fields: true
                     type: object
                   header:
+                    description: Message header format configuration.
                     properties:
                       type:
+                        description: Format type recognised by Debezium Server.
                         type: string
                       config:
+                        description: Format configuration properties.
                         properties:
                           props:
                             additionalProperties:

@@ -5,12 +5,19 @@
  */
 package io.debezium.operator.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
 public class Predicate implements ConfigMappable {
 
+    @JsonPropertyDescription("Fully qualified name of Java class implementing the predicate.")
+    @JsonProperty(required = true)
     private String type;
+
+    @JsonPropertyDescription("Predicate configuration properties.")
     private ConfigProperties config;
 
     public Predicate() {

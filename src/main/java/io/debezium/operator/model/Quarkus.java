@@ -5,10 +5,14 @@
  */
 package io.debezium.operator.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
 public class Quarkus implements ConfigMappable {
+
+    @JsonPropertyDescription("Quarkus configuration properties.")
     private ConfigProperties config;
 
     public Quarkus() {

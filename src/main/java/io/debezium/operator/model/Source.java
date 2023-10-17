@@ -6,20 +6,24 @@
 package io.debezium.operator.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
 public class Source implements ConfigMappable {
 
+    @JsonPropertyDescription("Fully qualified name of source connector Java class.")
+    @JsonProperty(value = "class", required = true)
     private String sourceClass;
+
+    @JsonPropertyDescription("Source connector configuration properties.")
     private ConfigProperties config;
 
     public Source() {
         this.config = new ConfigProperties();
     }
 
-    @JsonProperty("class")
     public String getSourceClass() {
         return sourceClass;
     }

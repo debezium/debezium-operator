@@ -13,7 +13,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.debezium.operator.DebeziumServer;
 import io.debezium.operator.VersionProvider;
+import io.debezium.operator.model.templates.PodTemplate;
 import io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder;
+import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EmptyDirVolumeSourceBuilder;
@@ -72,15 +74,16 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     protected Deployment desired(DebeziumServer primary, Context<DebeziumServer> context) {
         var name = primary.getMetadata().getName();
         var image = getTaggedImage(primary);
+        var desiredContainer = desiredContainer(primary, name, image);
         var labels = Map.of("app", name);
         var annotations = Map.of(CONFIG_MD5_ANNOTATION, primary.asConfiguration().md5Sum());
+
         var dataVolume = desiredDataVolume(primary);
         var sa = context.getSecondaryResource(ServiceAccount.class)
                 .map(r -> r.getMetadata().getName())
                 .orElseThrow();
 
-        var quarkus = primary.getSpec().getQuarkus();
-        var probePort = quarkus.getConfig().getProps().getOrDefault("http.port", 8080);
+        var templates = primary.getSpec().getRuntime().getTemplates();
 
         var deployment = new DeploymentBuilder()
                 .withMetadata(new ObjectMetaBuilder()
@@ -107,44 +110,28 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                                                         .build())
                                                 .build())
                                         .addToVolumes(dataVolume)
-                                        .addToContainers(new ContainerBuilder()
-                                                .withName(name)
-                                                .withImage(image)
-                                                .withLivenessProbe(new ProbeBuilder()
-                                                        .withHttpGet(new HTTPGetActionBuilder()
-                                                                .withPath("/q/health/live")
-                                                                .withPort(new IntOrString(probePort))
-                                                                .build())
-                                                        .build())
-                                                .withReadinessProbe(new ProbeBuilder()
-                                                        .withHttpGet(new HTTPGetActionBuilder()
-                                                                .withPath("/q/health/ready")
-                                                                .withPort(new IntOrString(probePort))
-                                                                .build())
-                                                        .build())
-                                                .withPorts(new ContainerPortBuilder()
-                                                        .withName("http")
-                                                        .withProtocol("TCP")
-                                                        .withContainerPort(DEFAULT_HTTP_PORT)
-                                                        .build())
-                                                .addToVolumeMounts(new VolumeMountBuilder()
-                                                        .withName(CONFIG_VOLUME_NAME)
-                                                        .withMountPath(CONFIG_FILE_PATH)
-                                                        .withSubPath(CONFIG_FILE_NAME)
-                                                        .build())
-                                                .addToVolumeMounts(new VolumeMountBuilder()
-                                                        .withName(DATA_VOLUME_NAME)
-                                                        .withMountPath(DATA_VOLUME_PATH)
-                                                        .build())
-                                                .build())
+                                        .addToContainers(desiredContainer)
                                         .build())
                                 .build())
                         .build())
                 .build();
 
+        addPodTemplateConfiguration(templates.getPod(), deployment);
         addExternalEnvVariables(primary, deployment);
         addExternalVolumes(primary, deployment);
         return deployment;
+    }
+
+    private void addPodTemplateConfiguration(PodTemplate template, Deployment deployment) {
+        var templateMeta = template.getMetadata();
+        var pod = deployment.getSpec().getTemplate();
+        var podSpec = pod.getSpec();
+        var podMeta = pod.getMetadata();
+
+        podSpec.setAffinity(template.getAffinity());
+        podSpec.setImagePullSecrets(template.getImagePullSecrets());
+        podMeta.getLabels().putAll(templateMeta.getLabels());
+        podMeta.getAnnotations().putAll(templateMeta.getAnnotations());
     }
 
     private void addExternalEnvVariables(DebeziumServer primary, Deployment deployment) {
@@ -182,7 +169,42 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                     .withClaimName(storageConfig.getClaimName())
                     .build());
         }
-
         return builder.build();
+    }
+
+    private Container desiredContainer(DebeziumServer primary, String name, String image) {
+        var quarkus = primary.getSpec().getQuarkus();
+        var probePort = quarkus.getConfig().getProps().getOrDefault("http.port", 8080);
+
+        return new ContainerBuilder()
+                .withName(name)
+                .withImage(image)
+                .withLivenessProbe(new ProbeBuilder()
+                        .withHttpGet(new HTTPGetActionBuilder()
+                                .withPath("/q/health/live")
+                                .withPort(new IntOrString(probePort))
+                                .build())
+                        .build())
+                .withReadinessProbe(new ProbeBuilder()
+                        .withHttpGet(new HTTPGetActionBuilder()
+                                .withPath("/q/health/ready")
+                                .withPort(new IntOrString(probePort))
+                                .build())
+                        .build())
+                .withPorts(new ContainerPortBuilder()
+                        .withName("http")
+                        .withProtocol("TCP")
+                        .withContainerPort(DEFAULT_HTTP_PORT)
+                        .build())
+                .addToVolumeMounts(new VolumeMountBuilder()
+                        .withName(CONFIG_VOLUME_NAME)
+                        .withMountPath(CONFIG_FILE_PATH)
+                        .withSubPath(CONFIG_FILE_NAME)
+                        .build())
+                .addToVolumeMounts(new VolumeMountBuilder()
+                        .withName(DATA_VOLUME_NAME)
+                        .withMountPath(DATA_VOLUME_PATH)
+                        .build())
+                .build();
     }
 }
