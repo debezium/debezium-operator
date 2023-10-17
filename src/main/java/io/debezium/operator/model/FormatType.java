@@ -5,13 +5,17 @@
  */
 package io.debezium.operator.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
 import io.debezium.operator.config.ConfigMappable;
 import io.debezium.operator.config.ConfigMapping;
 
 public class FormatType implements ConfigMappable {
 
+    @JsonPropertyDescription("Format type recognised by Debezium Server.")
     private String type;
 
+    @JsonPropertyDescription("Format configuration properties.")
     private ConfigProperties config;
 
     public FormatType() {
