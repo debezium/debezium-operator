@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -53,9 +54,8 @@
 
         <!-- Quarkus configuration and versions-->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-        <quarkus.platform.version>3.2.4.Final</quarkus.platform.version>
-        <quarkus.operator.sdk.version>6.3.3</quarkus.operator.sdk.version>
+        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+        <quarkus.platform.version>3.4.3</quarkus.platform.version>
 
         <!-- Operator and Image configuration -->
         <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
@@ -103,6 +103,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>quarkus-operator-sdk-bom</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -110,13 +117,11 @@
     <dependencies>
         <dependency>
             <groupId>io.quarkiverse.operatorsdk</groupId>
-            <artifactId>quarkus-operator-sdk</artifactId>
-            <version>${quarkus.operator.sdk.version}</version>
+            <artifactId>quarkus-operator-sdk-bundle-generator</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkiverse.operatorsdk</groupId>
-            <artifactId>quarkus-operator-sdk-bundle-generator</artifactId>
-            <version>${quarkus.operator.sdk.version}</version>
+            <artifactId>quarkus-operator-sdk</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -209,8 +214,7 @@
                         </goals>
                         <configuration>
                             <systemPropertyVariables>
-                                <native.image.path>${project.build.directory}/${project.build.finalName}-runner
-                                </native.image.path>
+                                <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
                                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
                                 <maven.home>${maven.home}</maven.home>
                             </systemPropertyVariables>
