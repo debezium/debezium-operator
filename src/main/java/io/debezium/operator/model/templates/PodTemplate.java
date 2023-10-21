@@ -5,6 +5,7 @@
  */
 package io.debezium.operator.model.templates;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,7 +18,9 @@ import io.fabric8.kubernetes.api.model.PodSecurityContext;
 
 @JsonPropertyOrder({ "metadata", "imagePullSecrets", "affinity" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class PodTemplate implements HasMetadataTemplate {
+public class PodTemplate implements HasMetadataTemplate, Serializable {
+
+    public static final long serialVersionUID = 1L;
 
     @JsonPropertyDescription("Metadata applied to the resource.")
     private MetadataTemplate metadata = new MetadataTemplate();
