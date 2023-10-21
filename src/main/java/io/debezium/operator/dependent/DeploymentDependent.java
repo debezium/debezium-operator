@@ -13,12 +13,14 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.debezium.operator.DebeziumServer;
 import io.debezium.operator.VersionProvider;
+import io.debezium.operator.model.templates.ContainerTemplate;
 import io.debezium.operator.model.templates.PodTemplate;
 import io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EmptyDirVolumeSourceBuilder;
+import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.HTTPGetActionBuilder;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.LabelSelectorBuilder;
@@ -117,6 +119,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                 .build();
 
         addPodTemplateConfiguration(templates.getPod(), deployment);
+        addContainerTemplateConfiguration(templates.getContainer(), deployment);
         addExternalEnvVariables(primary, deployment);
         addExternalVolumes(primary, deployment);
         return deployment;
@@ -156,6 +159,22 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
 
         volumes.addAll(config.getVolumes());
         containers.forEach(container -> container.getVolumeMounts().addAll(volumeMounts));
+    }
+
+    private void addContainerTemplateConfiguration(ContainerTemplate template, Deployment deployment) {
+        var containerEnv = template.getEnv()
+                .stream()
+                .map(ce -> new EnvVar(ce.getName(), ce.getValue(), null))
+                .toList();
+
+        var pod = deployment.getSpec().getTemplate();
+        var containers = pod.getSpec().getContainers();
+
+        containers.forEach(container -> {
+            container.getEnv().addAll(containerEnv);
+            container.setSecurityContext(template.getSecurityContext());
+            container.setResources(template.getResources());
+        });
     }
 
     private Volume desiredDataVolume(DebeziumServer primary) {
