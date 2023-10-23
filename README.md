@@ -37,6 +37,20 @@ spec:
   runtime:
     env: EnvFromSource array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#envfromsource-v1-core
     volumes: Volume array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#volume-v1-core
+    templates:
+      container:
+        env:
+          - name: String
+            value: String
+        resources: # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#resourcerequirements-v1-core
+        securityContext: # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#securitycontext-v1-core
+      pod:
+        metadata:
+          annotations: Map<String, String>
+          labels: Map<String, String>
+        imagePullSecrets: List # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#localobjectreference-v1-core
+        affinity: # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#affinity-v1-core
+        securityContext: # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#podsecuritycontext-v1-core
   quarkus:
     config:
       # quarkus properties 
