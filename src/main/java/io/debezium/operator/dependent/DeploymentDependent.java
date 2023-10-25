@@ -5,7 +5,10 @@
  */
 package io.debezium.operator.dependent;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 
@@ -18,6 +21,7 @@ import io.debezium.operator.model.JmxConfig;
 import io.debezium.operator.model.Runtime;
 import io.debezium.operator.model.templates.ContainerTemplate;
 import io.debezium.operator.model.templates.PodTemplate;
+import io.debezium.operator.util.StringUtils;
 import io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
@@ -263,19 +267,64 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
      * @param container target container
      */
     private void addJmxConfigurationToContainer(JmxConfig jmx, Container container) {
+        if (!jmx.isEnabled()) {
+            return;
+        }
+
         var ports = container.getPorts();
+        ports.add(new ContainerPortBuilder()
+                .withName("jmx")
+                .withProtocol("TCP")
+                .withContainerPort(jmx.getPort())
+                .build());
+
+        var opts = Map.of(
+                "-Dcom.sun.management.jmxremote.ssl", false,
+                "-Dcom.sun.management.jmxremote.port", jmx.getPort(),
+                "-Dcom.sun.management.jmxremote.rmi.port", jmx.getPort(),
+                "-Dcom.sun.management.jmxremote.local.only", false,
+                "-Djava.rmi.server.hostname", "0.0.0.0",
+                "-Dcom.sun.management.jmxremote.verbose", true,
+                "-Dcom.sun.management.jmxremote.authenticate", false);
+
+        // If JAVA_OPTS is already set (e.g. from container template) we don't want to override it
+        mergeJavaOptsEnvVar(opts, container);
+    }
+
+    /**
+     * Adds JAVA_OPTS environment variable is not set on container.
+     * If JAVA_OPTS already exists then new (and only new) options are added
+     *
+     * @param newValue additional JAVA_OPTS in form of a map
+     * @param container target container
+     */
+    private void mergeJavaOptsEnvVar(Map<String, ?> newValue, Container container) {
+        final var name = "JAVA_OPTS";
         var env = container.getEnv();
 
-        if (jmx.isEnabled()) {
-            ports.add(new ContainerPortBuilder()
-                    .withName("jmx")
-                    .withProtocol("TCP")
-                    .withContainerPort(jmx.getPort())
-                    .build());
+        var currentEnvVar = env.stream()
+                .filter(envVar -> name.equals(envVar.getName()))
+                .findFirst();
+        // Remove current EnvVar instance if it exists
+        currentEnvVar.ifPresent(env::remove);
 
-            env.add(new EnvVar("JMX_HOST", "0.0.0.0", null));
-            env.add(new EnvVar("JMX_PORT", String.valueOf(jmx.getPort()), null));
-        }
+        // Get current value as map
+        var currentProperties = currentEnvVar
+                .map(EnvVar::getValue)
+                .map(StringUtils::splitJavaOpts)
+                .orElse(Map.of());
+
+        // Only set properties which are not set yet
+        var additionalProperties = newValue.keySet()
+                .stream()
+                .filter(Predicate.not(currentProperties::containsKey))
+                .collect(Collectors.toMap(k -> k, newValue::get));
+
+        var mergedProperties = new HashMap<String, Object>();
+        mergedProperties.putAll(currentProperties);
+        mergedProperties.putAll(additionalProperties);
+
+        env.add(new EnvVar(name, StringUtils.joinAsJavaOpts(mergedProperties), null));
     }
 
     /**
