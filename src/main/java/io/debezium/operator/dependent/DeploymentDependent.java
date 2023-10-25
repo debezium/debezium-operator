@@ -13,6 +13,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.debezium.operator.DebeziumServer;
 import io.debezium.operator.VersionProvider;
+import io.debezium.operator.model.CommonLabels;
 import io.debezium.operator.model.templates.ContainerTemplate;
 import io.debezium.operator.model.templates.PodTemplate;
 import io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder;
@@ -77,7 +78,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var name = primary.getMetadata().getName();
         var image = getTaggedImage(primary);
         var desiredContainer = desiredContainer(primary, name, image);
-        var labels = Map.of("app", name);
+        var labels = CommonLabels.serverComponent(name).getMap();
         var annotations = Map.of(CONFIG_MD5_ANNOTATION, primary.asConfiguration().md5Sum());
 
         var dataVolume = desiredDataVolume(primary);
