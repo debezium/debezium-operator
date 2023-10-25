@@ -5,7 +5,6 @@
  */
 package io.debezium.operator.dependent;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import jakarta.inject.Inject;
@@ -15,12 +14,13 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.debezium.operator.DebeziumServer;
 import io.debezium.operator.VersionProvider;
 import io.debezium.operator.model.CommonLabels;
+import io.debezium.operator.model.JmxConfig;
+import io.debezium.operator.model.Runtime;
 import io.debezium.operator.model.templates.ContainerTemplate;
 import io.debezium.operator.model.templates.PodTemplate;
 import io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
-import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EmptyDirVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -30,6 +30,7 @@ import io.fabric8.kubernetes.api.model.LabelSelectorBuilder;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaimVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.PodSpecBuilder;
+import io.fabric8.kubernetes.api.model.PodTemplateSpec;
 import io.fabric8.kubernetes.api.model.PodTemplateSpecBuilder;
 import io.fabric8.kubernetes.api.model.ProbeBuilder;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
@@ -48,7 +49,6 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     public static final String CONFIG_VOLUME_NAME = "ds-config";
     public static final String CONFIG_FILE_NAME = "application.properties";
     public static final String CONFIG_FILE_PATH = "/debezium/conf/" + CONFIG_FILE_NAME;
-
     public static final String DATA_VOLUME_NAME = "ds-data";
     public static final String DATA_VOLUME_PATH = "/debezium/data";
     public static final String EXTERNAL_VOLUME_PATH = "/debezium/external-configuration/%s";
@@ -65,32 +65,43 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         super(Deployment.class);
     }
 
-    private String getTaggedImage(DebeziumServer primary) {
-        var image = primary.getSpec().getImage();
-
-        if (image == null) {
-            image = defaultImage + ":" + version.getImageTag(primary);
-        }
-
-        return image;
-    }
-
     @Override
     protected Deployment desired(DebeziumServer primary, Context<DebeziumServer> context) {
+        var runtime = primary.getSpec().getRuntime();
+        var templates = runtime.getTemplates();
         var name = primary.getMetadata().getName();
-        var image = getTaggedImage(primary);
-        var desiredContainer = desiredContainer(primary, name, image);
         var labels = CommonLabels.serverComponent(name).getMap();
         var annotations = Map.of(CONFIG_MD5_ANNOTATION, primary.asConfiguration().md5Sum());
 
-        var dataVolume = desiredDataVolume(primary);
         var sa = context.getSecondaryResource(ServiceAccount.class)
                 .map(r -> r.getMetadata().getName())
                 .orElseThrow();
 
-        var templates = primary.getSpec().getRuntime().getTemplates();
+        var desiredContainer = desiredServerContainer(primary);
+        var dataVolume = desiredDataVolume(primary);
 
-        var deployment = new DeploymentBuilder()
+        var pod = new PodTemplateSpecBuilder()
+                .withMetadata(new ObjectMetaBuilder()
+                        .withLabels(labels)
+                        .withAnnotations(annotations)
+                        .build())
+                .withSpec(new PodSpecBuilder()
+                        .withServiceAccountName(sa)
+                        .addToVolumes(new VolumeBuilder()
+                                .withName(CONFIG_VOLUME_NAME)
+                                .withConfigMap(new ConfigMapVolumeSourceBuilder()
+                                        .withName(name)
+                                        .build())
+                                .build())
+                        .addToVolumes(dataVolume)
+                        .addToContainers(desiredContainer)
+                        .build())
+                .build();
+
+        addTemplateConfigurationToPod(templates.getPod(), pod);
+        addExternalVolumesToPod(runtime, pod);
+
+        return new DeploymentBuilder()
                 .withMetadata(new ObjectMetaBuilder()
                         .withNamespace(primary.getMetadata().getNamespace())
                         .withName(name)
@@ -101,36 +112,19 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                         .withSelector(new LabelSelectorBuilder()
                                 .addToMatchLabels(labels)
                                 .build())
-                        .withTemplate(new PodTemplateSpecBuilder()
-                                .withMetadata(new ObjectMetaBuilder()
-                                        .withLabels(labels)
-                                        .withAnnotations(annotations)
-                                        .build())
-                                .withSpec(new PodSpecBuilder()
-                                        .withServiceAccountName(sa)
-                                        .addToVolumes(new VolumeBuilder()
-                                                .withName(CONFIG_VOLUME_NAME)
-                                                .withConfigMap(new ConfigMapVolumeSourceBuilder()
-                                                        .withName(name)
-                                                        .build())
-                                                .build())
-                                        .addToVolumes(dataVolume)
-                                        .addToContainers(desiredContainer)
-                                        .build())
-                                .build())
+                        .withTemplate(pod)
                         .build())
                 .build();
-
-        addPodTemplateConfiguration(templates.getPod(), deployment);
-        addContainerTemplateConfiguration(templates.getContainer(), deployment);
-        addExternalEnvVariables(primary, deployment);
-        addExternalVolumes(primary, deployment);
-        return deployment;
     }
 
-    private void addPodTemplateConfiguration(PodTemplate template, Deployment deployment) {
+    /**
+     * Applies pod template configuration to pod if required
+     *
+     * @param template pod template configuration
+     * @param pod actual pod template spec
+     */
+    private void addTemplateConfigurationToPod(PodTemplate template, PodTemplateSpec pod) {
         var templateMeta = template.getMetadata();
-        var pod = deployment.getSpec().getTemplate();
         var podSpec = pod.getSpec();
         var podMeta = pod.getMetadata();
 
@@ -140,46 +134,34 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         podMeta.getAnnotations().putAll(templateMeta.getAnnotations());
     }
 
-    private void addExternalEnvVariables(DebeziumServer primary, Deployment deployment) {
-        var config = primary.getSpec().getRuntime();
-        var containers = deployment.getSpec().getTemplate().getSpec().getContainers();
-
-        containers.forEach(container -> container.getEnvFrom().addAll(config.getEnv()));
+    /**
+     * Adds external volume definitions to pod if required
+     *
+     * @param runtime runtime configuration
+     * @param pod actual pod template spec
+     */
+    private void addExternalVolumesToPod(Runtime runtime, PodTemplateSpec pod) {
+        var volumes = pod.getSpec().getVolumes();
+        volumes.addAll(runtime.getVolumes());
     }
 
-    private void addExternalVolumes(DebeziumServer primary, Deployment deployment) {
-        var config = primary.getSpec().getRuntime();
-        var volumes = deployment.getSpec().getTemplate().getSpec().getVolumes();
-
-        var containers = deployment.getSpec().getTemplate().getSpec().getContainers();
-        var volumeMounts = config.getVolumes().stream()
-                .map(volume -> new VolumeMountBuilder()
-                        .withName(volume.getName())
-                        .withMountPath(EXTERNAL_VOLUME_PATH.formatted(volume.getName()))
-                        .withReadOnly()
-                        .build())
-                .toList();
-
-        volumes.addAll(config.getVolumes());
-        containers.forEach(container -> container.getVolumeMounts().addAll(volumeMounts));
-    }
-
-    private void addContainerTemplateConfiguration(ContainerTemplate template, Deployment deployment) {
+    private void addTemplateConfigurationToContainer(ContainerTemplate template, Container container) {
         var containerEnv = template.getEnv()
                 .stream()
                 .map(ce -> new EnvVar(ce.getName(), ce.getValue(), null))
                 .toList();
 
-        var pod = deployment.getSpec().getTemplate();
-        var containers = pod.getSpec().getContainers();
-
-        containers.forEach(container -> {
-            container.getEnv().addAll(containerEnv);
-            container.setSecurityContext(template.getSecurityContext());
-            container.setResources(template.getResources());
-        });
+        container.getEnv().addAll(containerEnv);
+        container.setSecurityContext(template.getSecurityContext());
+        container.setResources(template.getResources());
     }
 
+    /**
+     * Creates desired data volume
+     *
+     * @param primary primary CR
+     * @return desired data volume
+     */
     private Volume desiredDataVolume(DebeziumServer primary) {
         var storageConfig = primary.getSpec().getStorage();
         var builder = new VolumeBuilder().withName(DATA_VOLUME_NAME);
@@ -194,33 +176,22 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         return builder.build();
     }
 
-    private Container desiredContainer(DebeziumServer primary, String name, String image) {
+    /**
+     * Creates desired server container
+     *
+     * @param primary primary CR
+     * @return desired server container
+     */
+    private Container desiredServerContainer(DebeziumServer primary) {
         var quarkus = primary.getSpec().getQuarkus();
+        var runtime = primary.getSpec().getRuntime();
+        var template = runtime.getTemplates().getContainer();
         var jmx = primary.getSpec().getRuntime().getJmx();
         var probePort = quarkus.getConfig().getProps().getOrDefault("http.port", 8080);
+        var image = getTaggedImage(primary);
 
-        var ports = new ArrayList<ContainerPort>();
-        var env = new ArrayList<EnvVar>();
-
-        ports.add(new ContainerPortBuilder()
-                .withName("http")
-                .withProtocol("TCP")
-                .withContainerPort(DEFAULT_HTTP_PORT)
-                .build());
-
-        if (jmx.isEnabled()) {
-            ports.add(new ContainerPortBuilder()
-                    .withName("jmx")
-                    .withProtocol("TCP")
-                    .withContainerPort(jmx.getPort())
-                    .build());
-
-            env.add(new EnvVar("JMX_HOST", "0.0.0.0", null));
-            env.add(new EnvVar("JMX_PORT", String.valueOf(jmx.getPort()), null));
-        }
-
-        return new ContainerBuilder()
-                .withName(name)
+        var container = new ContainerBuilder()
+                .withName("server")
                 .withImage(image)
                 .withLivenessProbe(new ProbeBuilder()
                         .withHttpGet(new HTTPGetActionBuilder()
@@ -234,8 +205,11 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                                 .withPort(new IntOrString(probePort))
                                 .build())
                         .build())
-                .addAllToPorts(ports)
-                .addAllToEnv(env)
+                .withPorts(new ContainerPortBuilder()
+                        .withName("http")
+                        .withProtocol("TCP")
+                        .withContainerPort(DEFAULT_HTTP_PORT)
+                        .build())
                 .addToVolumeMounts(new VolumeMountBuilder()
                         .withName(CONFIG_VOLUME_NAME)
                         .withMountPath(CONFIG_FILE_PATH)
@@ -246,5 +220,77 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                         .withMountPath(DATA_VOLUME_PATH)
                         .build())
                 .build();
+
+        addTemplateConfigurationToContainer(template, container);
+        addExternalEnvVariablesToContainer(runtime, container);
+        addExternalVolumeMountsToContainer(runtime, container);
+        addJmxConfigurationToContainer(jmx, container);
+        return container;
+    }
+
+    /**
+     * Adds external volume mounts to container if required
+     *
+     * @param runtime runtime configuration
+     * @param container target container
+     */
+    private void addExternalVolumeMountsToContainer(Runtime runtime, Container container) {
+        var volumeMounts = runtime.getVolumes().stream()
+                .map(volume -> new VolumeMountBuilder()
+                        .withName(volume.getName())
+                        .withMountPath(EXTERNAL_VOLUME_PATH.formatted(volume.getName()))
+                        .withReadOnly()
+                        .build())
+                .toList();
+
+        container.getVolumeMounts().addAll(volumeMounts);
+    }
+
+    /**
+     * Adds external environment variables to container in required
+     *
+     * @param runtime runtime configuration
+     * @param container target container
+     */
+    private void addExternalEnvVariablesToContainer(Runtime runtime, Container container) {
+        container.getEnvFrom().addAll(runtime.getEnv());
+    }
+
+    /**
+     * Adds JMX configuration to container if required
+     *
+     * @param jmx jmx configuration
+     * @param container target container
+     */
+    private void addJmxConfigurationToContainer(JmxConfig jmx, Container container) {
+        var ports = container.getPorts();
+        var env = container.getEnv();
+
+        if (jmx.isEnabled()) {
+            ports.add(new ContainerPortBuilder()
+                    .withName("jmx")
+                    .withProtocol("TCP")
+                    .withContainerPort(jmx.getPort())
+                    .build());
+
+            env.add(new EnvVar("JMX_HOST", "0.0.0.0", null));
+            env.add(new EnvVar("JMX_PORT", String.valueOf(jmx.getPort()), null));
+        }
+    }
+
+    /**
+     * Determines the debezium server image tag
+     *
+     * @param primary primary CR
+     * @return image tag
+     */
+    private String getTaggedImage(DebeziumServer primary) {
+        var image = primary.getSpec().getImage();
+
+        if (image == null) {
+            image = defaultImage + ":" + version.getImageTag(primary);
+        }
+
+        return image;
     }
 }
