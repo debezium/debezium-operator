@@ -9,23 +9,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.fabric8.kubernetes.api.model.EnvFromSource;
 import io.fabric8.kubernetes.api.model.Volume;
 
+@JsonPropertyOrder({ "env", "jmx", "templates", "volumes" })
 public class Runtime {
 
     @JsonPropertyDescription("Additional environment variables set from ConfigMaps or Secrets in containers.")
     private List<EnvFromSource> env;
 
-    @JsonPropertyDescription("Additional volumes mounted to containers.")
-    private List<Volume> volumes;
+    @JsonPropertyDescription("JMX configuration.")
+    private JmxConfig jmx;
 
     @JsonPropertyDescription("Debezium Server resource templates.")
     private Templates templates;
 
+    @JsonPropertyDescription("Additional volumes mounted to containers.")
+    private List<Volume> volumes;
+
     public Runtime() {
         this.env = new ArrayList<>();
+        this.jmx = new JmxConfig();
         this.volumes = new ArrayList<>();
         this.templates = new Templates();
     }
@@ -52,5 +58,13 @@ public class Runtime {
 
     public void setTemplates(Templates templates) {
         this.templates = templates;
+    }
+
+    public JmxConfig getJmx() {
+        return jmx;
+    }
+
+    public void setJmx(JmxConfig jmx) {
+        this.jmx = jmx;
     }
 }
