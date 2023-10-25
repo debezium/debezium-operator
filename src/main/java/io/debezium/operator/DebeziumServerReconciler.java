@@ -11,10 +11,12 @@ import java.util.Arrays;
 
 import io.debezium.operator.dependent.ConfigMapDependent;
 import io.debezium.operator.dependent.DeploymentDependent;
+import io.debezium.operator.dependent.JmxServiceDependent;
 import io.debezium.operator.dependent.RoleBindingDependent;
 import io.debezium.operator.dependent.RoleDependent;
 import io.debezium.operator.dependent.ServiceAccountDependent;
 import io.debezium.operator.dependent.conditions.DeploymentReady;
+import io.debezium.operator.dependent.conditions.JmxEnabled;
 import io.debezium.operator.model.status.Condition;
 import io.debezium.operator.model.status.DebeziumServerStatus;
 import io.javaoperatorsdk.operator.api.reconciler.Constants;
@@ -38,6 +40,7 @@ import io.quarkus.logging.Log;
                 "config",
                 "role-binding"
         }, readyPostcondition = DeploymentReady.class),
+        @Dependent(name = "jmx-service", type = JmxServiceDependent.class, dependsOn = "deployment", reconcilePrecondition = JmxEnabled.class)
 })
 @CSVMetadata(name = DebeziumCsvMetadata.NAME)
 public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
