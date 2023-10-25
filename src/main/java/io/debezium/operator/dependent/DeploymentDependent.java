@@ -5,6 +5,7 @@
  */
 package io.debezium.operator.dependent;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import jakarta.inject.Inject;
@@ -19,6 +20,7 @@ import io.debezium.operator.model.templates.PodTemplate;
 import io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EmptyDirVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -194,7 +196,28 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
 
     private Container desiredContainer(DebeziumServer primary, String name, String image) {
         var quarkus = primary.getSpec().getQuarkus();
+        var jmx = primary.getSpec().getRuntime().getJmx();
         var probePort = quarkus.getConfig().getProps().getOrDefault("http.port", 8080);
+
+        var ports = new ArrayList<ContainerPort>();
+        var env = new ArrayList<EnvVar>();
+
+        ports.add(new ContainerPortBuilder()
+                .withName("http")
+                .withProtocol("TCP")
+                .withContainerPort(DEFAULT_HTTP_PORT)
+                .build());
+
+        if (jmx.isEnabled()) {
+            ports.add(new ContainerPortBuilder()
+                    .withName("jmx")
+                    .withProtocol("TCP")
+                    .withContainerPort(jmx.getPort())
+                    .build());
+
+            env.add(new EnvVar("JMX_HOST", "0.0.0.0", null));
+            env.add(new EnvVar("JMX_PORT", String.valueOf(jmx.getPort()), null));
+        }
 
         return new ContainerBuilder()
                 .withName(name)
@@ -211,11 +234,8 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                                 .withPort(new IntOrString(probePort))
                                 .build())
                         .build())
-                .withPorts(new ContainerPortBuilder()
-                        .withName("http")
-                        .withProtocol("TCP")
-                        .withContainerPort(DEFAULT_HTTP_PORT)
-                        .build())
+                .addAllToPorts(ports)
+                .addAllToEnv(env)
                 .addToVolumeMounts(new VolumeMountBuilder()
                         .withName(CONFIG_VOLUME_NAME)
                         .withMountPath(CONFIG_FILE_PATH)
