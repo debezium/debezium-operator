@@ -21,6 +21,17 @@ spec:
                 description: Configuration allowing the modification of various aspects
                   of Debezium Server runtime.
                 properties:
+                  jmx:
+                    description: JMX configuration.
+                    properties:
+                      enabled:
+                        description: Whether JMX should be enabled for this Debezium
+                          Server instance.
+                        type: boolean
+                      port:
+                        description: JMX port.
+                        type: integer
+                    type: object
                   volumes:
                     description: Additional volumes mounted to containers.
                     items:
