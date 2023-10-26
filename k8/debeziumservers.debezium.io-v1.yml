@@ -24,13 +24,30 @@ spec:
                   jmx:
                     description: JMX configuration.
                     properties:
+                      port:
+                        description: JMX port.
+                        type: integer
                       enabled:
                         description: Whether JMX should be enabled for this Debezium
                           Server instance.
                         type: boolean
-                      port:
-                        description: JMX port.
-                        type: integer
+                      authentication:
+                        description: JMX authentication config.
+                        properties:
+                          passwordFile:
+                            description: JMX password file name and secret key
+                            type: string
+                          accessFile:
+                            description: JMX access file name and secret key
+                            type: string
+                          enabled:
+                            description: Whether JMX authentication should be enabled
+                              for this Debezium Server instance.
+                            type: boolean
+                          secret:
+                            description: Secret providing credential files
+                            type: string
+                        type: object
                     type: object
                   volumes:
                     description: Additional volumes mounted to containers.
