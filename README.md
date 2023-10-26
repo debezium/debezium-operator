@@ -37,6 +37,9 @@ spec:
   runtime:
     env: EnvFromSource array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#envfromsource-v1-core
     volumes: Volume array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#volume-v1-core
+    jmx:
+      enabled: boolean
+      port: int # defaults to 1099
     templates:
       container:
         env:
