@@ -9,15 +9,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "enabled", "port" })
+@JsonPropertyOrder({ "enabled", "port", "auth" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class JmxConfig {
 
     @JsonPropertyDescription("Whether JMX should be enabled for this Debezium Server instance.")
-    boolean enabled = false;
-
+    private boolean enabled = false;
     @JsonPropertyDescription("JMX port.")
-    int port = 1099;
+    private int port = 1099;
+    @JsonPropertyDescription("JMX authentication config.")
+    private JmxAuthentication authentication;
+
+    public JmxConfig() {
+        this.authentication = new JmxAuthentication();
+    }
 
     public boolean isEnabled() {
         return enabled;
@@ -33,5 +38,13 @@ public class JmxConfig {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public JmxAuthentication getAuthentication() {
+        return authentication;
+    }
+
+    public void setAuthentication(JmxAuthentication authentication) {
+        this.authentication = authentication;
     }
 }

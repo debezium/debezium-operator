@@ -7,6 +7,7 @@ package io.debezium.operator.dependent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,7 @@ import io.fabric8.kubernetes.api.model.PodSpecBuilder;
 import io.fabric8.kubernetes.api.model.PodTemplateSpec;
 import io.fabric8.kubernetes.api.model.PodTemplateSpecBuilder;
 import io.fabric8.kubernetes.api.model.ProbeBuilder;
+import io.fabric8.kubernetes.api.model.SecretVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.Volume;
 import io.fabric8.kubernetes.api.model.VolumeBuilder;
@@ -52,12 +54,18 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     public static final String DEFAULT_IMAGE = "quay.io/debezium/server";
     public static final String CONFIG_VOLUME_NAME = "ds-config";
     public static final String CONFIG_FILE_NAME = "application.properties";
-    public static final String CONFIG_FILE_PATH = "/debezium/conf/" + CONFIG_FILE_NAME;
+    public static final String CONFIG_DIR_PATH = "/debezium/conf";
+    public static final String CONFIG_FILE_PATH = CONFIG_DIR_PATH + "/" + CONFIG_FILE_NAME;
+    public static final String JMX_CONFIG_VOLUME_NAME = "ds-jmx-config";
+    public static final String JMX_CONFIG_VOLUME_INIT_NAME = "ds-jmx-config-init";
+    public static final String JMX_CONFIG_VOLUME_PATH = CONFIG_DIR_PATH + "/jmx";
+    public static final String JMX_CONFIG_VOLUME_INIT_PATH = "/jmx";
     public static final String DATA_VOLUME_NAME = "ds-data";
     public static final String DATA_VOLUME_PATH = "/debezium/data";
     public static final String EXTERNAL_VOLUME_PATH = "/debezium/external-configuration/%s";
     public static final int DEFAULT_HTTP_PORT = 8080;
     private static final String CONFIG_MD5_ANNOTATION = "debezium.io/server-config-md5";
+    private static final String INIT_CONTAINER_IMAGE = "registry.access.redhat.com/ubi8-micro:latest";
 
     @ConfigProperty(name = "debezium.image", defaultValue = DEFAULT_IMAGE)
     String defaultImage;
@@ -104,6 +112,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
 
         addTemplateConfigurationToPod(templates.getPod(), pod);
         addExternalVolumesToPod(runtime, pod);
+        addJmxConfigurationToPod(primary, pod);
 
         return new DeploymentBuilder()
                 .withMetadata(new ObjectMetaBuilder()
@@ -147,6 +156,45 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     private void addExternalVolumesToPod(Runtime runtime, PodTemplateSpec pod) {
         var volumes = pod.getSpec().getVolumes();
         volumes.addAll(runtime.getVolumes());
+    }
+
+    /**
+     * Adds JMX configuration to pod if required
+     *
+     * @param primary primary resource
+     * @param pod target pod
+     */
+    private void addJmxConfigurationToPod(DebeziumServer primary, PodTemplateSpec pod) {
+        var jmx = primary.getSpec().getRuntime().getJmx();
+        var auth = jmx.getAuthentication();
+
+        if (!auth.isEnabled()) {
+            return;
+        }
+
+        var volumes = pod.getSpec().getVolumes();
+        var initContainers = pod.getSpec().getInitContainers();
+
+        // Add JMX volumes to pod
+        var jmxInitVolume = new VolumeBuilder()
+                .withName(JMX_CONFIG_VOLUME_INIT_NAME)
+                .withSecret(new SecretVolumeSourceBuilder()
+                        .withSecretName(auth.getSecret())
+                        .build())
+                .build();
+
+        var jmxConfigVolume = new VolumeBuilder()
+                .withName(JMX_CONFIG_VOLUME_NAME)
+                .withEmptyDir(new EmptyDirVolumeSourceBuilder().build())
+                .build();
+
+        volumes.add(jmxInitVolume);
+        volumes.add(jmxConfigVolume);
+
+        // Add JMX init container
+        var image = getTaggedImage(primary);
+        var container = desiredJmxInitContainer(jmx, image);
+        container.ifPresent(initContainers::add);
     }
 
     private void addTemplateConfigurationToContainer(ContainerTemplate template, Container container) {
@@ -233,6 +281,36 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     }
 
     /**
+     * Creates desired JMX init container
+     *
+     * @param jmx jmx configuration
+     * @return init container or empty optional
+     */
+    private Optional<Container> desiredJmxInitContainer(JmxConfig jmx, String image) {
+        var auth = jmx.getAuthentication();
+
+        if (!auth.isEnabled()) {
+            return Optional.empty();
+        }
+
+        var initContainer = new ContainerBuilder()
+                .withName("server-init")
+                .withImage(image)
+                .withCommand("sh", "-c", JmxCmd.of(auth.getAccessFile()) + " && " + JmxCmd.of(auth.getPasswordFile()))
+                .addToVolumeMounts(new VolumeMountBuilder()
+                        .withName(JMX_CONFIG_VOLUME_INIT_NAME)
+                        .withMountPath(JMX_CONFIG_VOLUME_INIT_PATH)
+                        .build())
+                .addToVolumeMounts(new VolumeMountBuilder()
+                        .withName(JMX_CONFIG_VOLUME_NAME)
+                        .withMountPath(JMX_CONFIG_VOLUME_PATH)
+                        .build())
+                .build();
+
+        return Optional.of(initContainer);
+    }
+
+    /**
      * Adds external volume mounts to container if required
      *
      * @param runtime runtime configuration
@@ -278,14 +356,33 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                 .withContainerPort(jmx.getPort())
                 .build());
 
-        var opts = Map.of(
+        var opts = new HashMap<>(Map.of(
                 "-Dcom.sun.management.jmxremote.ssl", false,
                 "-Dcom.sun.management.jmxremote.port", jmx.getPort(),
                 "-Dcom.sun.management.jmxremote.rmi.port", jmx.getPort(),
                 "-Dcom.sun.management.jmxremote.local.only", false,
                 "-Djava.rmi.server.hostname", "0.0.0.0",
                 "-Dcom.sun.management.jmxremote.verbose", true,
-                "-Dcom.sun.management.jmxremote.authenticate", false);
+                "-Dcom.sun.management.jmxremote.authenticate", false));
+
+        var auth = jmx.getAuthentication();
+
+        // If JMX authentication is enabled
+        // Add JVM options and mount config files
+        if (auth.isEnabled()) {
+            opts.putAll(Map.of(
+                    "-Dcom.sun.management.jmxremote.authenticate", true,
+                    "-Dcom.sun.management.jmxremote.access.file", JMX_CONFIG_VOLUME_PATH + "/" + auth.getAccessFile(),
+                    "-Dcom.sun.management.jmxremote.password.file", JMX_CONFIG_VOLUME_PATH + "/" + auth.getPasswordFile()));
+
+            var mount = new VolumeMountBuilder()
+                    .withName(JMX_CONFIG_VOLUME_NAME)
+                    .withMountPath(JMX_CONFIG_VOLUME_PATH)
+                    .withReadOnly(true)
+                    .build();
+
+            container.getVolumeMounts().add(mount);
+        }
 
         // If JAVA_OPTS is already set (e.g. from container template) we don't want to override it
         mergeJavaOptsEnvVar(opts, container);
@@ -341,5 +438,28 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         }
 
         return image;
+    }
+
+    /**
+     * JMX auth file copy and permission command representation
+     */
+    private static final class JmxCmd {
+
+        private final String source;
+        private final String target;
+
+        private JmxCmd(String file) {
+            source = JMX_CONFIG_VOLUME_INIT_PATH + "/" + file;
+            target = JMX_CONFIG_VOLUME_PATH + "/" + file;
+        }
+
+        @Override
+        public String toString() {
+            return "cp '%s' '%s' && chmod 600 '%s'".formatted(source, target, target);
+        }
+
+        public static JmxCmd of(String file) {
+            return new JmxCmd(file);
+        }
     }
 }
