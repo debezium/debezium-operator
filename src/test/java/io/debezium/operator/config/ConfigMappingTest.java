@@ -6,18 +6,19 @@
 
 package io.debezium.operator.config;
 
-import io.debezium.operator.model.ConfigProperties;
-import io.debezium.operator.model.Predicate;
-import io.debezium.operator.model.Transformation;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
+import org.junit.jupiter.api.Test;
+
+import io.debezium.operator.model.ConfigProperties;
+import io.debezium.operator.model.Predicate;
+import io.debezium.operator.model.Transformation;
 
 public class ConfigMappingTest {
 
@@ -67,8 +68,7 @@ public class ConfigMappingTest {
 
         List<Map<String, Object>> configDataList = List.of(
                 Map.of("type", "io.debezium.transforms.ByLogicalTableRouter", "negate", false),
-                Map.of("type", "io.debezium.transforms.ByLogicalTableRouter", "negate", true)
-        );
+                Map.of("type", "io.debezium.transforms.ByLogicalTableRouter", "negate", true));
 
         List<Transformation> transformations = new ArrayList<>();
 
