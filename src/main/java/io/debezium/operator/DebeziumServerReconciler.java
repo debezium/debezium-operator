@@ -15,6 +15,7 @@ import io.debezium.operator.dependent.JmxServiceDependent;
 import io.debezium.operator.dependent.RoleBindingDependent;
 import io.debezium.operator.dependent.RoleDependent;
 import io.debezium.operator.dependent.ServiceAccountDependent;
+import io.debezium.operator.dependent.conditions.CreateServiceAccount;
 import io.debezium.operator.dependent.conditions.DeploymentReady;
 import io.debezium.operator.dependent.conditions.JmxEnabled;
 import io.debezium.operator.model.status.Condition;
@@ -29,7 +30,7 @@ import io.quarkiverse.operatorsdk.annotations.CSVMetadata;
 import io.quarkus.logging.Log;
 
 @ControllerConfiguration(namespaces = Constants.WATCH_CURRENT_NAMESPACE, name = "debeziumserver", dependents = {
-        @Dependent(name = "service-account", type = ServiceAccountDependent.class),
+        @Dependent(name = "service-account", type = ServiceAccountDependent.class, reconcilePrecondition = CreateServiceAccount.class),
         @Dependent(name = "role", type = RoleDependent.class),
         @Dependent(name = "role-binding", type = RoleBindingDependent.class, dependsOn = {
                 "service-account",

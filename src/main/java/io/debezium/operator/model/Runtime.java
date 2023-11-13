@@ -8,6 +8,7 @@ package io.debezium.operator.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -28,6 +29,10 @@ public class Runtime {
 
     @JsonPropertyDescription("Additional volumes mounted to containers.")
     private List<Volume> volumes;
+
+    @JsonPropertyDescription("An existing service account used to run the Debezium Server pod")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String serviceAccount;
 
     public Runtime() {
         this.env = new ArrayList<>();
@@ -66,5 +71,13 @@ public class Runtime {
 
     public void setJmx(JmxConfig jmx) {
         this.jmx = jmx;
+    }
+
+    public String getServiceAccount() {
+        return serviceAccount;
+    }
+
+    public void setServiceAccount(String serviceAccount) {
+        this.serviceAccount = serviceAccount;
     }
 }
