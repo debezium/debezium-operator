@@ -722,6 +722,10 @@ spec:
                           type: object
                       type: object
                     type: array
+                  serviceAccount:
+                    description: An existing service account used to run the Debezium
+                      Server pod
+                    type: string
                   templates:
                     description: Debezium Server resource templates.
                     properties:

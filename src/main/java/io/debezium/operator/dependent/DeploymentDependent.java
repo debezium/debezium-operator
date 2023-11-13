@@ -39,7 +39,6 @@ import io.fabric8.kubernetes.api.model.PodTemplateSpec;
 import io.fabric8.kubernetes.api.model.PodTemplateSpecBuilder;
 import io.fabric8.kubernetes.api.model.ProbeBuilder;
 import io.fabric8.kubernetes.api.model.SecretVolumeSourceBuilder;
-import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.Volume;
 import io.fabric8.kubernetes.api.model.VolumeBuilder;
 import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
@@ -85,9 +84,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var labels = CommonLabels.serverComponent(name).getMap();
         var annotations = Map.of(CONFIG_MD5_ANNOTATION, primary.asConfiguration().md5Sum());
 
-        var sa = context.getSecondaryResource(ServiceAccount.class)
-                .map(r -> r.getMetadata().getName())
-                .orElseThrow();
+        var sa = ServiceAccountDependent.serviceAccountNameFor(primary);
 
         var desiredContainer = desiredServerContainer(primary);
         var dataVolume = desiredDataVolume(primary);
