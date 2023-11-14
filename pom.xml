@@ -10,7 +10,16 @@
 
     <artifactId>debezium-operator</artifactId>
     <version>2.5.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>Debezium Operator</name>
+
+
+    <modules>
+        <module>debezium-operator-commons</module>
+        <module>debezium-operator-api</module>
+        <module>debezium-operator-core</module>
+        <module>debezium-operator-dist</module>
+    </modules>
 
     <scm>
         <connection>scm:git:git@github.com:debezium/debezium-operator.git</connection>
@@ -37,6 +46,7 @@
         <version.compiler.plugin>3.11.0</version.compiler.plugin>
         <version.resources.plugin>3.3.1</version.resources.plugin>
         <version.docker.maven.plugin>0.43.4</version.docker.maven.plugin>
+        <version.jandex.plugin>3.1.3</version.jandex.plugin>
 
         <!-- Dependency versions -->
         <version.assertj>3.24.2</version.assertj>
@@ -101,6 +111,12 @@
                 <version>${quarkus.platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.assertj</groupId>
+                        <artifactId>assertj-core</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>${quarkus.platform.group-id}</groupId>
@@ -109,46 +125,34 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${version.assertj}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
-
-    <dependencies>
-        <dependency>
-            <groupId>io.quarkiverse.operatorsdk</groupId>
-            <artifactId>quarkus-operator-sdk-bundle-generator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkiverse.operatorsdk</groupId>
-            <artifactId>quarkus-operator-sdk</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-container-image-jib</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-arc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit5</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>${version.assertj}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.smallrye</groupId>
+                    <artifactId>jandex-maven-plugin</artifactId>
+                    <version>${version.jandex.plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>make-index</id>
+                            <goals>
+                                <goal>jandex</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -164,85 +168,6 @@
                         <configuration>
                             <versionString>${project.parent.version}</versionString>
                             <qualifierPrefix>${version.debezium.qualifier.prefix}</qualifierPrefix>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>${quarkus.platform.group-id}</groupId>
-                <artifactId>quarkus-maven-plugin</artifactId>
-                <version>${quarkus.platform.version}</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>build</goal>
-                            <goal>generate-code</goal>
-                            <goal>generate-code-tests</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${version.compiler.plugin}</version>
-                <configuration>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${version.surefire.plugin}</version>
-                <configuration>
-                    <systemPropertyVariables>
-                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                        <maven.home>${maven.home}</maven.home>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${version.surefire.plugin}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
-                                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                                <maven.home>${maven.home}</maven.home>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${version.resources.plugin}</version>
-                <executions>
-                    <execution>
-                        <id>olm-bundle-process</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/olm/bundles/${olm.bundle.name}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <!-- Outputting ${olm.bundle.name} without actually expanding the property -->
-                                    <directory>${project.build.directory}/bundle/${dollar}{olm.bundle.name}</directory>
-                                    <include>**/*</include>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                            <fileNameFiltering>true</fileNameFiltering>
                         </configuration>
                     </execution>
                 </executions>
@@ -263,6 +188,7 @@
                 <quarkus.package.type>native</quarkus.package.type>
             </properties>
         </profile>
+
         <profile>
             <id>stable</id>
             <properties>
@@ -273,6 +199,7 @@
                 <olm.bundle.channels>debezium-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.x</olm.bundle.channels>
             </properties>
         </profile>
+
         <profile>
             <!-- This must be defined later than stable profile to ensure correct property resolution!!! -->
             <!-- See: https://maven.apache.org/guides/introduction/introduction-to-profiles.html#profile-order -->
@@ -282,96 +209,7 @@
                 <quarkus.operator-sdk.bundle.channels>debezium-latest,${olm.bundle.channels}</quarkus.operator-sdk.bundle.channels>
             </properties>
         </profile>
-        <profile>
-            <id>k8update</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>${version.resources.plugin}</version>
-                        <executions>
-                            <execution>
-                                <id>copy-examples</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.basedir}/examples</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${project.basedir}/src/main/examples</directory>
-                                            <include>**/*</include>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>copy-k8</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.basedir}/k8</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${project.build.directory}/kubernetes</directory>
-                                            <include>*.yml</include>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>assembly</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>${version.assembly.plugin}</version>
-                        <configuration>
-                            <attach>true</attach>  <!-- we want to attach & deploy these to Maven -->
-                            <tarLongFileMode>posix</tarLongFileMode>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>operator-package</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <descriptors>
-                                        <descriptor>src/main/assemblies/operator.xml</descriptor>
-                                    </descriptors>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>olm-bundle-package</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <appendAssemblyId>true</appendAssemblyId>
-                                    <descriptors>
-                                        <descriptor>src/main/assemblies/olm.xml</descriptor>
-                                    </descriptors>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+
+
     </profiles>
 </project>

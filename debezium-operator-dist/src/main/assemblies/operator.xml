@@ -1,0 +1,33 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 https://maven.apache.org/xsd/assembly-2.2.0.xsd">
+    <id>distribution</id>
+    <formats>
+        <format>tar.gz</format>
+        <format>zip</format>
+    </formats>
+
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <!-- Get the files from the top-level directory -->
+            <directory>${dist.root.dir}</directory>
+            <outputDirectory>${project.artifactId}</outputDirectory>
+            <includes>
+                <include>README*</include>
+                <include>CHANGELOG*</include>
+                <include>CONTRIBUTE*</include>
+                <include>COPYRIGHT*</include>
+                <include>LICENSE*</include>
+            </includes>
+            <useDefaultExcludes>true</useDefaultExcludes>
+        </fileSet>
+        <fileSet>
+            <directory>${dist.app.source.dir}</directory>
+            <outputDirectory>${project.artifactId}</outputDirectory>
+            <includes>
+                <include>**/**</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>
