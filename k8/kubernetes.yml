@@ -44,6 +44,18 @@ rules:
   - apiGroups:
       - ""
     resources:
+      - serviceaccounts
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - delete
+      - create
+  - apiGroups:
+      - ""
+    resources:
       - configmaps
     verbs:
       - get
@@ -78,33 +90,21 @@ rules:
       - delete
       - create
   - apiGroups:
-      - ""
-    resources:
-      - services
-    verbs:
-      - get
-      - list
-      - watch
-      - patch
-      - update
-      - delete
-      - create
-  - apiGroups:
-      - ""
-    resources:
-      - serviceaccounts
-    verbs:
-      - get
-      - list
-      - watch
-      - patch
-      - update
-      - delete
-      - create
-  - apiGroups:
       - apps
     resources:
       - deployments
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - delete
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - services
     verbs:
       - get
       - list

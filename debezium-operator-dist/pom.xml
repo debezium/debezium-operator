@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.debezium</groupId>
+        <artifactId>debezium-operator</artifactId>
+        <version>2.5.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>debezium-operator-dist</artifactId>
+    <packaging>pom</packaging>
+
+
+    <properties>
+        <dist.root.dir>${project.parent.basedir}</dist.root.dir>
+        <dist.core.build.dir>${dist.root.dir}/debezium-operator-core/target</dist.core.build.dir>
+        <dist.app.source.dir>${dist.core.build.dir}/quarkus-app</dist.app.source.dir>
+        <dist.examples.target.dir>${dist.root.dir}/examples</dist.examples.target.dir>
+        <dist.k8.source.dir>${dist.core.build.dir}/kubernetes</dist.k8.source.dir>
+        <dist.k8.target.dir>${dist.root.dir}/k8</dist.k8.target.dir>
+    </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>io.debezium</groupId>
+            <artifactId>debezium-operator-core</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${version.resources.plugin}</version>
+                <executions>
+                    <execution>
+                        <id>olm-bundle-process</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/olm/bundles/${olm.bundle.name}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <!-- Outputting ${olm.bundle.name} without actually expanding the property -->
+                                    <!-- Note the expression cannot be extracted into property -->
+                                    <directory>${dist.core.build.dir}/bundle/${dollar}{olm.bundle.name}</directory>
+                                    <include>**/*</include>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                            <fileNameFiltering>true</fileNameFiltering>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>k8update</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>${version.resources.plugin}</version>
+                        <executions>
+                            <execution>
+                                <id>copy-examples</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${dist.examples.target.dir}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>src/main/examples</directory>
+                                            <include>**/*</include>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-k8</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${dist.k8.target.dir}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${dist.k8.source.dir}</directory>
+                                            <include>*.yml</include>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+
+        <profile>
+            <id>assembly</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>${version.assembly.plugin}</version>
+                        <configuration>
+                            <attach>true</attach>  <!-- we want to attach & deploy these to Maven -->
+                            <tarLongFileMode>posix</tarLongFileMode>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>operator-package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <appendAssemblyId>false</appendAssemblyId>
+                                    <descriptors>
+                                        <descriptor>src/main/assemblies/operator.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>olm-bundle-package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <appendAssemblyId>true</appendAssemblyId>
+                                    <descriptors>
+                                        <descriptor>src/main/assemblies/olm.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

@@ -17,38 +17,183 @@ spec:
         properties:
           spec:
             properties:
+              format:
+                description: Message output format configuration.
+                properties:
+                  header:
+                    description: Message header format configuration.
+                    properties:
+                      config:
+                        description: Format configuration properties.
+                        properties:
+                          props:
+                            additionalProperties:
+                              type: object
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                      type:
+                        description: Format type recognised by Debezium Server.
+                        type: string
+                    type: object
+                  key:
+                    description: Message key format configuration.
+                    properties:
+                      config:
+                        description: Format configuration properties.
+                        properties:
+                          props:
+                            additionalProperties:
+                              type: object
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                      type:
+                        description: Format type recognised by Debezium Server.
+                        type: string
+                    type: object
+                  value:
+                    description: Message value format configuration.
+                    properties:
+                      config:
+                        description: Format configuration properties.
+                        properties:
+                          props:
+                            additionalProperties:
+                              type: object
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                      type:
+                        description: Format type recognised by Debezium Server.
+                        type: string
+                    type: object
+                type: object
+              sink:
+                description: Sink configuration.
+                properties:
+                  config:
+                    description: Sink configuration properties.
+                    properties:
+                      props:
+                        additionalProperties:
+                          type: object
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  type:
+                    description: Sink type recognised by Debezium Server.
+                    type: string
+                type: object
+              source:
+                description: Debezium source connector configuration.
+                properties:
+                  class:
+                    description: Fully qualified name of source connector Java class.
+                    type: string
+                  config:
+                    description: Source connector configuration properties.
+                    properties:
+                      props:
+                        additionalProperties:
+                          type: object
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                type: object
+              transforms:
+                description: Single Message Transformations employed by this instance
+                  of Debezium Server.
+                items:
+                  properties:
+                    negate:
+                      description: Determines if the result of the applied predicate
+                        will be negated.
+                      type: boolean
+                    config:
+                      properties:
+                        props:
+                          additionalProperties:
+                            type: object
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                    predicate:
+                      description: The name of the predicate to be applied to this
+                        transformation.
+                      type: string
+                    type:
+                      description: Fully qualified name of Java class implementing
+                        the transformation.
+                      type: string
+                  type: object
+                type: array
+              version:
+                description: Version of Debezium Server to be used.
+                type: string
+              quarkus:
+                description: Quarkus configuration passed down to Debezium Server
+                  process.
+                properties:
+                  config:
+                    description: Quarkus configuration properties.
+                    properties:
+                      props:
+                        additionalProperties:
+                          type: object
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                type: object
+              image:
+                description: Image used for Debezium Server container. This property
+                  takes precedence over version.
+                type: string
+              storage:
+                description: Storage configuration to be used by this instance of
+                  Debezium Server.
+                properties:
+                  type:
+                    description: Storage type.
+                    enum:
+                    - ephemeral
+                    - persistent
+                    type: string
+                  claimName:
+                    description: Name of persistent volume claim for persistent storage.
+                    type: string
+                type: object
+              predicates:
+                additionalProperties:
+                  properties:
+                    config:
+                      description: Predicate configuration properties.
+                      properties:
+                        props:
+                          additionalProperties:
+                            type: object
+                          type: object
+                          x-kubernetes-preserve-unknown-fields: true
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                    type:
+                      description: Fully qualified name of Java class implementing
+                        the predicate.
+                      type: string
+                  type: object
+                description: Predicates employed by this instance of Debezium Server.
+                type: object
               runtime:
                 description: Configuration allowing the modification of various aspects
                   of Debezium Server runtime.
                 properties:
-                  jmx:
-                    description: JMX configuration.
-                    properties:
-                      port:
-                        description: JMX port.
-                        type: integer
-                      enabled:
-                        description: Whether JMX should be enabled for this Debezium
-                          Server instance.
-                        type: boolean
-                      authentication:
-                        description: JMX authentication config.
-                        properties:
-                          passwordFile:
-                            description: JMX password file name and secret key
-                            type: string
-                          accessFile:
-                            description: JMX access file name and secret key
-                            type: string
-                          enabled:
-                            description: Whether JMX authentication should be enabled
-                              for this Debezium Server instance.
-                            type: boolean
-                          secret:
-                            description: Secret providing credential files
-                            type: string
-                        type: object
-                    type: object
                   volumes:
                     description: Additional volumes mounted to containers.
                     items:
@@ -699,39 +844,24 @@ spec:
                           type: object
                       type: object
                     type: array
-                  env:
-                    description: Additional environment variables set from ConfigMaps
-                      or Secrets in containers.
-                    items:
-                      properties:
-                        prefix:
-                          type: string
-                        configMapRef:
-                          properties:
-                            optional:
-                              type: boolean
-                            name:
-                              type: string
-                          type: object
-                        secretRef:
-                          properties:
-                            optional:
-                              type: boolean
-                            name:
-                              type: string
-                          type: object
-                      type: object
-                    type: array
-                  serviceAccount:
-                    description: An existing service account used to run the Debezium
-                      Server pod
-                    type: string
                   templates:
                     description: Debezium Server resource templates.
                     properties:
                       container:
                         description: Container template
                         properties:
+                          env:
+                            description: Environment variables applied to the container.
+                            items:
+                              properties:
+                                value:
+                                  description: The environment variable value.
+                                  type: string
+                                name:
+                                  description: The environment variable name.
+                                  type: string
+                              type: object
+                            type: array
                           securityContext:
                             description: Container security context.
                             properties:
@@ -815,22 +945,22 @@ spec:
                                   x-kubernetes-int-or-string: true
                                 type: object
                             type: object
-                          env:
-                            description: Environment variables applied to the container.
-                            items:
-                              properties:
-                                value:
-                                  description: The environment variable value.
-                                  type: string
-                                name:
-                                  description: The environment variable name.
-                                  type: string
-                              type: object
-                            type: array
                         type: object
                       pod:
                         description: Pod template.
                         properties:
+                          metadata:
+                            description: Metadata applied to the resource.
+                            properties:
+                              labels:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                              annotations:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                            type: object
                           affinity:
                             description: Pod affinity rules
                             properties:
@@ -1128,18 +1258,6 @@ spec:
                                     type: array
                                 type: object
                             type: object
-                          metadata:
-                            description: Metadata applied to the resource.
-                            properties:
-                              labels:
-                                additionalProperties:
-                                  type: string
-                                type: object
-                              annotations:
-                                additionalProperties:
-                                  type: string
-                                type: object
-                            type: object
                           securityContext:
                             description: Pod-level security attributes and container
                               settings
@@ -1208,179 +1326,61 @@ spec:
                             type: array
                         type: object
                     type: object
-                type: object
-              transforms:
-                description: Single Message Transformations employed by this instance
-                  of Debezium Server.
-                items:
-                  properties:
-                    negate:
-                      description: Determines if the result of the applied predicate
-                        will be negated.
-                      type: boolean
-                    predicate:
-                      description: The name of the predicate to be applied to this
-                        transformation.
-                      type: string
-                    type:
-                      description: Fully qualified name of Java class implementing
-                        the transformation.
-                      type: string
-                    config:
+                  jmx:
+                    description: JMX configuration.
+                    properties:
+                      port:
+                        description: JMX port.
+                        type: integer
+                      authentication:
+                        description: JMX authentication config.
+                        properties:
+                          passwordFile:
+                            description: JMX password file name and secret key
+                            type: string
+                          accessFile:
+                            description: JMX access file name and secret key
+                            type: string
+                          enabled:
+                            description: Whether JMX authentication should be enabled
+                              for this Debezium Server instance.
+                            type: boolean
+                          secret:
+                            description: Secret providing credential files
+                            type: string
+                        type: object
+                      enabled:
+                        description: Whether JMX should be enabled for this Debezium
+                          Server instance.
+                        type: boolean
+                    type: object
+                  env:
+                    description: Additional environment variables set from ConfigMaps
+                      or Secrets in containers.
+                    items:
                       properties:
-                        props:
-                          additionalProperties:
-                            type: object
+                        prefix:
+                          type: string
+                        configMapRef:
+                          properties:
+                            optional:
+                              type: boolean
+                            name:
+                              type: string
                           type: object
-                          x-kubernetes-preserve-unknown-fields: true
+                        secretRef:
+                          properties:
+                            optional:
+                              type: boolean
+                            name:
+                              type: string
+                          type: object
                       type: object
-                      x-kubernetes-preserve-unknown-fields: true
-                  type: object
-                type: array
-              sink:
-                description: Sink configuration.
-                properties:
-                  type:
-                    description: Sink type recognised by Debezium Server.
+                    type: array
+                  serviceAccount:
+                    description: An existing service account used to run the Debezium
+                      Server pod
                     type: string
-                  config:
-                    description: Sink configuration properties.
-                    properties:
-                      props:
-                        additionalProperties:
-                          type: object
-                        type: object
-                        x-kubernetes-preserve-unknown-fields: true
-                    type: object
-                    x-kubernetes-preserve-unknown-fields: true
-                type: object
-              storage:
-                description: Storage configuration to be used by this instance of
-                  Debezium Server.
-                properties:
-                  claimName:
-                    description: Name of persistent volume claim for persistent storage.
-                    type: string
-                  type:
-                    description: Storage type.
-                    enum:
-                    - persistent
-                    - ephemeral
-                    type: string
-                type: object
-              version:
-                description: Version of Debezium Server to be used.
-                type: string
-              image:
-                description: Image used for Debezium Server container. This property
-                  takes precedence over version.
-                type: string
-              quarkus:
-                description: Quarkus configuration passed down to Debezium Server
-                  process.
-                properties:
-                  config:
-                    description: Quarkus configuration properties.
-                    properties:
-                      props:
-                        additionalProperties:
-                          type: object
-                        type: object
-                        x-kubernetes-preserve-unknown-fields: true
-                    type: object
-                    x-kubernetes-preserve-unknown-fields: true
-                type: object
-              predicates:
-                additionalProperties:
-                  properties:
-                    type:
-                      description: Fully qualified name of Java class implementing
-                        the predicate.
-                      type: string
-                    config:
-                      description: Predicate configuration properties.
-                      properties:
-                        props:
-                          additionalProperties:
-                            type: object
-                          type: object
-                          x-kubernetes-preserve-unknown-fields: true
-                      type: object
-                      x-kubernetes-preserve-unknown-fields: true
-                  type: object
-                description: Predicates employed by this instance of Debezium Server.
-                type: object
-              source:
-                description: Debezium source connector configuration.
-                properties:
-                  class:
-                    description: Fully qualified name of source connector Java class.
-                    type: string
-                  config:
-                    description: Source connector configuration properties.
-                    properties:
-                      props:
-                        additionalProperties:
-                          type: object
-                        type: object
-                        x-kubernetes-preserve-unknown-fields: true
-                    type: object
-                    x-kubernetes-preserve-unknown-fields: true
-                type: object
-              format:
-                description: Message output format configuration.
-                properties:
-                  key:
-                    description: Message key format configuration.
-                    properties:
-                      type:
-                        description: Format type recognised by Debezium Server.
-                        type: string
-                      config:
-                        description: Format configuration properties.
-                        properties:
-                          props:
-                            additionalProperties:
-                              type: object
-                            type: object
-                            x-kubernetes-preserve-unknown-fields: true
-                        type: object
-                        x-kubernetes-preserve-unknown-fields: true
-                    type: object
-                  value:
-                    description: Message value format configuration.
-                    properties:
-                      type:
-                        description: Format type recognised by Debezium Server.
-                        type: string
-                      config:
-                        description: Format configuration properties.
-                        properties:
-                          props:
-                            additionalProperties:
-                              type: object
-                            type: object
-                            x-kubernetes-preserve-unknown-fields: true
-                        type: object
-                        x-kubernetes-preserve-unknown-fields: true
-                    type: object
-                  header:
-                    description: Message header format configuration.
-                    properties:
-                      type:
-                        description: Format type recognised by Debezium Server.
-                        type: string
-                      config:
-                        description: Format configuration properties.
-                        properties:
-                          props:
-                            additionalProperties:
-                              type: object
-                            type: object
-                            x-kubernetes-preserve-unknown-fields: true
-                        type: object
-                        x-kubernetes-preserve-unknown-fields: true
-                    type: object
                 type: object
             type: object
           status:
