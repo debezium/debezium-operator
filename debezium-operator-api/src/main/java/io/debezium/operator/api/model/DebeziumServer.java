@@ -14,10 +14,17 @@ import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.model.annotation.Group;
 import io.fabric8.kubernetes.model.annotation.Version;
 import io.quarkiverse.operatorsdk.annotations.CSVMetadata;
+import io.sundr.builder.annotations.Buildable;
+import io.sundr.builder.annotations.BuildableReference;
 
 @CSVMetadata(name = OperatorConstants.CSV_INTERNAL_BUNDLE_NAME, displayName = "DebeziumServer", description = "Represents a Debezium Server")
 @Version("v1alpha1")
 @Group("debezium.io")
+@Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false, refs = {
+        @BuildableReference(io.fabric8.kubernetes.api.model.ObjectMeta.class),
+        @BuildableReference(io.fabric8.kubernetes.client.CustomResource.class),
+        @BuildableReference(DebeziumServerSpec.class)
+})
 public class DebeziumServer
         extends CustomResource<DebeziumServerSpec, DebeziumServerStatus>
         implements Namespaced, ConfigMappable {
