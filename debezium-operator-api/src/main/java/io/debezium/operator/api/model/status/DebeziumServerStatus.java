@@ -8,6 +8,9 @@ package io.debezium.operator.api.model.status;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.sundr.builder.annotations.Buildable;
+
+@Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
 public class DebeziumServerStatus {
     private List<Condition> conditions;
 
