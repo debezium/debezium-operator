@@ -16,10 +16,13 @@
     <properties>
         <dist.root.dir>${project.parent.basedir}</dist.root.dir>
         <dist.core.build.dir>${dist.root.dir}/debezium-operator-core/target</dist.core.build.dir>
+        <dist.api.build.dir>${dist.root.dir}/debezium-operator-api/target</dist.api.build.dir>
         <dist.app.source.dir>${dist.core.build.dir}/quarkus-app</dist.app.source.dir>
         <dist.examples.target.dir>${dist.root.dir}/examples</dist.examples.target.dir>
         <dist.k8.source.dir>${dist.core.build.dir}/kubernetes</dist.k8.source.dir>
         <dist.k8.target.dir>${dist.root.dir}/k8</dist.k8.target.dir>
+        <dist.api.docs.source.dir>${dist.api.build.dir}/docs</dist.api.docs.source.dir>
+        <dist.api.docs.target.dir>${dist.root.dir}/docs</dist.api.docs.target.dir>
     </properties>
 
 
@@ -103,6 +106,21 @@
                                         <resource>
                                             <directory>${dist.k8.source.dir}</directory>
                                             <include>*.yml</include>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-docs-dist</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${dist.api.docs.target.dir}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${dist.api.docs.source.dir}</directory>
                                         </resource>
                                     </resources>
                                 </configuration>
