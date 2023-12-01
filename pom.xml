@@ -15,6 +15,7 @@
 
 
     <modules>
+        <module>debezium-operator-docs-gen</module>
         <module>debezium-operator-commons</module>
         <module>debezium-operator-api</module>
         <module>debezium-operator-core</module>
