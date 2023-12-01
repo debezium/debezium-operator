@@ -10,13 +10,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.debezium.operator.docs.annotations.Documented;
+
 @JsonPropertyOrder({ "labels", "annotations" })
+@Documented
 public class MetadataTemplate implements Serializable {
     public static final long serialVersionUID = 1L;
 
+    @JsonPropertyDescription("Labels added to the Kubernetes resource")
     private Map<String, String> labels = new HashMap<>(0);
+    @JsonPropertyDescription("Annotations added to the Kubernetes resource")
     private Map<String, String> annotations = new HashMap<>(0);
 
     public Map<String, String> getLabels() {

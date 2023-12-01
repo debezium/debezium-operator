@@ -13,7 +13,9 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.docs.annotations.Documented;
 
+@Documented(hidden = true, name = "Map")
 public class ConfigProperties implements ConfigMappable {
 
     private Map<String, Object> props = new HashMap<>(0);

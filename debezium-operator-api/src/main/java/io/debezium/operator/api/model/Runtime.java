@@ -12,10 +12,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.debezium.operator.docs.annotations.Documented;
 import io.fabric8.kubernetes.api.model.EnvFromSource;
 import io.fabric8.kubernetes.api.model.Volume;
 
 @JsonPropertyOrder({ "env", "jmx", "templates", "volumes" })
+@Documented
 public class Runtime {
 
     @JsonPropertyDescription("Additional environment variables set from ConfigMaps or Secrets in containers.")

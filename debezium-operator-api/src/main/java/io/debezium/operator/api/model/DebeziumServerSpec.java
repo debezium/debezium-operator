@@ -13,8 +13,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.docs.annotations.Documented;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Documented
 public class DebeziumServerSpec implements ConfigMappable {
 
     @JsonPropertyDescription("Image used for Debezium Server container. This property takes precedence over version.")

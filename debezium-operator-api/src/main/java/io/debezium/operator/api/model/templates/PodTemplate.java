@@ -12,12 +12,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.debezium.operator.docs.annotations.Documented;
 import io.fabric8.kubernetes.api.model.Affinity;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.PodSecurityContext;
 
 @JsonPropertyOrder({ "metadata", "imagePullSecrets", "affinity" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Documented
 public class PodTemplate implements HasMetadataTemplate, Serializable {
 
     public static final long serialVersionUID = 1L;

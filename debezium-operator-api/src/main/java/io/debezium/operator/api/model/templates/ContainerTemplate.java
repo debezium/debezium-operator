@@ -12,11 +12,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.debezium.operator.docs.annotations.Documented;
 import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.api.model.SecurityContext;
 
 @JsonPropertyOrder({ "resources", "securityContext" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Documented
 public class ContainerTemplate implements Serializable {
     public static final long serialVersionUID = 1L;
 
