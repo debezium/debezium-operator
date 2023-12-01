@@ -9,7 +9,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.docs.annotations.Documented;
 
+@Documented
 public class FormatType implements ConfigMappable {
 
     @JsonPropertyDescription("Format type recognised by Debezium Server.")

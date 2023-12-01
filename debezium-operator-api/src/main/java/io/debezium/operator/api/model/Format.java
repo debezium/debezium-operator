@@ -9,7 +9,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.docs.annotations.Documented;
 
+@Documented
 public class Format implements ConfigMappable {
 
     @JsonPropertyDescription("Message key format configuration.")

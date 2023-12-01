@@ -9,8 +9,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.debezium.operator.docs.annotations.Documented;
+
 @JsonPropertyOrder({ "enabled", "port", "auth" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Documented
 public class JmxConfig {
 
     @JsonPropertyDescription("Whether JMX should be enabled for this Debezium Server instance.")

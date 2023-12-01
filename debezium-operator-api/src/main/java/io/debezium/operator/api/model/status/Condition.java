@@ -5,10 +5,18 @@
  */
 package io.debezium.operator.api.model.status;
 
+import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+
+import io.debezium.operator.docs.annotations.Documented;
+
+@Documented
 public class Condition {
 
+    @JsonPropertyDescription("The status of the condition, either True, False or Unknown.")
     private String status;
+    @JsonPropertyDescription("Human-readable message indicating details about the condition’s last transition.")
     private String message;
+    @JsonPropertyDescription("Unique identifier of a condition.")
     private String type;
 
     public String getStatus() {

@@ -7,6 +7,9 @@ package io.debezium.operator.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.debezium.operator.docs.annotations.Documented;
+
+@Documented(hidden = true)
 public enum StorageType {
     @JsonProperty("ephemeral")
     EPHEMERAL,

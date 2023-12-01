@@ -9,6 +9,7 @@ import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.api.model.status.DebeziumServerStatus;
 import io.debezium.operator.commons.OperatorConstants;
+import io.debezium.operator.docs.annotations.Documented;
 import io.fabric8.kubernetes.api.model.Namespaced;
 import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.model.annotation.Group;
@@ -24,6 +25,10 @@ import io.sundr.builder.annotations.BuildableReference;
         @BuildableReference(io.fabric8.kubernetes.api.model.ObjectMeta.class),
         @BuildableReference(io.fabric8.kubernetes.client.CustomResource.class),
         @BuildableReference(DebeziumServerSpec.class)
+})
+@Documented(fields = {
+        @Documented.Field(name = "spec", type = "DebeziumServerSpec", description = "The specification of Debezium Server"),
+        @Documented.Field(name = "status", type = "DebeziumServerStatus", description = "The status of Debezium")
 })
 public class DebeziumServer
         extends CustomResource<DebeziumServerSpec, DebeziumServerStatus>

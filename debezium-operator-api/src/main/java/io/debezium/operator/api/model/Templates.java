@@ -10,8 +10,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.debezium.operator.api.model.templates.ContainerTemplate;
 import io.debezium.operator.api.model.templates.PodTemplate;
+import io.debezium.operator.docs.annotations.Documented;
 
 @JsonPropertyOrder({ "container", "pod" })
+@Documented
 public class Templates {
 
     @JsonPropertyDescription("Container template")

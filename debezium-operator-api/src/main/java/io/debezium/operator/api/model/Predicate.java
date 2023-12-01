@@ -10,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.docs.annotations.Documented;
 
+@Documented
 public class Predicate implements ConfigMappable {
 
     @JsonPropertyDescription("Fully qualified name of Java class implementing the predicate.")

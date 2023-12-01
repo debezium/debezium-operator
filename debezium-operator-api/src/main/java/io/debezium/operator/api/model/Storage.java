@@ -7,6 +7,9 @@ package io.debezium.operator.api.model;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
+import io.debezium.operator.docs.annotations.Documented;
+
+@Documented
 public class Storage {
 
     @JsonPropertyDescription("Storage type.")

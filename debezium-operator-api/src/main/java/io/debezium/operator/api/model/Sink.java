@@ -10,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.docs.annotations.Documented;
 
+@Documented
 public class Sink implements ConfigMappable {
 
     @JsonPropertyDescription("Sink type recognised by Debezium Server.")

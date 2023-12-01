@@ -1389,10 +1389,15 @@ spec:
                 items:
                   properties:
                     status:
+                      description: "The status of the condition, either True, False\
+                        \ or Unknown."
                       type: string
                     type:
+                      description: Unique identifier of a condition.
                       type: string
                     message:
+                      description: Human-readable message indicating details about
+                        the condition’s last transition.
                       type: string
                   type: object
                 type: array

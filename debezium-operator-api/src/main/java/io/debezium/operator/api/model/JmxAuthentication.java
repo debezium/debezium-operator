@@ -10,8 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.debezium.operator.docs.annotations.Documented;
+
 @JsonPropertyOrder({ "enabled", "secret", "accessFile", "secretFile" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Documented
 public class JmxAuthentication {
     @JsonPropertyDescription("Whether JMX authentication should be enabled for this Debezium Server instance.")
     private boolean enabled = false;

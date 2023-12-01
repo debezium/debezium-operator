@@ -9,7 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.debezium.operator.docs.annotations.Documented;
+
 @JsonPropertyOrder({ "name", "value" })
+@Documented
 public class ContainerEnvVar {
     @JsonPropertyDescription("The environment variable name.")
     @JsonProperty(required = true)
