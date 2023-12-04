@@ -1,168 +1,155 @@
 [[debezium-operator-schema-reference]]
-=== Debezium Operator Schema Reference properties
 
-[id="debezium-operator-condition-schema-reference"]
+=== Debezium Operator Schema Reference
+
+[debezium-operator-schema-reference-condition]
 .Condition schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|status |String | |The status of the condition, either True, False or Unknown.
-|message |String | |Human-readable message indicating details about the condition’s last transition.
-|type |String | |Unique identifier of a condition.
+| Property| Type| Default| Description
+| status| String| | The status of the condition, either True, False or Unknown.
+| message| String| | Human-readable message indicating details about the condition’s last transition.
+| type| String| | Unique identifier of a condition.
 |===
 
-[id="debezium-operator-storage-schema-reference"]
+[debezium-operator-schema-reference-storage]
 .Storage schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|type |StorageType | |Storage type.
-|claimName |String | |Name of persistent volume claim for persistent storage.
+| Property| Type| Default| Description
+| type| StorageType| | Storage type.
+| claimName| String| | Name of persistent volume claim for persistent storage.
 |===
 
-[id="debezium-operator-debeziumserver-schema-reference"]
+[debezium-operator-schema-reference-debeziumserver]
 .DebeziumServer schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|spec |DebeziumServerSpec | |The specification of Debezium Server
-|Status |DebeziumServerStatus | |The status of Debezium
+| Property| Type| Default| Description
+| spec| DebeziumServerSpec| | The specification of Debezium Server
+| status| DebeziumServerStatus| | The status of Debezium
 |===
 
-[id="debezium-operator-sink-schema-reference"]
+[debezium-operator-schema-reference-sink]
 .Sink schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|type |String | |Sink type recognised by Debezium Server.
-|config |ConfigProperties | |Sink configuration properties.
+| Property| Type| Default| Description
+| type| String| | Sink type recognised by Debezium Server.
+| config| ConfigProperties| | Sink configuration properties.
 |===
 
-[id="debezium-operator-debeziumserverspec-schema-reference"]
+[debezium-operator-schema-reference-debeziumserverspec]
 .DebeziumServerSpec schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|image |String | |Image used for Debezium Server container. This property takes precedence over version.
-|version |String | |Version of Debezium Server to be used.
-|storage |Storage | |Storage configuration to be used by this instance of Debezium Server.
-|sink |Sink | |Sink configuration.
-|source |Source | |Debezium source connector configuration.
-|format |Format | |Message output format configuration.
-|quarkus |Quarkus | |Quarkus configuration passed down to Debezium Server process.
-|runtime |Runtime | |Configuration allowing the modification of various aspects of Debezium Server runtime.
-|transforms |List<Transformation> | |Single Message Transformations employed by this instance of Debezium Server.
-|predicates |Map<String, Predicate> | |Predicates employed by this instance of Debezium Server.
+| Property| Type| Default| Description
+| image| String| | Image used for Debezium Server container. This property takes precedence over version.
+| version| String| | Version of Debezium Server to be used.
+| storage| Storage| | Storage configuration to be used by this instance of Debezium Server.
+| sink| Sink| | Sink configuration.
+| source| Source| | Debezium source connector configuration.
+| format| Format| | Message output format configuration.
+| quarkus| Quarkus| | Quarkus configuration passed down to Debezium Server process.
+| runtime| Runtime| | Configuration allowing the modification of various aspects of Debezium Server runtime.
+| transforms| List<Transformation>| | Single Message Transformations employed by this instance of Debezium Server.
+| predicates| Map<String, Predicate>| | Predicates employed by this instance of Debezium Server.
 |===
 
-[id="debezium-operator-debeziumserverstatus-schema-reference"]
+[debezium-operator-schema-reference-debeziumserverstatus]
 .DebeziumServerStatus schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
+| Property| Type| Default| Description
 
 |===
 
-[id="debezium-operator-quarkus-schema-reference"]
+[debezium-operator-schema-reference-quarkus]
 .Quarkus schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|config |ConfigProperties | |Quarkus configuration properties.
+| Property| Type| Default| Description
+| config| ConfigProperties| | Quarkus configuration properties.
 |===
 
-[id="debezium-operator-templates-schema-reference"]
+[debezium-operator-schema-reference-templates]
 .Templates schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|container |ContainerTemplate | |Container template
-|pod |PodTemplate | |Pod template.
+| Property| Type| Default| Description
+| container| ContainerTemplate| | Container template
+| pod| PodTemplate| | Pod template.
 |===
 
-[id="debezium-operator-transformation-schema-reference"]
+[debezium-operator-schema-reference-transformation]
 .Transformation schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|type |String | |Fully qualified name of Java class implementing the transformation.
-|predicate |String | |The name of the predicate to be applied to this transformation.
-|negate |boolean | |Determines if the result of the applied predicate will be negated.
+| Property| Type| Default| Description
+| type| String| | Fully qualified name of Java class implementing the transformation.
+| predicate| String| | The name of the predicate to be applied to this transformation.
+| negate| boolean| | Determines if the result of the applied predicate will be negated.
 |===
 
-[id="debezium-operator-source-schema-reference"]
+[debezium-operator-schema-reference-source]
 .Source schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|sourceClass |String | |Fully qualified name of source connector Java class.
-|config |ConfigProperties | |Source connector configuration properties.
+| Property| Type| Default| Description
+| sourceClass| String| | Fully qualified name of source connector Java class.
+| config| ConfigProperties| | Source connector configuration properties.
 |===
 
-[id="debezium-operator-formattype-schema-reference"]
+[debezium-operator-schema-reference-formattype]
 .FormatType schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|type |String | |Format type recognised by Debezium Server.
-|config |ConfigProperties | |Format configuration properties.
+| Property| Type| Default| Description
+| type| String| | Format type recognised by Debezium Server.
+| config| ConfigProperties| | Format configuration properties.
 |===
 
-[id="debezium-operator-jmxauthentication-schema-reference"]
+[debezium-operator-schema-reference-jmxauthentication]
 .JmxAuthentication schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|enabled |boolean | |Whether JMX authentication should be enabled for this Debezium Server instance.
-|secret |String | |Secret providing credential files
-|accessFile |String | |JMX access file name and secret key
-|passwordFile |String | |JMX password file name and secret key
+| Property| Type| Default| Description
+| enabled| boolean| | Whether JMX authentication should be enabled for this Debezium Server instance.
+| secret| String| | Secret providing credential files
+| accessFile| String| | JMX access file name and secret key
+| passwordFile| String| | JMX password file name and secret key
 |===
 
-[id="debezium-operator-runtime-schema-reference"]
+[debezium-operator-schema-reference-runtime]
 .Runtime schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|env |List<EnvFromSource> | |Additional environment variables set from ConfigMaps or Secrets in containers.
-|jmx |JmxConfig | |JMX configuration.
-|templates |Templates | |Debezium Server resource templates.
-|volumes |List<Volume> | |Additional volumes mounted to containers.
-|serviceAccount |String | |An existing service account used to run the Debezium Server pod
+| Property| Type| Default| Description
+| env| List<EnvFromSource>| | Additional environment variables set from ConfigMaps or Secrets in containers.
+| jmx| JmxConfig| | JMX configuration.
+| templates| Templates| | Debezium Server resource templates.
+| volumes| List<Volume>| | Additional volumes mounted to containers.
+| serviceAccount| String| | An existing service account used to run the Debezium Server pod
 |===
 
-[id="debezium-operator-format-schema-reference"]
+[debezium-operator-schema-reference-format]
 .Format schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|key |FormatType | |Message key format configuration.
-|value |FormatType | |Message value format configuration.
-|header |FormatType | |Message header format configuration.
+| Property| Type| Default| Description
+| key| FormatType| | Message key format configuration.
+| value| FormatType| | Message value format configuration.
+| header| FormatType| | Message header format configuration.
 |===
 
-[id="debezium-operator-jmxconfig-schema-reference"]
+[debezium-operator-schema-reference-jmxconfig]
 .JmxConfig schema reference
 [cols="20%a,20%s,20%a,40%a",options="header"]
 |===
-|Property |Type |Default |Description
-
-|enabled |boolean | |Whether JMX should be enabled for this Debezium Server instance.
-|port |int | |JMX port.
-|authentication |JmxAuthentication | |JMX authentication config.
+| Property| Type| Default| Description
+| enabled| boolean| | Whether JMX should be enabled for this Debezium Server instance.
+| port| int| | JMX port.
+| authentication| JmxAuthentication| | JMX authentication config.
 |===
 
 
