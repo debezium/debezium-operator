@@ -26,10 +26,12 @@ public class ContainerTemplate implements Serializable {
     private List<ContainerEnvVar> env = List.of();
     @JsonPropertyDescription("CPU and memory resource requirements.")
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Documented.Field(k8Ref = "resourcerequirements-v1-core")
     private ResourceRequirements resources;
 
     @JsonPropertyDescription("Container security context.")
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Documented.Field(k8Ref = "securitycontext-v1-core")
     private SecurityContext securityContext;
 
     public SecurityContext getSecurityContext() {

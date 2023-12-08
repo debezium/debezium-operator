@@ -32,11 +32,23 @@ public class DebeziumOperatorDocsProcessor
         return new AsciidocFormatter();
     }
 
-    protected FieldDescription fieldDescription(Documented.Field field) {
-        return new FieldDescription(field.name(), field.type(), field.type(), field.defaultVal(), field.description());
+    protected FieldDescription createFieldDocs(Documented.Field field) {
+        return new FieldDescription(
+                field.name(),
+                field.type(),
+                field.type(),
+                fieldExternalTypeReference(field),
+                field.defaultVal(),
+                field.description());
     }
 
-    protected FieldDescription fieldDescription(VariableElement field) {
-        return new FieldDescription(name(field), type(field), typeReference(field), "", descriptionValue(field));
+    protected FieldDescription createFieldDocs(VariableElement field) {
+        return new FieldDescription(
+                name(field),
+                fieldType(field),
+                fieldTypeReference(field),
+                fieldExternalTypeReference(field),
+                "",
+                fieldDescription(field));
     }
 }

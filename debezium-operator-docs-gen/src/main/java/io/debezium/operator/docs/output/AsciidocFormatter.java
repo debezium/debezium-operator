@@ -38,7 +38,7 @@ public final class AsciidocFormatter implements DocumentationFormatter<FieldDesc
         var template = """
                 [#%s]
                 .%s schema reference
-                [cols="20%%a,20%%s,20%%a,40%%a",options="header"]
+                [cols="20%%a,25%%s,15%%a,40%%a",options="header"]
                 |===
                 | Property | Type | Default | Description
                 %s
@@ -72,11 +72,19 @@ public final class AsciidocFormatter implements DocumentationFormatter<FieldDesc
     }
 
     private String formatFieldType(Documentation<FieldDescription> documentation, TypeDescription<FieldDescription> type, FieldDescription field) {
-        if (documentation.isKnownType(field.typeRef())) {
+        if (field.typeRef() != null) {
             var template = "<<%s, `+%s+`>>";
 
             return template.formatted(
                     identifier(documentation.title(), field.typeRef()),
+                    field.type());
+        }
+
+        if (field.externalTypeRef() != null) {
+            var template = "%s[`+%s+`]";
+
+            return template.formatted(
+                    field.externalTypeRef(),
                     field.type());
         }
 

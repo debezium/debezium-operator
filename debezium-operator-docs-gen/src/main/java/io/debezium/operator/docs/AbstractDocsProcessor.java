@@ -5,19 +5,28 @@
  */
 package io.debezium.operator.docs;
 
+import static io.debezium.operator.docs.Processing.annotation;
+import static io.debezium.operator.docs.Processing.asDeclared;
+import static io.debezium.operator.docs.Processing.asElement;
+import static io.debezium.operator.docs.Processing.asEnum;
+import static io.debezium.operator.docs.Processing.enclosedElements;
+import static io.debezium.operator.docs.Processing.isAnnotated;
+import static io.debezium.operator.docs.Processing.typeArguments;
+import static java.util.function.Predicate.not;
+
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -26,6 +35,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.StandardLocation;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.docs.annotations.Documented;
@@ -83,6 +93,7 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
     private void documentTypes(Collection<TypeElement> types) {
         types
                 .stream()
+                .filter(this::isNotHidden)
                 .map(this::documentType)
                 .forEach(documentation::addTypeDescription);
     }
@@ -93,34 +104,34 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
 
         presentFields(element)
                 .stream()
-                .map(this::fieldDescription)
+                .map(this::createFieldDocs)
                 .forEach(description::addFieldDescription);
 
         additionalFields(element)
                 .stream()
-                .map(this::fieldDescription)
+                .map(this::createFieldDocs)
                 .forEach(description::addFieldDescription);
 
         return description.build();
     }
 
     private List<Documented.Field> additionalFields(TypeElement element) {
-        var fields = element.getAnnotation(Documented.class);
-        return Arrays.asList(fields.fields());
-    }
-
-    private List<VariableElement> presentFields(TypeElement element) {
-        return element.getEnclosedElements()
+        return documentedTypeInfo(element)
                 .stream()
-                .filter(e -> e.getKind() == ElementKind.FIELD)
-                .map(VariableElement.class::cast)
-                .filter(this::hasDescription)
+                .map(Documented::fields)
+                .flatMap(Stream::of)
                 .toList();
     }
 
-    private void setKnownTypes(Set<TypeElement> types) {
-        types
-                .stream()
+    private List<VariableElement> presentFields(TypeElement element) {
+        return enclosedElements(element, ElementKind.FIELD, VariableElement.class)
+                .filter(this::isDocumentedField)
+                .toList();
+    }
+
+    private void setKnownTypes(Collection<TypeElement> types) {
+        types.stream()
+                .filter(this::isNotHidden)
                 .map(this::name)
                 .forEach(knownTypes::add);
     }
@@ -135,20 +146,10 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
     }
 
     /**
-     * @param type type given as {@link TypeMirror} instance
-     * @return name of the type
+     * @return name of the element
      */
-    protected String name(TypeMirror type) {
-        var fullName = type.toString();
-        return simpleName(fullName);
-    }
-
-    /**
-     * @param field  given as {@link VariableElement} instance
-     * @return name of the field
-     */
-    protected String name(VariableElement field) {
-        return String.valueOf(field.getSimpleName());
+    protected String name(Element element) {
+        return String.valueOf(element.getSimpleName());
     }
 
     /**
@@ -162,69 +163,173 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
         return fullName.substring(dot);
     }
 
+    protected Optional<Documented.Field> documentedFieldInfo(Element element) {
+        return annotation(element, Documented.Field.class);
+    }
+
+    protected Optional<JsonPropertyDescription> jsonPropertyDescription(Element element) {
+        return annotation(element, JsonPropertyDescription.class);
+    }
+
+    protected Optional<Documented> documentedTypeInfo(TypeMirror type) {
+        return asElement(type).flatMap(e -> annotation(e, Documented.class));
+    }
+
+    protected Optional<Documented> documentedTypeInfo(TypeElement type) {
+        return annotation(type, Documented.class);
+    }
+
+    protected boolean isDocumentedField(Element field) {
+        return isAnnotated(field, Documented.Field.class)
+                || isAnnotated(field, JsonProperty.class)
+                || isAnnotated(field, JsonPropertyDescription.class);
+    }
+
+    protected boolean isNotHidden(TypeElement element) {
+        return documentedTypeInfo(element)
+                .map(Documented::hidden)
+                .map(hidden -> !hidden)
+                .orElse(true);
+    }
+
+    protected boolean isKnownType(String name) {
+        return knownTypes.contains(name);
+    }
+
     /**
-     * Gets field descriptions from  {@link JsonPropertyDescription}
+     * Gets descriptions from  {@link JsonPropertyDescription}
      *
-     * @param field field given as {@link VariableElement} instance
+     * @param element annotated element
      * @return field description
      */
-    protected String descriptionValue(VariableElement field) {
-        var annotation = field.getAnnotation(JsonPropertyDescription.class);
-        return annotation.value();
-    }
-
-    protected <A extends Annotation> boolean isAnnotated(VariableElement field, Class<A> annotationType) {
-        return field.getAnnotation(annotationType) != null;
-    }
-
-    protected boolean hasDescription(VariableElement field) {
-        return isAnnotated(field, JsonPropertyDescription.class);
+    protected String fieldDescription(Element element) {
+        return Optional.<String> empty()
+                .or(() -> documentedFieldInfo(element)
+                        .map(Documented.Field::description)
+                        .filter(not(String::isEmpty)))
+                .or(() -> jsonPropertyDescription(element)
+                        .map(JsonPropertyDescription::value)
+                        .filter(not(String::isEmpty)))
+                .orElse("");
     }
 
     /**
      * @param field variable field
      * @return type with generic arguments
      */
-    protected String type(VariableElement field) {
+    protected String fieldType(VariableElement field) {
         var type = field.asType();
+        return Optional.<String> empty()
+                .or(() -> explicitFieldTypeName(field))
+                .or(() -> explicitTypeName(type))
+                .or(() -> enumTypeName(type))
+                .or(() -> declaredTypeName(type))
+                .orElseGet(() -> typeName(type));
+    }
 
-        if (type instanceof DeclaredType declared) {
-            var erasure = processingEnv.getTypeUtils().erasure(declared);
-            var typeArgs = new StringJoiner(", ", "<", ">").setEmptyValue("");
+    /**
+     * Extracts type documented by {@link Documented.Field}
+     *
+     * @param field scanned field
+     * @return documented type or empty
+     */
+    protected Optional<String> explicitFieldTypeName(VariableElement field) {
+        return documentedFieldInfo(field)
+                .map(Documented.Field::type)
+                .filter(not(String::isEmpty));
+    }
 
-            declared.getTypeArguments()
-                    .stream()
-                    .map(this::name)
-                    .forEach(typeArgs::add);
+    protected Optional<String> explicitTypeName(TypeMirror type) {
+        return documentedTypeInfo(type)
+                .map(Documented::name)
+                .filter(not(String::isEmpty));
+    }
 
-            return name(erasure) + typeArgs;
-        }
+    protected Optional<String> enumTypeName(TypeMirror type) {
+        return asEnum(type)
+                .map(this::enumConstantNames)
+                .map(names -> String.join(",", names));
+    }
 
-        return name(type);
+    protected Optional<String> declaredTypeName(TypeMirror mirror) {
+        return asDeclared(mirror).map(this::genericTypeName);
+    }
+
+    protected String typeName(TypeMirror type) {
+        var fullName = type.toString();
+        return simpleName(fullName);
+    }
+
+    protected String genericTypeName(DeclaredType type) {
+        var erasure = processingEnv.getTypeUtils().erasure(type);
+        var typeArgs = new StringJoiner(", ", "<", ">").setEmptyValue("");
+
+        typeArguments(type)
+                .map(this::typeName)
+                .forEach(typeArgs::add);
+
+        return typeName(erasure) + typeArgs;
+    }
+
+    private List<String> enumConstantNames(TypeElement type) {
+        return enclosedElements(type, ElementKind.ENUM_CONSTANT)
+                .map(this::name)
+                .map(String::toLowerCase)
+                .toList();
     }
 
     /**
      * Extracts a type reference from a field's type.
-     * Type reference is a name of type annotated by the {@link Documented} annotation
-     * It can be either the type of the field directly or part of type arguments (e.g. in case of List or Map)
-     *
+
      * @param field variable element
      * @return name of documented type
      */
-    protected String typeReference(VariableElement field) {
-        var mirror = field.asType();
-        var type = Optional.<String> empty();
+    protected String fieldTypeReference(VariableElement field) {
+        var type = field.asType();
 
-        if (mirror instanceof DeclaredType declared) {
-            type = declared.getTypeArguments()
-                    .stream()
-                    .map(this::name)
-                    .findFirst();
-        }
-
-        return type.or(() -> Optional.of(mirror).map(this::name))
-                .filter(knownTypes::contains)
+        return Optional.<String> empty()
+                .or(() -> typeErasureReference(type))
+                .or(() -> typeArgumentReference(type))
                 .orElse(null);
+    }
+
+    /**
+     * Extracts external type reference URL  from {@link Documented.Field} present on a field
+     *
+     * @return reference url
+     */
+    protected String fieldExternalTypeReference(VariableElement field) {
+        return documentedFieldInfo(field)
+                .map(this::fieldExternalTypeReference)
+                .orElse(null);
+    }
+
+    protected String fieldExternalTypeReference(Documented.Field field) {
+        return Optional.<String> empty()
+                .or(() -> k8TypeReference(field.k8Ref()))
+                .orElse(null);
+    }
+
+    private Optional<String> k8TypeReference(String slug) {
+        if (slug.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(Documented.K8_API_DOCS_ADDR + "#" + slug);
+    }
+
+    protected Optional<String> typeErasureReference(TypeMirror type) {
+        var erasure = processingEnv.getTypeUtils().erasure(type);
+
+        return asDeclared(erasure)
+                .map(this::typeName)
+                .filter(this::isKnownType);
+    }
+
+    protected Optional<String> typeArgumentReference(TypeMirror type) {
+        return asDeclared(type)
+                .map(t -> typeArguments(t, this::typeName))
+                .map(s -> s.filter(this::isKnownType))
+                .flatMap(Stream::findFirst);
     }
 
     /**
@@ -249,7 +354,7 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
      * @param field field as {@link Documented.Field}
      * @return instance of {@link TField}
      */
-    protected abstract TField fieldDescription(Documented.Field field);
+    protected abstract TField createFieldDocs(Documented.Field field);
 
     /**
      * Called for each field documented by {@link JsonPropertyDescription}
@@ -257,5 +362,5 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
      * @param field field as {@link VariableElement}
      * @return instance of {@link TField}
      */
-    protected abstract TField fieldDescription(VariableElement field);
+    protected abstract TField createFieldDocs(VariableElement field);
 }

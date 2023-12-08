@@ -9,15 +9,7 @@ public record FieldDescription(
         String name,
         String type,
         String typeRef,
+        String externalTypeRef,
         String defaultVal,
         String description) {
-
-    public FieldDescription(
-            String name,
-            String type,
-            String defaultVal,
-            String description) {
-        this(name, type, null, defaultVal, description);
-    }
-
 }

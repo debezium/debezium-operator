@@ -21,6 +21,7 @@ import io.fabric8.kubernetes.api.model.Volume;
 public class Runtime {
 
     @JsonPropertyDescription("Additional environment variables set from ConfigMaps or Secrets in containers.")
+    @Documented.Field(k8Ref = "envfromsource-v1-core")
     private List<EnvFromSource> env;
 
     @JsonPropertyDescription("JMX configuration.")
@@ -30,6 +31,7 @@ public class Runtime {
     private Templates templates;
 
     @JsonPropertyDescription("Additional volumes mounted to containers.")
+    @Documented.Field(k8Ref = "volume-v1-core")
     private List<Volume> volumes;
 
     @JsonPropertyDescription("An existing service account used to run the Debezium Server pod")
