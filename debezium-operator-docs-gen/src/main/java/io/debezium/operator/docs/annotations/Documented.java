@@ -14,11 +14,16 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 public @interface Documented {
 
+    String K8_API_DOCS_ADDR = "https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/";
+
+    @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.SOURCE)
     @interface Field {
-        String name();
+        String name() default "";
 
-        String type();
+        String type() default "";
+
+        String k8Ref() default "";
 
         String defaultVal() default "";
 
@@ -26,4 +31,8 @@ public @interface Documented {
     }
 
     Field[] fields() default {};
+
+    boolean hidden() default false;
+
+    String name() default "";
 }

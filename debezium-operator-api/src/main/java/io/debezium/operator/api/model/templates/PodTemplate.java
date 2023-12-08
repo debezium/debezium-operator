@@ -29,14 +29,17 @@ public class PodTemplate implements HasMetadataTemplate, Serializable {
 
     @JsonPropertyDescription("List of local references to secrets used for pulling any of the images used by this Pod.")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @Documented.Field(k8Ref = "localobjectreference-v1-core")
     private List<LocalObjectReference> imagePullSecrets = List.of();
 
     @JsonPropertyDescription("Pod affinity rules")
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Documented.Field(k8Ref = "affinity-v1-core")
     private Affinity affinity;
 
     @JsonPropertyDescription("Pod-level security attributes and container settings")
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Documented.Field(k8Ref = "podsecuritycontext-v1-core")
     private PodSecurityContext securityContext;
 
     @Override
