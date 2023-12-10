@@ -6,6 +6,7 @@
 package io.debezium.operator.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -17,8 +18,10 @@ import io.debezium.operator.docs.annotations.Documented;
 public class JmxConfig {
 
     @JsonPropertyDescription("Whether JMX should be enabled for this Debezium Server instance.")
+    @JsonProperty(defaultValue = "false")
     private boolean enabled = false;
     @JsonPropertyDescription("JMX port.")
+    @JsonProperty(defaultValue = "1099")
     private int port = 1099;
     @JsonPropertyDescription("JMX authentication config.")
     private JmxAuthentication authentication;

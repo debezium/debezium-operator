@@ -23,6 +23,7 @@ public class Transformation implements ConfigMappable {
     private String predicate;
 
     @JsonPropertyDescription("Determines if the result of the applied predicate will be negated.")
+    @JsonProperty(defaultValue = "false")
     private boolean negate = false;
     private ConfigProperties config;
 

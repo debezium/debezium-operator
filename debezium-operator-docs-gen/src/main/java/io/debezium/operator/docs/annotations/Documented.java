@@ -25,7 +25,7 @@ public @interface Documented {
 
         String k8Ref() default "";
 
-        String defaultVal() default "";
+        String defaultValue() default "";
 
         String description() default "";
     }
