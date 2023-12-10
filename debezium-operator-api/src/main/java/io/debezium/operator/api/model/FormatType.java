@@ -5,6 +5,7 @@
  */
 package io.debezium.operator.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMappable;
@@ -15,13 +16,13 @@ import io.debezium.operator.docs.annotations.Documented;
 public class FormatType implements ConfigMappable {
 
     @JsonPropertyDescription("Format type recognised by Debezium Server.")
-    private String type;
+    @JsonProperty(defaultValue = "json")
+    private String type = "json";
 
     @JsonPropertyDescription("Format configuration properties.")
     private ConfigProperties config;
 
     public FormatType() {
-        type = "json";
         this.config = new ConfigProperties();
     }
 

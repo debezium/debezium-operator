@@ -10,6 +10,6 @@ public record FieldDescription(
         String type,
         String typeRef,
         String externalTypeRef,
-        String defaultVal,
+        String defaultValue,
         String description) {
 }

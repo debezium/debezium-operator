@@ -38,7 +38,7 @@ public class DebeziumOperatorDocsProcessor
                 field.type(),
                 field.type(),
                 fieldExternalTypeReference(field),
-                field.defaultVal(),
+                field.defaultValue(),
                 field.description());
     }
 
@@ -48,7 +48,7 @@ public class DebeziumOperatorDocsProcessor
                 fieldType(field),
                 fieldTypeReference(field),
                 fieldExternalTypeReference(field),
-                "",
+                fieldDefaultValue(field),
                 fieldDescription(field));
     }
 }

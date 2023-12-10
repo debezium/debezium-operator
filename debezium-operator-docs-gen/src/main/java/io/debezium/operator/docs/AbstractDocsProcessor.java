@@ -171,6 +171,10 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
         return annotation(element, JsonPropertyDescription.class);
     }
 
+    protected Optional<JsonProperty> jsonProperty(Element element) {
+        return annotation(element, JsonProperty.class);
+    }
+
     protected Optional<Documented> documentedTypeInfo(TypeMirror type) {
         return asElement(type).flatMap(e -> annotation(e, Documented.class));
     }
@@ -194,6 +198,17 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
 
     protected boolean isKnownType(String name) {
         return knownTypes.contains(name);
+    }
+
+    protected String fieldDefaultValue(Element element) {
+        return Optional.<String> empty()
+                .or(() -> documentedFieldInfo(element)
+                        .map(Documented.Field::defaultValue)
+                        .filter(not(String::isEmpty)))
+                .or(() -> jsonProperty(element)
+                        .map(JsonProperty::defaultValue)
+                        .filter(not(String::isEmpty)))
+                .orElse("");
     }
 
     /**

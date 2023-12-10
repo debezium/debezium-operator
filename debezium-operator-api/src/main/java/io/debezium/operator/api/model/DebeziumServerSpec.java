@@ -23,6 +23,7 @@ public class DebeziumServerSpec implements ConfigMappable {
     private String image;
 
     @JsonPropertyDescription("Version of Debezium Server to be used.")
+    @Documented.Field(defaultValue = "same as operator")
     private String version;
 
     @JsonPropertyDescription("Storage configuration to be used by this instance of Debezium Server.")

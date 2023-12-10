@@ -5,6 +5,7 @@
  */
 package io.debezium.operator.api.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.docs.annotations.Documented;
@@ -13,6 +14,7 @@ import io.debezium.operator.docs.annotations.Documented;
 public class Storage {
 
     @JsonPropertyDescription("Storage type.")
+    @JsonProperty(defaultValue = "ephemeral")
     private StorageType type;
 
     @JsonPropertyDescription("Name of persistent volume claim for persistent storage.")

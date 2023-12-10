@@ -58,7 +58,7 @@ public final class AsciidocFormatter implements DocumentationFormatter<FieldDesc
         return template.formatted(
                 formatFieldName(documentation, type, field),
                 formatFieldType(documentation, type, field),
-                field.defaultVal(),
+                field.defaultValue(),
                 field.description());
     }
 
