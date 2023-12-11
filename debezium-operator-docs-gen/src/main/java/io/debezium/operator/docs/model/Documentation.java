@@ -6,8 +6,10 @@
 package io.debezium.operator.docs.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -66,6 +68,8 @@ public final class Documentation {
     private final List<TypeDescription> types;
     private final Set<String> typeNames;
 
+    private Map<String, Set<String>> usageReference = new HashMap<>();
+
     /**
      * Creates new documentation
      * @param title title of this Documentation
@@ -79,6 +83,11 @@ public final class Documentation {
     public Documentation addTypeDescription(TypeDescription type) {
         types.add(type);
         typeNames.add(type.name);
+
+        type.fields().forEach(field -> usageReference
+                .computeIfAbsent(field.typeRef(), k -> new HashSet<>())
+                .add(type.name()));
+
         return this;
     }
 
@@ -96,6 +105,10 @@ public final class Documentation {
 
     public boolean isKnownType(String name) {
         return typeNames.contains(name);
+    }
+
+    public Set<String> getUsages(String name) {
+        return usageReference.getOrDefault(name, Set.of());
     }
 
 }

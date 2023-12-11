@@ -5,6 +5,10 @@
  */
 package io.debezium.operator.docs.output;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,7 +40,10 @@ public final class AsciidocFormatter implements DocumentationFormatter {
     private String formatType(Documentation documentation, TypeDescription type) {
         var template = """
                 [#%s]
-                .%s schema reference
+                ==== %s Schema Reference
+                %s
+
+                .%s properties
                 [cols="20%%a,25%%s,15%%a,40%%a",options="header"]
                 |===
                 | Property | Type | Default | Description
@@ -48,7 +55,24 @@ public final class AsciidocFormatter implements DocumentationFormatter {
         return template.formatted(
                 identifier(documentation.title(), type.name()),
                 type.name(),
+                formatUsageReference(documentation, type),
+                type.name(),
                 formatFields(documentation, type));
+    }
+
+    private String formatUsageReference(Documentation documentation, TypeDescription type) {
+        var template = "Used in: %s\n";
+        var usages = documentation.getUsages(type.name())
+                .stream()
+                .sorted()
+                .map(name -> formatTypeReference(documentation, name, name))
+                .collect(Collectors.joining(", "));
+
+        if (usages.isEmpty()) {
+            return "";
+        }
+
+        return template.formatted(usages);
     }
 
     private String formatField(Documentation documentation, TypeDescription type, Documentation.FieldDescription field) {
@@ -70,13 +94,17 @@ public final class AsciidocFormatter implements DocumentationFormatter {
                 field.name());
     }
 
+    private String formatTypeReference(Documentation documentation, String type, String typeRef) {
+        var template = "<<%s, `+%s+`>>";
+
+        return template.formatted(
+                identifier(documentation.title(), typeRef),
+                type);
+    }
+
     private String formatFieldType(Documentation documentation, TypeDescription type, Documentation.FieldDescription field) {
         if (field.typeRef() != null) {
-            var template = "<<%s, `+%s+`>>";
-
-            return template.formatted(
-                    identifier(documentation.title(), field.typeRef()),
-                    field.type());
+            return formatTypeReference(documentation, field.type(), field.typeRef());
         }
 
         if (field.externalTypeRef() != null) {
@@ -97,6 +125,8 @@ public final class AsciidocFormatter implements DocumentationFormatter {
                 .collect(Collectors.joining("\n"));
     }
 
+    private Map<String, Set<String>> index = new HashMap<>();
+
     @Override
     public String formatted(Documentation documentation) {
         var docs = new StringBuilder();
@@ -105,6 +135,7 @@ public final class AsciidocFormatter implements DocumentationFormatter {
 
         documentation.types()
                 .stream()
+                .sorted(Comparator.comparing(TypeDescription::name))
                 .map(t -> formatType(documentation, t))
                 .forEach(docs::append);
 
