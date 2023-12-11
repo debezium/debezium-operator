@@ -26,6 +26,8 @@ kubectl create -f examples/postgres/ -n $NAMESPACE
 ```
 
 ## DebeziumServerSpec Reference
+The snippet bellow provides a rough outline of the `DebeziumServer` spec. See the [full API reference](docs/reference.adoc) for more details.
+
 
 ```yaml
 spec:
