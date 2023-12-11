@@ -44,13 +44,13 @@ import io.debezium.operator.docs.model.Documentation.TypeDescription;
 import io.debezium.operator.docs.model.Documentation.TypeDescriptionBuilder;
 import io.debezium.operator.docs.output.DocumentationFormatter;
 
-public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
-    private final Documentation<TField> documentation;
+public abstract class AbstractDocsProcessor extends AbstractProcessor {
+    private final Documentation documentation;
     private final String file;
     private final Set<String> knownTypes;
 
     public AbstractDocsProcessor(String file, String title) {
-        this.documentation = new Documentation<>(title);
+        this.documentation = new Documentation(title);
         this.knownTypes = new HashSet<>();
         this.file = file;
     }
@@ -90,7 +90,7 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
         }
     }
 
-    private void documentTypes(Collection<TypeElement> types) {
+    protected void documentTypes(Collection<TypeElement> types) {
         types
                 .stream()
                 .filter(this::isNotHidden)
@@ -98,7 +98,7 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
                 .forEach(documentation::addTypeDescription);
     }
 
-    protected TypeDescription<TField> documentType(TypeElement element) {
+    protected TypeDescription documentType(TypeElement element) {
         var name = name(element);
         var description = typeDescriptionBuilder(name);
 
@@ -115,7 +115,7 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
         return description.build();
     }
 
-    private List<Documented.Field> additionalFields(TypeElement element) {
+    protected List<Documented.Field> additionalFields(TypeElement element) {
         return documentedTypeInfo(element)
                 .stream()
                 .map(Documented::fields)
@@ -123,7 +123,7 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
                 .toList();
     }
 
-    private List<VariableElement> presentFields(TypeElement element) {
+    protected List<VariableElement> presentFields(TypeElement element) {
         return enclosedElements(element, ElementKind.FIELD, VariableElement.class)
                 .filter(this::isDocumentedField)
                 .toList();
@@ -158,7 +158,7 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
      * @param fullName fully qualified name
      * @return simple name
      */
-    private String simpleName(String fullName) {
+    protected String simpleName(String fullName) {
         var dot = fullName.lastIndexOf('.') + 1;
         return fullName.substring(dot);
     }
@@ -286,7 +286,7 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
         return typeName(erasure) + typeArgs;
     }
 
-    private List<String> enumConstantNames(TypeElement type) {
+    protected List<String> enumConstantNames(TypeElement type) {
         return enclosedElements(type, ElementKind.ENUM_CONSTANT)
                 .map(this::name)
                 .map(String::toLowerCase)
@@ -325,7 +325,7 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
                 .orElse(null);
     }
 
-    private Optional<String> k8TypeReference(String slug) {
+    protected Optional<String> k8TypeReference(String slug) {
         if (slug.isEmpty()) {
             return Optional.empty();
         }
@@ -353,29 +353,46 @@ public abstract class AbstractDocsProcessor<TField> extends AbstractProcessor {
      * @param name type name
      * @return type description builder
      */
-    protected TypeDescriptionBuilder<TField> typeDescriptionBuilder(String name) {
-        return new TypeDescriptionBuilder<>(name);
+    protected TypeDescriptionBuilder typeDescriptionBuilder(String name) {
+        return new TypeDescriptionBuilder(name);
+    }
+
+    /**
+     * Called for each field documented by {@link Documented.Field}
+     *
+     * @param field field as {@link Documented.Field}
+     * @return field description
+     */
+    protected Documentation.FieldDescription createFieldDocs(Documented.Field field) {
+        return new Documentation.FieldDescription(
+                field.name(),
+                field.type(),
+                field.type(),
+                fieldExternalTypeReference(field),
+                field.defaultValue(),
+                field.description());
+    }
+
+    /**
+     * Called for each field documented by {@link JsonPropertyDescription}
+     *
+     * @param field field as {@link VariableElement}
+     * @return filed description
+     */
+    protected Documentation.FieldDescription createFieldDocs(VariableElement field) {
+        return new Documentation.FieldDescription(
+                name(field),
+                fieldType(field),
+                fieldTypeReference(field),
+                fieldExternalTypeReference(field),
+                fieldDefaultValue(field),
+                fieldDescription(field));
     }
 
     /**
      * Creates an appropriate instance of documentation formatter
      * @return documentation formatter
      */
-    protected abstract DocumentationFormatter<TField> formatter();
+    protected abstract DocumentationFormatter formatter();
 
-    /**
-     * Called for each field documented by {@link Documented.Field}
-     *
-     * @param field field as {@link Documented.Field}
-     * @return instance of {@link TField}
-     */
-    protected abstract TField createFieldDocs(Documented.Field field);
-
-    /**
-     * Called for each field documented by {@link JsonPropertyDescription}
-     *
-     * @param field field as {@link VariableElement}
-     * @return instance of {@link TField}
-     */
-    protected abstract TField createFieldDocs(VariableElement field);
 }

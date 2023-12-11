@@ -15,7 +15,7 @@ import java.util.Set;
  * Abstract representation of CR reference documentation.
  * Documentation is represented as a collection of documented types see {@link TypeDescription}
  */
-public final class Documentation<T> {
+public final class Documentation {
 
     /**
      * Documentation of a type
@@ -25,37 +25,45 @@ public final class Documentation<T> {
      */
 
     // @formatter:off
-    public record TypeDescription<T> (
+    public record TypeDescription (
             String name,
-            List<T> fields) {
+            List<FieldDescription> fields) {
+    }
+
+    public record FieldDescription(
+            String name,
+            String type,
+            String typeRef,
+            String externalTypeRef,
+            String defaultValue,
+            String description) {
     }
     // @formatter:on
 
     /**
      * Builder for {@link TypeDescription}
-     * @param <T> field description type
      */
-    public static class TypeDescriptionBuilder<T> {
-        private String name;
-        private final List<T> fields = new ArrayList<>();
+    public static class TypeDescriptionBuilder {
+        private final String name;
+        private final List<FieldDescription> fields = new ArrayList<>();
 
         public TypeDescriptionBuilder(String name) {
             this.name = name;
         }
 
-        public TypeDescriptionBuilder<T> addFieldDescription(T field) {
+        public TypeDescriptionBuilder addFieldDescription(FieldDescription field) {
             fields.add(field);
             return this;
         }
 
-        public TypeDescription<T> build() {
+        public TypeDescription build() {
             Objects.requireNonNull(name);
-            return new TypeDescription<>(name, fields);
+            return new TypeDescription(name, fields);
         }
     }
 
     private final String title;
-    private final List<TypeDescription<T>> types;
+    private final List<TypeDescription> types;
     private final Set<String> typeNames;
 
     /**
@@ -68,7 +76,7 @@ public final class Documentation<T> {
         this.typeNames = new HashSet<>();
     }
 
-    public Documentation<T> addTypeDescription(TypeDescription<T> type) {
+    public Documentation addTypeDescription(TypeDescription type) {
         types.add(type);
         typeNames.add(type.name);
         return this;
@@ -78,7 +86,7 @@ public final class Documentation<T> {
         return title;
     }
 
-    public List<TypeDescription<T>> types() {
+    public List<TypeDescription> types() {
         return types;
     }
 
@@ -89,4 +97,5 @@ public final class Documentation<T> {
     public boolean isKnownType(String name) {
         return typeNames.contains(name);
     }
+
 }
