@@ -1,155 +1,281 @@
-[[debezium-operator-schema-reference]]
-
+[#debezium-operator-schema-reference]
 === Debezium Operator Schema Reference
 
-[debezium-operator-schema-reference-condition]
-.Condition schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-condition]
+==== Condition Schema Reference
+Used in: <<debezium-operator-schema-reference-debeziumserverstatus, `+DebeziumServerStatus+`>>
+
+
+.Condition properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| status| String| | The status of the condition, either True, False or Unknown.
-| message| String| | Human-readable message indicating details about the condition’s last transition.
-| type| String| | Unique identifier of a condition.
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-condition-status]]<<debezium-operator-schema-reference-condition-status, `+status+`>> | String |  | The status of the condition, either True, False or Unknown.
+| [[debezium-operator-schema-reference-condition-message]]<<debezium-operator-schema-reference-condition-message, `+message+`>> | String |  | Human-readable message indicating details about the condition’s last transition.
+| [[debezium-operator-schema-reference-condition-type]]<<debezium-operator-schema-reference-condition-type, `+type+`>> | String |  | Unique identifier of a condition.
 |===
 
-[debezium-operator-schema-reference-storage]
-.Storage schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-containerenvvar]
+==== ContainerEnvVar Schema Reference
+Used in: <<debezium-operator-schema-reference-containertemplate, `+ContainerTemplate+`>>
+
+
+.ContainerEnvVar properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| type| StorageType| | Storage type.
-| claimName| String| | Name of persistent volume claim for persistent storage.
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-containerenvvar-name]]<<debezium-operator-schema-reference-containerenvvar-name, `+name+`>> | String |  | The environment variable name.
+| [[debezium-operator-schema-reference-containerenvvar-value]]<<debezium-operator-schema-reference-containerenvvar-value, `+value+`>> | String |  | The environment variable value.
 |===
 
-[debezium-operator-schema-reference-debeziumserver]
-.DebeziumServer schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-containertemplate]
+==== ContainerTemplate Schema Reference
+Used in: <<debezium-operator-schema-reference-templates, `+Templates+`>>
+
+
+.ContainerTemplate properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| spec| DebeziumServerSpec| | The specification of Debezium Server
-| status| DebeziumServerStatus| | The status of Debezium
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-containertemplate-env]]<<debezium-operator-schema-reference-containertemplate-env, `+env+`>> | <<debezium-operator-schema-reference-containerenvvar, `+List<ContainerEnvVar>+`>> |  | Environment variables applied to the container.
+| [[debezium-operator-schema-reference-containertemplate-resources]]<<debezium-operator-schema-reference-containertemplate-resources, `+resources+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#resourcerequirements-v1-core[`+ResourceRequirements+`] |  | CPU and memory resource requirements.
+| [[debezium-operator-schema-reference-containertemplate-securitycontext]]<<debezium-operator-schema-reference-containertemplate-securitycontext, `+securityContext+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#securitycontext-v1-core[`+SecurityContext+`] |  | Container security context.
 |===
 
-[debezium-operator-schema-reference-sink]
-.Sink schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-debeziumserver]
+==== DebeziumServer Schema Reference
+
+
+.DebeziumServer properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| type| String| | Sink type recognised by Debezium Server.
-| config| ConfigProperties| | Sink configuration properties.
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-debeziumserver-spec]]<<debezium-operator-schema-reference-debeziumserver-spec, `+spec+`>> | <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>> |  | The specification of Debezium Server
+| [[debezium-operator-schema-reference-debeziumserver-status]]<<debezium-operator-schema-reference-debeziumserver-status, `+status+`>> | <<debezium-operator-schema-reference-debeziumserverstatus, `+DebeziumServerStatus+`>> |  | The status of Debezium
 |===
 
-[debezium-operator-schema-reference-debeziumserverspec]
-.DebeziumServerSpec schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-debeziumserverspec]
+==== DebeziumServerSpec Schema Reference
+Used in: <<debezium-operator-schema-reference-debeziumserver, `+DebeziumServer+`>>
+
+
+.DebeziumServerSpec properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| image| String| | Image used for Debezium Server container. This property takes precedence over version.
-| version| String| | Version of Debezium Server to be used.
-| storage| Storage| | Storage configuration to be used by this instance of Debezium Server.
-| sink| Sink| | Sink configuration.
-| source| Source| | Debezium source connector configuration.
-| format| Format| | Message output format configuration.
-| quarkus| Quarkus| | Quarkus configuration passed down to Debezium Server process.
-| runtime| Runtime| | Configuration allowing the modification of various aspects of Debezium Server runtime.
-| transforms| List<Transformation>| | Single Message Transformations employed by this instance of Debezium Server.
-| predicates| Map<String, Predicate>| | Predicates employed by this instance of Debezium Server.
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-debeziumserverspec-image]]<<debezium-operator-schema-reference-debeziumserverspec-image, `+image+`>> | String |  | Image used for Debezium Server container. This property takes precedence over version.
+| [[debezium-operator-schema-reference-debeziumserverspec-version]]<<debezium-operator-schema-reference-debeziumserverspec-version, `+version+`>> | String | same as operator | Version of Debezium Server to be used.
+| [[debezium-operator-schema-reference-debeziumserverspec-storage]]<<debezium-operator-schema-reference-debeziumserverspec-storage, `+storage+`>> | <<debezium-operator-schema-reference-storage, `+Storage+`>> |  | Storage configuration to be used by this instance of Debezium Server.
+| [[debezium-operator-schema-reference-debeziumserverspec-sink]]<<debezium-operator-schema-reference-debeziumserverspec-sink, `+sink+`>> | <<debezium-operator-schema-reference-sink, `+Sink+`>> |  | Sink configuration.
+| [[debezium-operator-schema-reference-debeziumserverspec-source]]<<debezium-operator-schema-reference-debeziumserverspec-source, `+source+`>> | <<debezium-operator-schema-reference-source, `+Source+`>> |  | Debezium source connector configuration.
+| [[debezium-operator-schema-reference-debeziumserverspec-format]]<<debezium-operator-schema-reference-debeziumserverspec-format, `+format+`>> | <<debezium-operator-schema-reference-format, `+Format+`>> |  | Message output format configuration.
+| [[debezium-operator-schema-reference-debeziumserverspec-quarkus]]<<debezium-operator-schema-reference-debeziumserverspec-quarkus, `+quarkus+`>> | <<debezium-operator-schema-reference-quarkus, `+Quarkus+`>> |  | Quarkus configuration passed down to Debezium Server process.
+| [[debezium-operator-schema-reference-debeziumserverspec-runtime]]<<debezium-operator-schema-reference-debeziumserverspec-runtime, `+runtime+`>> | <<debezium-operator-schema-reference-runtime, `+Runtime+`>> |  | Configuration allowing the modification of various aspects of Debezium Server runtime.
+| [[debezium-operator-schema-reference-debeziumserverspec-transforms]]<<debezium-operator-schema-reference-debeziumserverspec-transforms, `+transforms+`>> | <<debezium-operator-schema-reference-transformation, `+List<Transformation>+`>> |  | Single Message Transformations employed by this instance of Debezium Server.
+| [[debezium-operator-schema-reference-debeziumserverspec-predicates]]<<debezium-operator-schema-reference-debeziumserverspec-predicates, `+predicates+`>> | <<debezium-operator-schema-reference-predicate, `+Map<String, Predicate>+`>> |  | Predicates employed by this instance of Debezium Server.
 |===
 
-[debezium-operator-schema-reference-debeziumserverstatus]
-.DebeziumServerStatus schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
-|===
-| Property| Type| Default| Description
+[#debezium-operator-schema-reference-debeziumserverstatus]
+==== DebeziumServerStatus Schema Reference
+Used in: <<debezium-operator-schema-reference-debeziumserver, `+DebeziumServer+`>>
 
-|===
 
-[debezium-operator-schema-reference-quarkus]
-.Quarkus schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+.DebeziumServerStatus properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| config| ConfigProperties| | Quarkus configuration properties.
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-debeziumserverstatus-conditions]]<<debezium-operator-schema-reference-debeziumserverstatus-conditions, `+conditions+`>> | <<debezium-operator-schema-reference-condition, `+List<Condition>+`>> |  | List of status conditions
 |===
 
-[debezium-operator-schema-reference-templates]
-.Templates schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-format]
+==== Format Schema Reference
+Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
+
+
+.Format properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| container| ContainerTemplate| | Container template
-| pod| PodTemplate| | Pod template.
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-format-key]]<<debezium-operator-schema-reference-format-key, `+key+`>> | <<debezium-operator-schema-reference-formattype, `+FormatType+`>> |  | Message key format configuration.
+| [[debezium-operator-schema-reference-format-value]]<<debezium-operator-schema-reference-format-value, `+value+`>> | <<debezium-operator-schema-reference-formattype, `+FormatType+`>> |  | Message value format configuration.
+| [[debezium-operator-schema-reference-format-header]]<<debezium-operator-schema-reference-format-header, `+header+`>> | <<debezium-operator-schema-reference-formattype, `+FormatType+`>> |  | Message header format configuration.
 |===
 
-[debezium-operator-schema-reference-transformation]
-.Transformation schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-formattype]
+==== FormatType Schema Reference
+Used in: <<debezium-operator-schema-reference-format, `+Format+`>>
+
+
+.FormatType properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| type| String| | Fully qualified name of Java class implementing the transformation.
-| predicate| String| | The name of the predicate to be applied to this transformation.
-| negate| boolean| | Determines if the result of the applied predicate will be negated.
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-formattype-type]]<<debezium-operator-schema-reference-formattype-type, `+type+`>> | String | json | Format type recognised by Debezium Server.
+| [[debezium-operator-schema-reference-formattype-config]]<<debezium-operator-schema-reference-formattype-config, `+config+`>> | Map |  | Format configuration properties.
 |===
 
-[debezium-operator-schema-reference-source]
-.Source schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-jmxauthentication]
+==== JmxAuthentication Schema Reference
+Used in: <<debezium-operator-schema-reference-jmxconfig, `+JmxConfig+`>>
+
+
+.JmxAuthentication properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| sourceClass| String| | Fully qualified name of source connector Java class.
-| config| ConfigProperties| | Source connector configuration properties.
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-jmxauthentication-enabled]]<<debezium-operator-schema-reference-jmxauthentication-enabled, `+enabled+`>> | boolean | false | Whether JMX authentication should be enabled for this Debezium Server instance.
+| [[debezium-operator-schema-reference-jmxauthentication-secret]]<<debezium-operator-schema-reference-jmxauthentication-secret, `+secret+`>> | String |  | Secret providing credential files
+| [[debezium-operator-schema-reference-jmxauthentication-accessfile]]<<debezium-operator-schema-reference-jmxauthentication-accessfile, `+accessFile+`>> | String | jmxremote.access | JMX access file name and secret key
+| [[debezium-operator-schema-reference-jmxauthentication-passwordfile]]<<debezium-operator-schema-reference-jmxauthentication-passwordfile, `+passwordFile+`>> | String | jmxremote.password | JMX password file name and secret key
 |===
 
-[debezium-operator-schema-reference-formattype]
-.FormatType schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-jmxconfig]
+==== JmxConfig Schema Reference
+Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
+
+
+.JmxConfig properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| type| String| | Format type recognised by Debezium Server.
-| config| ConfigProperties| | Format configuration properties.
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-jmxconfig-enabled]]<<debezium-operator-schema-reference-jmxconfig-enabled, `+enabled+`>> | boolean | false | Whether JMX should be enabled for this Debezium Server instance.
+| [[debezium-operator-schema-reference-jmxconfig-port]]<<debezium-operator-schema-reference-jmxconfig-port, `+port+`>> | int | 1099 | JMX port.
+| [[debezium-operator-schema-reference-jmxconfig-authentication]]<<debezium-operator-schema-reference-jmxconfig-authentication, `+authentication+`>> | <<debezium-operator-schema-reference-jmxauthentication, `+JmxAuthentication+`>> |  | JMX authentication config.
 |===
 
-[debezium-operator-schema-reference-jmxauthentication]
-.JmxAuthentication schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-metadatatemplate]
+==== MetadataTemplate Schema Reference
+Used in: <<debezium-operator-schema-reference-podtemplate, `+PodTemplate+`>>
+
+
+.MetadataTemplate properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| enabled| boolean| | Whether JMX authentication should be enabled for this Debezium Server instance.
-| secret| String| | Secret providing credential files
-| accessFile| String| | JMX access file name and secret key
-| passwordFile| String| | JMX password file name and secret key
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-metadatatemplate-labels]]<<debezium-operator-schema-reference-metadatatemplate-labels, `+labels+`>> | Map<String, String> |  | Labels added to the Kubernetes resource
+| [[debezium-operator-schema-reference-metadatatemplate-annotations]]<<debezium-operator-schema-reference-metadatatemplate-annotations, `+annotations+`>> | Map<String, String> |  | Annotations added to the Kubernetes resource
 |===
 
-[debezium-operator-schema-reference-runtime]
-.Runtime schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-podtemplate]
+==== PodTemplate Schema Reference
+Used in: <<debezium-operator-schema-reference-templates, `+Templates+`>>
+
+
+.PodTemplate properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| env| List<EnvFromSource>| | Additional environment variables set from ConfigMaps or Secrets in containers.
-| jmx| JmxConfig| | JMX configuration.
-| templates| Templates| | Debezium Server resource templates.
-| volumes| List<Volume>| | Additional volumes mounted to containers.
-| serviceAccount| String| | An existing service account used to run the Debezium Server pod
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-podtemplate-metadata]]<<debezium-operator-schema-reference-podtemplate-metadata, `+metadata+`>> | <<debezium-operator-schema-reference-metadatatemplate, `+MetadataTemplate+`>> |  | Metadata applied to the resource.
+| [[debezium-operator-schema-reference-podtemplate-imagepullsecrets]]<<debezium-operator-schema-reference-podtemplate-imagepullsecrets, `+imagePullSecrets+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#localobjectreference-v1-core[`+List<LocalObjectReference>+`] |  | List of local references to secrets used for pulling any of the images used by this Pod.
+| [[debezium-operator-schema-reference-podtemplate-affinity]]<<debezium-operator-schema-reference-podtemplate-affinity, `+affinity+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#affinity-v1-core[`+Affinity+`] |  | Pod affinity rules
+| [[debezium-operator-schema-reference-podtemplate-securitycontext]]<<debezium-operator-schema-reference-podtemplate-securitycontext, `+securityContext+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#podsecuritycontext-v1-core[`+PodSecurityContext+`] |  | Pod-level security attributes and container settings
 |===
 
-[debezium-operator-schema-reference-format]
-.Format schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-predicate]
+==== Predicate Schema Reference
+Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
+
+
+.Predicate properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| key| FormatType| | Message key format configuration.
-| value| FormatType| | Message value format configuration.
-| header| FormatType| | Message header format configuration.
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-predicate-type]]<<debezium-operator-schema-reference-predicate-type, `+type+`>> | String |  | Fully qualified name of Java class implementing the predicate.
+| [[debezium-operator-schema-reference-predicate-config]]<<debezium-operator-schema-reference-predicate-config, `+config+`>> | Map |  | Predicate configuration properties.
 |===
 
-[debezium-operator-schema-reference-jmxconfig]
-.JmxConfig schema reference
-[cols="20%a,20%s,20%a,40%a",options="header"]
+[#debezium-operator-schema-reference-quarkus]
+==== Quarkus Schema Reference
+Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
+
+
+.Quarkus properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
 |===
-| Property| Type| Default| Description
-| enabled| boolean| | Whether JMX should be enabled for this Debezium Server instance.
-| port| int| | JMX port.
-| authentication| JmxAuthentication| | JMX authentication config.
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-quarkus-config]]<<debezium-operator-schema-reference-quarkus-config, `+config+`>> | Map |  | Quarkus configuration properties.
+|===
+
+[#debezium-operator-schema-reference-runtime]
+==== Runtime Schema Reference
+Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
+
+
+.Runtime properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-runtime-env]]<<debezium-operator-schema-reference-runtime-env, `+env+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#envfromsource-v1-core[`+List<EnvFromSource>+`] |  | Additional environment variables set from ConfigMaps or Secrets in containers.
+| [[debezium-operator-schema-reference-runtime-jmx]]<<debezium-operator-schema-reference-runtime-jmx, `+jmx+`>> | <<debezium-operator-schema-reference-jmxconfig, `+JmxConfig+`>> |  | JMX configuration.
+| [[debezium-operator-schema-reference-runtime-templates]]<<debezium-operator-schema-reference-runtime-templates, `+templates+`>> | <<debezium-operator-schema-reference-templates, `+Templates+`>> |  | Debezium Server resource templates.
+| [[debezium-operator-schema-reference-runtime-volumes]]<<debezium-operator-schema-reference-runtime-volumes, `+volumes+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#volume-v1-core[`+List<Volume>+`] |  | Additional volumes mounted to containers.
+| [[debezium-operator-schema-reference-runtime-serviceaccount]]<<debezium-operator-schema-reference-runtime-serviceaccount, `+serviceAccount+`>> | String |  | An existing service account used to run the Debezium Server pod
+|===
+
+[#debezium-operator-schema-reference-sink]
+==== Sink Schema Reference
+Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
+
+
+.Sink properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-sink-type]]<<debezium-operator-schema-reference-sink-type, `+type+`>> | String |  | Sink type recognised by Debezium Server.
+| [[debezium-operator-schema-reference-sink-config]]<<debezium-operator-schema-reference-sink-config, `+config+`>> | Map |  | Sink configuration properties.
+|===
+
+[#debezium-operator-schema-reference-source]
+==== Source Schema Reference
+Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
+
+
+.Source properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-source-sourceclass]]<<debezium-operator-schema-reference-source-sourceclass, `+sourceClass+`>> | String |  | Fully qualified name of source connector Java class.
+| [[debezium-operator-schema-reference-source-config]]<<debezium-operator-schema-reference-source-config, `+config+`>> | Map |  | Source connector configuration properties.
+|===
+
+[#debezium-operator-schema-reference-storage]
+==== Storage Schema Reference
+Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
+
+
+.Storage properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-storage-type]]<<debezium-operator-schema-reference-storage-type, `+type+`>> | ephemeral,persistent | ephemeral | Storage type.
+| [[debezium-operator-schema-reference-storage-claimname]]<<debezium-operator-schema-reference-storage-claimname, `+claimName+`>> | String |  | Name of persistent volume claim for persistent storage.
+|===
+
+[#debezium-operator-schema-reference-templates]
+==== Templates Schema Reference
+Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
+
+
+.Templates properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-templates-container]]<<debezium-operator-schema-reference-templates-container, `+container+`>> | <<debezium-operator-schema-reference-containertemplate, `+ContainerTemplate+`>> |  | Container template
+| [[debezium-operator-schema-reference-templates-pod]]<<debezium-operator-schema-reference-templates-pod, `+pod+`>> | <<debezium-operator-schema-reference-podtemplate, `+PodTemplate+`>> |  | Pod template.
+|===
+
+[#debezium-operator-schema-reference-transformation]
+==== Transformation Schema Reference
+Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
+
+
+.Transformation properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-transformation-type]]<<debezium-operator-schema-reference-transformation-type, `+type+`>> | String |  | Fully qualified name of Java class implementing the transformation.
+| [[debezium-operator-schema-reference-transformation-predicate]]<<debezium-operator-schema-reference-transformation-predicate, `+predicate+`>> | String |  | The name of the predicate to be applied to this transformation.
+| [[debezium-operator-schema-reference-transformation-negate]]<<debezium-operator-schema-reference-transformation-negate, `+negate+`>> | boolean | false | Determines if the result of the applied predicate will be negated.
 |===
 
 

@@ -955,10 +955,12 @@ spec:
                               labels:
                                 additionalProperties:
                                   type: string
+                                description: Labels added to the Kubernetes resource
                                 type: object
                               annotations:
                                 additionalProperties:
                                   type: string
+                                description: Annotations added to the Kubernetes resource
                                 type: object
                             type: object
                           affinity:
@@ -1386,6 +1388,7 @@ spec:
           status:
             properties:
               conditions:
+                description: List of status conditions
                 items:
                   properties:
                     status:
