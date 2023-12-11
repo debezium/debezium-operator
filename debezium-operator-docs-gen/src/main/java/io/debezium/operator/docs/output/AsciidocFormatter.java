@@ -10,9 +10,8 @@ import java.util.stream.Stream;
 
 import io.debezium.operator.docs.model.Documentation;
 import io.debezium.operator.docs.model.Documentation.TypeDescription;
-import io.debezium.operator.docs.model.FieldDescription;
 
-public final class AsciidocFormatter implements DocumentationFormatter<FieldDescription> {
+public final class AsciidocFormatter implements DocumentationFormatter {
 
     private String identifier(String... names) {
         return Stream.of(names)
@@ -22,7 +21,7 @@ public final class AsciidocFormatter implements DocumentationFormatter<FieldDesc
 
     }
 
-    private String formatDocHeader(Documentation<FieldDescription> documentation) {
+    private String formatDocHeader(Documentation documentation) {
         var template = """
                 [#%s]
                 === %s
@@ -34,7 +33,7 @@ public final class AsciidocFormatter implements DocumentationFormatter<FieldDesc
                 documentation.title());
     }
 
-    private String formatType(Documentation<FieldDescription> documentation, TypeDescription<FieldDescription> type) {
+    private String formatType(Documentation documentation, TypeDescription type) {
         var template = """
                 [#%s]
                 .%s schema reference
@@ -52,7 +51,7 @@ public final class AsciidocFormatter implements DocumentationFormatter<FieldDesc
                 formatFields(documentation, type));
     }
 
-    private String formatField(Documentation<FieldDescription> documentation, TypeDescription<FieldDescription> type, FieldDescription field) {
+    private String formatField(Documentation documentation, TypeDescription type, Documentation.FieldDescription field) {
         var template = "| %s | %s | %s | %s";
 
         return template.formatted(
@@ -62,7 +61,7 @@ public final class AsciidocFormatter implements DocumentationFormatter<FieldDesc
                 field.description());
     }
 
-    private String formatFieldName(Documentation<FieldDescription> documentation, TypeDescription<FieldDescription> type, FieldDescription field) {
+    private String formatFieldName(Documentation documentation, TypeDescription type, Documentation.FieldDescription field) {
         var template = "[[%s]]<<%s, `+%s+`>>";
 
         return template.formatted(
@@ -71,7 +70,7 @@ public final class AsciidocFormatter implements DocumentationFormatter<FieldDesc
                 field.name());
     }
 
-    private String formatFieldType(Documentation<FieldDescription> documentation, TypeDescription<FieldDescription> type, FieldDescription field) {
+    private String formatFieldType(Documentation documentation, TypeDescription type, Documentation.FieldDescription field) {
         if (field.typeRef() != null) {
             var template = "<<%s, `+%s+`>>";
 
@@ -91,7 +90,7 @@ public final class AsciidocFormatter implements DocumentationFormatter<FieldDesc
         return field.type();
     }
 
-    private String formatFields(Documentation<FieldDescription> documentation, TypeDescription<FieldDescription> type) {
+    private String formatFields(Documentation documentation, TypeDescription type) {
         return type.fields()
                 .stream()
                 .map(f -> formatField(documentation, type, f))
@@ -99,7 +98,7 @@ public final class AsciidocFormatter implements DocumentationFormatter<FieldDesc
     }
 
     @Override
-    public String formatted(Documentation<FieldDescription> documentation) {
+    public String formatted(Documentation documentation) {
         var docs = new StringBuilder();
 
         docs.append(formatDocHeader(documentation));

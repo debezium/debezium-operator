@@ -7,6 +7,6 @@ package io.debezium.operator.docs.output;
 
 import io.debezium.operator.docs.model.Documentation;
 
-public interface DocumentationFormatter<T> {
-    String formatted(Documentation<T> documentation);
+public interface DocumentationFormatter {
+    String formatted(Documentation documentation);
 }
