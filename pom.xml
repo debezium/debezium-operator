@@ -55,6 +55,7 @@
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.4.3</quarkus.platform.version>
+        <quarkus.operator.sdk.version>6.3.5</quarkus.operator.sdk.version>
 
         <!-- Operator and Image configuration -->
         <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
@@ -103,9 +104,9 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>${quarkus.platform.group-id}</groupId>
+                <groupId>io.quarkiverse.operatorsdk</groupId>
                 <artifactId>quarkus-operator-sdk-bom</artifactId>
-                <version>${quarkus.platform.version}</version>
+                <version>${quarkus.operator.sdk.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
