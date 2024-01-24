@@ -39,6 +39,7 @@
         <!-- Debezium version -->
         <version.debezium>${project.version}</version.debezium>
         <version.debezium.qualifier.prefix>-</version.debezium.qualifier.prefix>
+        <!--suppress UnresolvedMavenProperty -->
         <version.debezium.parsed>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</version.debezium.parsed>
 
         <!-- Plugin versions -->
@@ -198,6 +199,7 @@
                 <quarkus.container-image.tag>${project.parent.version}</quarkus.container-image.tag>
                 <quarkus.operator-sdk.bundle.channels>${olm.bundle.channels}</quarkus.operator-sdk.bundle.channels>
                 <olm.bundle.version>${version.debezium.parsed}</olm.bundle.version>
+                <!--suppress UnresolvedMavenProperty -->
                 <olm.bundle.channels>debezium-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.x</olm.bundle.channels>
             </properties>
         </profile>
