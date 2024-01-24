@@ -29,6 +29,8 @@ import io.javaoperatorsdk.operator.api.reconciler.Reconciler;
 import io.javaoperatorsdk.operator.api.reconciler.UpdateControl;
 import io.javaoperatorsdk.operator.api.reconciler.dependent.Dependent;
 import io.quarkiverse.operatorsdk.annotations.CSVMetadata;
+import io.quarkiverse.operatorsdk.annotations.RBACRule;
+import io.quarkiverse.operatorsdk.annotations.RBACVerbs;
 import io.quarkus.logging.Log;
 
 @ControllerConfiguration(namespaces = Constants.WATCH_CURRENT_NAMESPACE, name = "debeziumserver", dependents = {
@@ -46,6 +48,7 @@ import io.quarkus.logging.Log;
         @Dependent(name = "jmx-service", type = JmxServiceDependent.class, dependsOn = "deployment", reconcilePrecondition = JmxEnabled.class)
 })
 @CSVMetadata(name = OperatorConstants.CSV_INTERNAL_BUNDLE_NAME)
+@RBACRule(verbs = { RBACVerbs.GET, RBACVerbs.LIST, RBACVerbs.WATCH }, apiGroups = "", resources = "secrets")
 public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
 
     @Override
