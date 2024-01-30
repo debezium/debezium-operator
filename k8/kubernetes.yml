@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   annotations:
-    app.quarkus.io/vcs-uri: git@github.com:jcechace/debezium-operator.git
+    app.quarkus.io/vcs-uri: https://github.com/debezium/debezium-operator.git
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -126,7 +126,7 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: debezium-operator
-    app.kubernetes.io/version: 2.5.0.Final
+    app.kubernetes.io/version: 2.5.0-SNAPSHOT
   name: debezium-operator-view
 roleRef:
   kind: ClusterRole
@@ -140,7 +140,7 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    app.quarkus.io/vcs-uri: git@github.com:jcechace/debezium-operator.git
+    app.quarkus.io/vcs-uri: https://github.com/debezium/debezium-operator.git
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -159,7 +159,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    app.quarkus.io/vcs-uri: git@github.com:jcechace/debezium-operator.git
+    app.quarkus.io/vcs-uri: https://github.com/debezium/debezium-operator.git
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -172,7 +172,7 @@ spec:
   template:
     metadata:
       annotations:
-        app.quarkus.io/vcs-uri: git@github.com:jcechace/debezium-operator.git
+        app.quarkus.io/vcs-uri: https://github.com/debezium/debezium-operator.git
       labels:
         app.kubernetes.io/managed-by: quarkus
         app.kubernetes.io/name: debezium-operator
@@ -183,7 +183,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          image: quay.io/debezium/operator:2.5
+          image: quay.io/debezium/operator:2.5.0-SNAPSHOT
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
