@@ -21,6 +21,7 @@
         <dist.k8.target.dir>${dist.root.dir}/k8</dist.k8.target.dir>
         <dist.api.docs.source.dir>${dist.api.build.dir}/docs</dist.api.docs.source.dir>
         <dist.api.docs.target.dir>${dist.root.dir}/docs</dist.api.docs.target.dir>
+        <dist.helm.source.dir>${dist.core.build.dir}/helm</dist.helm.source.dir>
     </properties>
 
 
@@ -166,6 +167,19 @@
                                     <appendAssemblyId>true</appendAssemblyId>
                                     <descriptors>
                                         <descriptor>src/main/assemblies/olm.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>helm-chart-package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <appendAssemblyId>true</appendAssemblyId>
+                                    <descriptors>
+                                        <descriptor>src/main/assemblies/helm.xml</descriptor>
                                     </descriptors>
                                 </configuration>
                             </execution>

@@ -64,6 +64,8 @@
         <olm.bundle.package.name>debezium-operator</olm.bundle.package.name>
         <olm.bundle.repository>${project.scm.url}</olm.bundle.repository>
 
+        <!-- Helm chart configuration -->
+        <helm.chart.dir.name>debezium-operator-${version.debezium.parsed}</helm.chart.dir.name>
         <!-- Quarkus configuration and versions-->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
@@ -82,6 +84,7 @@
         <quarkus.container-image.tag>nightly</quarkus.container-image.tag>
         <quarkus.kubernetes.name>debezium-operator</quarkus.kubernetes.name>
         <quarkus.kubernetes.idempotent>true</quarkus.kubernetes.idempotent>
+        <quarkus.operator-sdk.helm.enabled>true</quarkus.operator-sdk.helm.enabled>
 
         <!-- Formatting configuration -->
         <format.imports.source.compliance>17</format.imports.source.compliance>
