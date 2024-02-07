@@ -38,9 +38,10 @@
 
         <!-- Debezium version -->
         <version.debezium>${project.version}</version.debezium>
+        <version.debezium.qualifier>nightly</version.debezium.qualifier>
         <version.debezium.qualifier.prefix>-</version.debezium.qualifier.prefix>
         <!--suppress UnresolvedMavenProperty -->
-        <version.debezium.parsed>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</version.debezium.parsed>
+        <version.debezium.parsed>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${version.debezium.qualifier}</version.debezium.parsed>
 
         <!-- Plugin versions -->
         <version.buildhelper.plugin>3.4.0</version.buildhelper.plugin>
@@ -56,7 +57,7 @@
         <!-- OLM configuration -->
         <olm.bundle.name>debezium-operator.v${olm.bundle.version}</olm.bundle.name>
         <olm.bundle.channels>alpha</olm.bundle.channels>
-        <olm.bundle.version>${version.debezium.parsed}-nightly</olm.bundle.version>
+        <olm.bundle.version>${version.debezium.parsed}</olm.bundle.version>
         <olm.bundle.replaces />
         <olm.bundle.containerImage>${quarkus.container-image.registry}/${quarkus.container-image.group}/${quarkus.container-image.name}:${quarkus.container-image.tag}</olm.bundle.containerImage>
         <olm.bundle.createdAt>${maven.build.timestamp}</olm.bundle.createdAt>
@@ -68,6 +69,7 @@
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.6.5</quarkus.platform.version>
         <quarkus.operator.sdk.version>6.5.1</quarkus.operator.sdk.version>
+        <quarkus.application.version>${version.debezium.parsed}</quarkus.application.version>
 
         <!-- Operator and Image configuration -->
         <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
@@ -195,10 +197,11 @@
         <profile>
             <id>stable</id>
             <properties>
+                <!--suppress UnresolvedMavenProperty -->
+                <version.debezium.qualifier>${parsedVersion.qualifier}</version.debezium.qualifier>
                 <version.debezium.qualifier.prefix>.</version.debezium.qualifier.prefix>
                 <quarkus.container-image.tag>${project.parent.version}</quarkus.container-image.tag>
                 <quarkus.operator-sdk.bundle.channels>${olm.bundle.channels}</quarkus.operator-sdk.bundle.channels>
-                <olm.bundle.version>${version.debezium.parsed}</olm.bundle.version>
                 <!--suppress UnresolvedMavenProperty -->
                 <olm.bundle.channels>debezium-${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.x</olm.bundle.channels>
             </properties>
