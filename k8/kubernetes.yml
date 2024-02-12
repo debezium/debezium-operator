@@ -2,9 +2,11 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  annotations:
+    app.quarkus.io/vcs-uri: git@github.com:jcechace/debezium-operator.git
   labels:
-    app.kubernetes.io/managed-by: quarkus
     app.kubernetes.io/name: debezium-operator
+    app.kubernetes.io/managed-by: quarkus
   name: debezium-operator
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -122,6 +124,9 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  labels:
+    app.kubernetes.io/name: debezium-operator
+    app.kubernetes.io/version: 2.6.0-nightly
   name: debezium-operator-view
 roleRef:
   kind: ClusterRole
@@ -134,6 +139,8 @@ subjects:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    app.quarkus.io/vcs-uri: git@github.com:jcechace/debezium-operator.git
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -151,9 +158,11 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    app.quarkus.io/vcs-uri: git@github.com:jcechace/debezium-operator.git
   labels:
-    app.kubernetes.io/managed-by: quarkus
     app.kubernetes.io/name: debezium-operator
+    app.kubernetes.io/managed-by: quarkus
   name: debezium-operator
 spec:
   replicas: 1
@@ -162,6 +171,8 @@ spec:
       app.kubernetes.io/name: debezium-operator
   template:
     metadata:
+      annotations:
+        app.quarkus.io/vcs-uri: git@github.com:jcechace/debezium-operator.git
       labels:
         app.kubernetes.io/managed-by: quarkus
         app.kubernetes.io/name: debezium-operator
