@@ -40,6 +40,7 @@ Used in: <<debezium-operator-schema-reference-templates, `+Templates+`>>
 | [[debezium-operator-schema-reference-containertemplate-env]]<<debezium-operator-schema-reference-containertemplate-env, `+env+`>> | <<debezium-operator-schema-reference-containerenvvar, `+List<ContainerEnvVar>+`>> |  | Environment variables applied to the container.
 | [[debezium-operator-schema-reference-containertemplate-resources]]<<debezium-operator-schema-reference-containertemplate-resources, `+resources+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#resourcerequirements-v1-core[`+ResourceRequirements+`] |  | CPU and memory resource requirements.
 | [[debezium-operator-schema-reference-containertemplate-securitycontext]]<<debezium-operator-schema-reference-containertemplate-securitycontext, `+securityContext+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#securitycontext-v1-core[`+SecurityContext+`] |  | Container security context.
+| [[debezium-operator-schema-reference-containertemplate-probes]]<<debezium-operator-schema-reference-containertemplate-probes, `+probes+`>> | <<debezium-operator-schema-reference-probes, `+Probes+`>> |  | Container probes configuration.
 |===
 
 [#debezium-operator-schema-reference-debeziumserver]
@@ -182,6 +183,34 @@ Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServ
 | Property | Type | Default | Description
 | [[debezium-operator-schema-reference-predicate-type]]<<debezium-operator-schema-reference-predicate-type, `+type+`>> | String |  | Fully qualified name of Java class implementing the predicate.
 | [[debezium-operator-schema-reference-predicate-config]]<<debezium-operator-schema-reference-predicate-config, `+config+`>> | Map |  | Predicate configuration properties.
+|===
+
+[#debezium-operator-schema-reference-probe]
+==== Probe Schema Reference
+Used in: <<debezium-operator-schema-reference-probes, `+Probes+`>>
+
+
+.Probe properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-probe-initialdelayseconds]]<<debezium-operator-schema-reference-probe-initialdelayseconds, `+initialDelaySeconds+`>> | int | 5 | Number of seconds after the container has started before probes are initiated.
+| [[debezium-operator-schema-reference-probe-periodseconds]]<<debezium-operator-schema-reference-probe-periodseconds, `+periodSeconds+`>> | int | 10 | How often (in seconds) to perform the probe.
+| [[debezium-operator-schema-reference-probe-timeoutseconds]]<<debezium-operator-schema-reference-probe-timeoutseconds, `+timeoutSeconds+`>> | int | 10 | Number of seconds after which the probe times out.
+| [[debezium-operator-schema-reference-probe-failurethreshold]]<<debezium-operator-schema-reference-probe-failurethreshold, `+failureThreshold+`>> | int | 3 | Number of failures in a row before the overall check has failed.
+|===
+
+[#debezium-operator-schema-reference-probes]
+==== Probes Schema Reference
+Used in: <<debezium-operator-schema-reference-containertemplate, `+ContainerTemplate+`>>
+
+
+.Probes properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-probes-readiness]]<<debezium-operator-schema-reference-probes-readiness, `+readiness+`>> | <<debezium-operator-schema-reference-probe, `+Probe+`>> |  | Readiness probe configuration applied to the container.
+| [[debezium-operator-schema-reference-probes-liveness]]<<debezium-operator-schema-reference-probes-liveness, `+liveness+`>> | <<debezium-operator-schema-reference-probe, `+Probe+`>> |  | Liveness probe configuration applied to the container.
 |===
 
 [#debezium-operator-schema-reference-quarkus]

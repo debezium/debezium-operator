@@ -188,6 +188,52 @@ spec:
                                   type: string
                               type: object
                             type: array
+                          probes:
+                            description: Container probes configuration.
+                            properties:
+                              liveness:
+                                description: Liveness probe configuration applied
+                                  to the container.
+                                properties:
+                                  failureThreshold:
+                                    description: Number of failures in a row before
+                                      the overall check has failed.
+                                    type: integer
+                                  initialDelaySeconds:
+                                    description: Number of seconds after the container
+                                      has started before probes are initiated.
+                                    type: integer
+                                  periodSeconds:
+                                    description: How often (in seconds) to perform
+                                      the probe.
+                                    type: integer
+                                  timeoutSeconds:
+                                    description: Number of seconds after which the
+                                      probe times out.
+                                    type: integer
+                                type: object
+                              readiness:
+                                description: Readiness probe configuration applied
+                                  to the container.
+                                properties:
+                                  failureThreshold:
+                                    description: Number of failures in a row before
+                                      the overall check has failed.
+                                    type: integer
+                                  initialDelaySeconds:
+                                    description: Number of seconds after the container
+                                      has started before probes are initiated.
+                                    type: integer
+                                  periodSeconds:
+                                    description: How often (in seconds) to perform
+                                      the probe.
+                                    type: integer
+                                  timeoutSeconds:
+                                    description: Number of seconds after which the
+                                      probe times out.
+                                    type: integer
+                                type: object
+                            type: object
                           resources:
                             description: CPU and memory resource requirements.
                             properties:
