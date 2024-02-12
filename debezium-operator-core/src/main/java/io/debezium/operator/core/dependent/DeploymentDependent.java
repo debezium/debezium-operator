@@ -237,18 +237,28 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var template = runtime.getTemplates().getContainer();
         var jmx = primary.getSpec().getRuntime().getJmx();
         var probePort = quarkus.getConfig().getProps().getOrDefault("http.port", 8080);
+        var livenessProbe = template.getProbes().getLiveness();
+        var readinessProbe = template.getProbes().getReadiness();
         var image = getTaggedImage(primary);
 
         var container = new ContainerBuilder()
                 .withName("server")
                 .withImage(image)
                 .withLivenessProbe(new ProbeBuilder()
+                        .withFailureThreshold(livenessProbe.getFailureThreshold())
+                        .withInitialDelaySeconds(livenessProbe.getInitialDelaySeconds())
+                        .withTimeoutSeconds(livenessProbe.getTimeoutSeconds())
+                        .withPeriodSeconds(livenessProbe.getPeriodSeconds())
                         .withHttpGet(new HTTPGetActionBuilder()
                                 .withPath("/q/health/live")
                                 .withPort(new IntOrString(probePort))
                                 .build())
                         .build())
                 .withReadinessProbe(new ProbeBuilder()
+                        .withFailureThreshold(readinessProbe.getFailureThreshold())
+                        .withInitialDelaySeconds(readinessProbe.getInitialDelaySeconds())
+                        .withTimeoutSeconds(readinessProbe.getTimeoutSeconds())
+                        .withPeriodSeconds(readinessProbe.getPeriodSeconds())
                         .withHttpGet(new HTTPGetActionBuilder()
                                 .withPath("/q/health/ready")
                                 .withPort(new IntOrString(probePort))
