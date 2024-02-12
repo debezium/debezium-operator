@@ -16,7 +16,7 @@ import io.debezium.operator.docs.annotations.Documented;
 import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.api.model.SecurityContext;
 
-@JsonPropertyOrder({ "resources", "securityContext" })
+@JsonPropertyOrder({ "resources", "securityContext", "probes" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Documented
 public class ContainerTemplate implements Serializable {
@@ -34,6 +34,10 @@ public class ContainerTemplate implements Serializable {
     @Documented.Field(k8Ref = "securitycontext-v1-core")
     private SecurityContext securityContext;
 
+    @JsonPropertyDescription("Container probes configuration.")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Probes probes = new Probes();
+
     public SecurityContext getSecurityContext() {
         return securityContext;
     }
@@ -48,6 +52,14 @@ public class ContainerTemplate implements Serializable {
 
     public void setResources(ResourceRequirements resources) {
         this.resources = resources;
+    }
+
+    public Probes getProbes() {
+        return probes;
+    }
+
+    public void setProbes(Probes probes) {
+        this.probes = probes;
     }
 
     public List<ContainerEnvVar> getEnv() {
