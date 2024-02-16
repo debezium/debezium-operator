@@ -3,10 +3,9 @@
  *
  * Licensed under the Apache Software License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package io.debezium.operator.api.model.templates;
+package io.debezium.operator.api.model.runtime.templates;
 
 import java.io.Serializable;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -22,8 +21,6 @@ import io.fabric8.kubernetes.api.model.SecurityContext;
 public class ContainerTemplate implements Serializable {
     public static final long serialVersionUID = 1L;
 
-    @JsonPropertyDescription("Environment variables applied to the container.")
-    private List<ContainerEnvVar> env = List.of();
     @JsonPropertyDescription("CPU and memory resource requirements.")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Documented.Field(k8Ref = "resourcerequirements-v1-core")
@@ -60,13 +57,5 @@ public class ContainerTemplate implements Serializable {
 
     public void setProbes(Probes probes) {
         this.probes = probes;
-    }
-
-    public List<ContainerEnvVar> getEnv() {
-        return env;
-    }
-
-    public void setEnv(List<ContainerEnvVar> env) {
-        this.env = env;
     }
 }

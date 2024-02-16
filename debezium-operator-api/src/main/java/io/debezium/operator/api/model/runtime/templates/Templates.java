@@ -3,16 +3,16 @@
  *
  * Licensed under the Apache Software License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package io.debezium.operator.api.model;
+package io.debezium.operator.api.model.runtime.templates;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.debezium.operator.api.model.templates.ContainerTemplate;
-import io.debezium.operator.api.model.templates.PodTemplate;
 import io.debezium.operator.docs.annotations.Documented;
+import io.fabric8.kubernetes.api.model.PersistentVolumeClaimSpec;
 
-@JsonPropertyOrder({ "container", "pod" })
+@JsonPropertyOrder({ "container", "pod", "volumeClaim" })
 @Documented
 public class Templates {
 
@@ -20,6 +20,11 @@ public class Templates {
     private ContainerTemplate container;
     @JsonPropertyDescription("Pod template.")
     private PodTemplate pod;
+
+    @JsonPropertyDescription("PVC template for data volume if no explicit claim is specified.")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Documented.Field(k8Ref = "persistentvolumeclaimspec-v1-core")
+    private PersistentVolumeClaimSpec volumeClaim;
 
     public Templates() {
         this.pod = new PodTemplate();
@@ -40,5 +45,13 @@ public class Templates {
 
     public void setContainer(ContainerTemplate container) {
         this.container = container;
+    }
+
+    public PersistentVolumeClaimSpec getVolumeClaim() {
+        return volumeClaim;
+    }
+
+    public void setVolumeClaim(PersistentVolumeClaimSpec volumeClaim) {
+        this.volumeClaim = volumeClaim;
     }
 }

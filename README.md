@@ -33,20 +33,22 @@ The snippet bellow provides a rough outline of the `DebeziumServer` spec. See th
 spec:
   version: String
   image: String # exclusive with version
-  storage:
-    type: persistent | ephemeral  # enum
-    claimName: String # only valid and required for "persistent" type
   runtime:
-    env: EnvFromSource array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#envfromsource-v1-core
-    volumes: Volume array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#volume-v1-core
+    environment:
+      vars:
+        - name: String
+          value: String
+      from: EnvFromSource array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#envfromsource-v1-core
+    storage:
+      data:
+        type: persistent | ephemeral  # enum
+        claimName: String # only valid and required for "persistent" type
+      external: Volume array # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#volume-v1-core
     jmx:
       enabled: boolean
       port: int # defaults to 1099
     templates:
       container:
-        env:
-          - name: String
-            value: String
         resources: # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#resourcerequirements-v1-core
         securityContext: # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#securitycontext-v1-core
       pod:
