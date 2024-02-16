@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache Software License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package io.debezium.operator.api.model.templates;
+package io.debezium.operator.api.model.runtime.templates;
 
 import java.io.Serializable;
 import java.util.HashMap;

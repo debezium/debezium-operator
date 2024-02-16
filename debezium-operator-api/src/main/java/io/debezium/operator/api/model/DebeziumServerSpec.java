@@ -10,13 +10,16 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.api.model.runtime.Runtime;
 import io.debezium.operator.docs.annotations.Documented;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Documented
+@JsonPropertyOrder({ "image", "version", "image", "quarkus", "runtime", "format", "transforms", "predicates", "source", "sink" })
 public class DebeziumServerSpec implements ConfigMappable {
 
     @JsonPropertyDescription("Image used for Debezium Server container. This property takes precedence over version.")
@@ -25,9 +28,6 @@ public class DebeziumServerSpec implements ConfigMappable {
     @JsonPropertyDescription("Version of Debezium Server to be used.")
     @Documented.Field(defaultValue = "same as operator")
     private String version;
-
-    @JsonPropertyDescription("Storage configuration to be used by this instance of Debezium Server.")
-    private Storage storage;
 
     @JsonPropertyDescription("Sink configuration.")
     private Sink sink;
@@ -53,7 +53,6 @@ public class DebeziumServerSpec implements ConfigMappable {
     private Map<String, Predicate> predicates;
 
     public DebeziumServerSpec() {
-        this.storage = new Storage();
         this.sink = new Sink();
         this.source = new Source();
         this.format = new Format();
@@ -77,14 +76,6 @@ public class DebeziumServerSpec implements ConfigMappable {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public Storage getStorage() {
-        return storage;
-    }
-
-    public void setStorage(Storage storage) {
-        this.storage = storage;
     }
 
     public Sink getSink() {

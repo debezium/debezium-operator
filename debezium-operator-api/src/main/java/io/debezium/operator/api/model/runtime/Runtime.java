@@ -3,26 +3,25 @@
  *
  * Licensed under the Apache Software License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package io.debezium.operator.api.model;
-
-import java.util.ArrayList;
-import java.util.List;
+package io.debezium.operator.api.model.runtime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.debezium.operator.api.model.runtime.jmx.JmxConfig;
+import io.debezium.operator.api.model.runtime.storage.RuntimeStorage;
+import io.debezium.operator.api.model.runtime.templates.Templates;
 import io.debezium.operator.docs.annotations.Documented;
-import io.fabric8.kubernetes.api.model.EnvFromSource;
-import io.fabric8.kubernetes.api.model.Volume;
 
-@JsonPropertyOrder({ "env", "jmx", "templates", "volumes" })
+@JsonPropertyOrder({ "storage", "environment", "jmx", "templates" })
 @Documented
 public class Runtime {
+    @JsonPropertyDescription("Storage configuration")
+    private RuntimeStorage storage;
 
-    @JsonPropertyDescription("Additional environment variables set from ConfigMaps or Secrets in containers.")
-    @Documented.Field(k8Ref = "envfromsource-v1-core")
-    private List<EnvFromSource> env;
+    @JsonPropertyDescription("Additional environment variables used by this Debezium Server.")
+    private RuntimeEnvironment environment;
 
     @JsonPropertyDescription("JMX configuration.")
     private JmxConfig jmx;
@@ -30,35 +29,15 @@ public class Runtime {
     @JsonPropertyDescription("Debezium Server resource templates.")
     private Templates templates;
 
-    @JsonPropertyDescription("Additional volumes mounted to containers.")
-    @Documented.Field(k8Ref = "volume-v1-core")
-    private List<Volume> volumes;
-
     @JsonPropertyDescription("An existing service account used to run the Debezium Server pod")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String serviceAccount;
 
     public Runtime() {
-        this.env = new ArrayList<>();
+        this.storage = new RuntimeStorage();
+        this.environment = new RuntimeEnvironment();
         this.jmx = new JmxConfig();
-        this.volumes = new ArrayList<>();
         this.templates = new Templates();
-    }
-
-    public List<EnvFromSource> getEnv() {
-        return env;
-    }
-
-    public void setEnv(List<EnvFromSource> env) {
-        this.env = env;
-    }
-
-    public List<Volume> getVolumes() {
-        return volumes;
-    }
-
-    public void setVolumes(List<Volume> volumes) {
-        this.volumes = volumes;
     }
 
     public Templates getTemplates() {
@@ -83,5 +62,21 @@ public class Runtime {
 
     public void setServiceAccount(String serviceAccount) {
         this.serviceAccount = serviceAccount;
+    }
+
+    public RuntimeStorage getStorage() {
+        return storage;
+    }
+
+    public void setStorage(RuntimeStorage storage) {
+        this.storage = storage;
+    }
+
+    public RuntimeEnvironment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(RuntimeEnvironment environment) {
+        this.environment = environment;
     }
 }

@@ -3,7 +3,7 @@
  *
  * Licensed under the Apache Software License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package io.debezium.operator.api.model;
+package io.debezium.operator.api.model.runtime.storage;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.debezium.operator.docs.annotations.Documented;
 
 @Documented
-public class Storage {
+public class DataStorage {
 
     @JsonPropertyDescription("Storage type.")
     @JsonProperty(defaultValue = "ephemeral")
@@ -20,7 +20,7 @@ public class Storage {
     @JsonPropertyDescription("Name of persistent volume claim for persistent storage.")
     private String claimName;
 
-    public Storage() {
+    public DataStorage() {
         this.type = StorageType.EPHEMERAL;
     }
 
