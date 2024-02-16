@@ -31,18 +31,6 @@ rules:
   - apiGroups:
       - ""
     resources:
-      - serviceaccounts
-    verbs:
-      - get
-      - list
-      - watch
-      - patch
-      - update
-      - delete
-      - create
-  - apiGroups:
-      - ""
-    resources:
       - configmaps
     verbs:
       - get
@@ -56,18 +44,6 @@ rules:
       - rbac.authorization.k8s.io
     resources:
       - rolebindings
-    verbs:
-      - get
-      - list
-      - watch
-      - patch
-      - update
-      - delete
-      - create
-  - apiGroups:
-      - rbac.authorization.k8s.io
-    resources:
-      - roles
     verbs:
       - get
       - list
@@ -92,6 +68,42 @@ rules:
       - ""
     resources:
       - services
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - delete
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - persistentvolumeclaims
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - delete
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - serviceaccounts
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - delete
+      - create
+  - apiGroups:
+      - rbac.authorization.k8s.io
+    resources:
+      - roles
     verbs:
       - get
       - list
