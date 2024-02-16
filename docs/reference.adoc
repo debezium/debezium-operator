@@ -17,7 +17,7 @@ Used in: <<debezium-operator-schema-reference-debeziumserverstatus, `+DebeziumSe
 
 [#debezium-operator-schema-reference-containerenvvar]
 ==== ContainerEnvVar Schema Reference
-Used in: <<debezium-operator-schema-reference-containertemplate, `+ContainerTemplate+`>>
+Used in: <<debezium-operator-schema-reference-runtimeenvironment, `+RuntimeEnvironment+`>>
 
 
 .ContainerEnvVar properties
@@ -37,10 +37,22 @@ Used in: <<debezium-operator-schema-reference-templates, `+Templates+`>>
 [cols="20%a,25%s,15%a,40%a",options="header"]
 |===
 | Property | Type | Default | Description
-| [[debezium-operator-schema-reference-containertemplate-env]]<<debezium-operator-schema-reference-containertemplate-env, `+env+`>> | <<debezium-operator-schema-reference-containerenvvar, `+List<ContainerEnvVar>+`>> |  | Environment variables applied to the container.
 | [[debezium-operator-schema-reference-containertemplate-resources]]<<debezium-operator-schema-reference-containertemplate-resources, `+resources+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#resourcerequirements-v1-core[`+ResourceRequirements+`] |  | CPU and memory resource requirements.
 | [[debezium-operator-schema-reference-containertemplate-securitycontext]]<<debezium-operator-schema-reference-containertemplate-securitycontext, `+securityContext+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#securitycontext-v1-core[`+SecurityContext+`] |  | Container security context.
 | [[debezium-operator-schema-reference-containertemplate-probes]]<<debezium-operator-schema-reference-containertemplate-probes, `+probes+`>> | <<debezium-operator-schema-reference-probes, `+Probes+`>> |  | Container probes configuration.
+|===
+
+[#debezium-operator-schema-reference-datastorage]
+==== DataStorage Schema Reference
+Used in: <<debezium-operator-schema-reference-runtimestorage, `+RuntimeStorage+`>>
+
+
+.DataStorage properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-datastorage-type]]<<debezium-operator-schema-reference-datastorage-type, `+type+`>> | ephemeral,persistent | ephemeral | Storage type.
+| [[debezium-operator-schema-reference-datastorage-claimname]]<<debezium-operator-schema-reference-datastorage-claimname, `+claimName+`>> | String |  | Name of persistent volume claim for persistent storage.
 |===
 
 [#debezium-operator-schema-reference-debeziumserver]
@@ -66,7 +78,6 @@ Used in: <<debezium-operator-schema-reference-debeziumserver, `+DebeziumServer+`
 | Property | Type | Default | Description
 | [[debezium-operator-schema-reference-debeziumserverspec-image]]<<debezium-operator-schema-reference-debeziumserverspec-image, `+image+`>> | String |  | Image used for Debezium Server container. This property takes precedence over version.
 | [[debezium-operator-schema-reference-debeziumserverspec-version]]<<debezium-operator-schema-reference-debeziumserverspec-version, `+version+`>> | String | same as operator | Version of Debezium Server to be used.
-| [[debezium-operator-schema-reference-debeziumserverspec-storage]]<<debezium-operator-schema-reference-debeziumserverspec-storage, `+storage+`>> | <<debezium-operator-schema-reference-storage, `+Storage+`>> |  | Storage configuration to be used by this instance of Debezium Server.
 | [[debezium-operator-schema-reference-debeziumserverspec-sink]]<<debezium-operator-schema-reference-debeziumserverspec-sink, `+sink+`>> | <<debezium-operator-schema-reference-sink, `+Sink+`>> |  | Sink configuration.
 | [[debezium-operator-schema-reference-debeziumserverspec-source]]<<debezium-operator-schema-reference-debeziumserverspec-source, `+source+`>> | <<debezium-operator-schema-reference-source, `+Source+`>> |  | Debezium source connector configuration.
 | [[debezium-operator-schema-reference-debeziumserverspec-format]]<<debezium-operator-schema-reference-debeziumserverspec-format, `+format+`>> | <<debezium-operator-schema-reference-format, `+Format+`>> |  | Message output format configuration.
@@ -234,11 +245,37 @@ Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServ
 [cols="20%a,25%s,15%a,40%a",options="header"]
 |===
 | Property | Type | Default | Description
-| [[debezium-operator-schema-reference-runtime-env]]<<debezium-operator-schema-reference-runtime-env, `+env+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#envfromsource-v1-core[`+List<EnvFromSource>+`] |  | Additional environment variables set from ConfigMaps or Secrets in containers.
+| [[debezium-operator-schema-reference-runtime-storage]]<<debezium-operator-schema-reference-runtime-storage, `+storage+`>> | <<debezium-operator-schema-reference-runtimestorage, `+RuntimeStorage+`>> |  | Storage configuration
+| [[debezium-operator-schema-reference-runtime-environment]]<<debezium-operator-schema-reference-runtime-environment, `+environment+`>> | <<debezium-operator-schema-reference-runtimeenvironment, `+RuntimeEnvironment+`>> |  | Additional environment variables used by this Debezium Server.
 | [[debezium-operator-schema-reference-runtime-jmx]]<<debezium-operator-schema-reference-runtime-jmx, `+jmx+`>> | <<debezium-operator-schema-reference-jmxconfig, `+JmxConfig+`>> |  | JMX configuration.
 | [[debezium-operator-schema-reference-runtime-templates]]<<debezium-operator-schema-reference-runtime-templates, `+templates+`>> | <<debezium-operator-schema-reference-templates, `+Templates+`>> |  | Debezium Server resource templates.
-| [[debezium-operator-schema-reference-runtime-volumes]]<<debezium-operator-schema-reference-runtime-volumes, `+volumes+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#volume-v1-core[`+List<Volume>+`] |  | Additional volumes mounted to containers.
 | [[debezium-operator-schema-reference-runtime-serviceaccount]]<<debezium-operator-schema-reference-runtime-serviceaccount, `+serviceAccount+`>> | String |  | An existing service account used to run the Debezium Server pod
+|===
+
+[#debezium-operator-schema-reference-runtimeenvironment]
+==== RuntimeEnvironment Schema Reference
+Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
+
+
+.RuntimeEnvironment properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-runtimeenvironment-vars]]<<debezium-operator-schema-reference-runtimeenvironment-vars, `+vars+`>> | <<debezium-operator-schema-reference-containerenvvar, `+List<ContainerEnvVar>+`>> |  | Environment variables applied to the container.
+| [[debezium-operator-schema-reference-runtimeenvironment-from]]<<debezium-operator-schema-reference-runtimeenvironment-from, `+from+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#envfromsource-v1-core[`+List<EnvFromSource>+`] |  | Additional environment variables set from ConfigMaps or Secrets in containers.
+|===
+
+[#debezium-operator-schema-reference-runtimestorage]
+==== RuntimeStorage Schema Reference
+Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
+
+
+.RuntimeStorage properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-runtimestorage-data]]<<debezium-operator-schema-reference-runtimestorage-data, `+data+`>> | <<debezium-operator-schema-reference-datastorage, `+DataStorage+`>> |  | File storage configuration used by this instance of Debezium Server.
+| [[debezium-operator-schema-reference-runtimestorage-external]]<<debezium-operator-schema-reference-runtimestorage-external, `+external+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#volume-v1-core[`+List<Volume>+`] |  | Additional volumes mounted to /debezium/external
 |===
 
 [#debezium-operator-schema-reference-sink]
@@ -267,19 +304,6 @@ Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServ
 | [[debezium-operator-schema-reference-source-config]]<<debezium-operator-schema-reference-source-config, `+config+`>> | Map |  | Source connector configuration properties.
 |===
 
-[#debezium-operator-schema-reference-storage]
-==== Storage Schema Reference
-Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
-
-
-.Storage properties
-[cols="20%a,25%s,15%a,40%a",options="header"]
-|===
-| Property | Type | Default | Description
-| [[debezium-operator-schema-reference-storage-type]]<<debezium-operator-schema-reference-storage-type, `+type+`>> | ephemeral,persistent | ephemeral | Storage type.
-| [[debezium-operator-schema-reference-storage-claimname]]<<debezium-operator-schema-reference-storage-claimname, `+claimName+`>> | String |  | Name of persistent volume claim for persistent storage.
-|===
-
 [#debezium-operator-schema-reference-templates]
 ==== Templates Schema Reference
 Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
@@ -291,6 +315,7 @@ Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
 | Property | Type | Default | Description
 | [[debezium-operator-schema-reference-templates-container]]<<debezium-operator-schema-reference-templates-container, `+container+`>> | <<debezium-operator-schema-reference-containertemplate, `+ContainerTemplate+`>> |  | Container template
 | [[debezium-operator-schema-reference-templates-pod]]<<debezium-operator-schema-reference-templates-pod, `+pod+`>> | <<debezium-operator-schema-reference-podtemplate, `+PodTemplate+`>> |  | Pod template.
+| [[debezium-operator-schema-reference-templates-volumeclaim]]<<debezium-operator-schema-reference-templates-volumeclaim, `+volumeClaim+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#persistentvolumeclaimspec-v1-core[`+PersistentVolumeClaimSpec+`] |  | PVC template for data volume if no explicit claim is specified.
 |===
 
 [#debezium-operator-schema-reference-transformation]
