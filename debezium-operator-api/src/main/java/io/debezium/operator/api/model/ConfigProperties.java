@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
@@ -23,6 +24,11 @@ public class ConfigProperties implements ConfigMappable {
     @JsonAnyGetter
     public Map<String, Object> getProps() {
         return props;
+    }
+
+    @JsonIgnore
+    public void setAllProps(Map<String, Object> props) {
+        this.props.putAll(props);
     }
 
     @JsonAnySetter
