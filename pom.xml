@@ -38,7 +38,6 @@
 
         <!-- Debezium version -->
         <version.debezium>${project.version}</version.debezium>
-        <version.debezium.qualifier>nightly</version.debezium.qualifier>
         <version.debezium.qualifier.prefix>-</version.debezium.qualifier.prefix>
         <!--suppress UnresolvedMavenProperty -->
         <version.debezium.parsed>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${version.debezium.qualifier}</version.debezium.parsed>
@@ -69,8 +68,8 @@
         <!-- Quarkus configuration and versions-->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.6.5</quarkus.platform.version>
-        <quarkus.operator.sdk.version>6.5.1</quarkus.operator.sdk.version>
+        <quarkus.platform.version>3.7.2</quarkus.platform.version>
+        <quarkus.operator.sdk.version>6.6.3</quarkus.operator.sdk.version>
         <quarkus.application.version>${version.debezium.parsed}</quarkus.application.version>
 
         <!-- Operator and Image configuration -->
@@ -178,6 +177,24 @@
                             <qualifierPrefix>${version.debezium.qualifier.prefix}</qualifierPrefix>
                         </configuration>
                     </execution>
+                    <execution>
+                        <phase>initialize</phase>
+                        <id>set-qualifier</id>
+                        <goals>
+                            <goal>regex-property</goal>
+                        </goals>
+                        <configuration>
+                            <name>version.debezium.qualifier</name>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <value>${parsedVersion.qualifier}</value>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <regex>SNAPSHOT</regex>
+                            <!--suppress UnresolvedMavenProperty -->
+                            <replacement>nightly</replacement>
+                            <toLowerCase>true</toLowerCase>
+                            <failIfNoMatch>false</failIfNoMatch>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -200,8 +217,6 @@
         <profile>
             <id>stable</id>
             <properties>
-                <!--suppress UnresolvedMavenProperty -->
-                <version.debezium.qualifier>${parsedVersion.qualifier}</version.debezium.qualifier>
                 <version.debezium.qualifier.prefix>.</version.debezium.qualifier.prefix>
                 <quarkus.container-image.tag>${project.parent.version}</quarkus.container-image.tag>
                 <quarkus.operator-sdk.bundle.channels>${olm.bundle.channels}</quarkus.operator-sdk.bundle.channels>
