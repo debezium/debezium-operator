@@ -11,10 +11,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.debezium.operator.docs.annotations.Documented;
+import io.sundr.builder.annotations.Buildable;
 
 @JsonPropertyOrder({ "enabled", "port", "auth" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Documented
+@Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
 public class JmxConfig {
 
     @JsonPropertyDescription("Whether JMX should be enabled for this Debezium Server instance.")

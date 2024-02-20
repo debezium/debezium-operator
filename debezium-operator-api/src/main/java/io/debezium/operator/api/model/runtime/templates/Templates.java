@@ -11,9 +11,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.debezium.operator.docs.annotations.Documented;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaimSpec;
+import io.sundr.builder.annotations.Buildable;
 
 @JsonPropertyOrder({ "container", "pod", "volumeClaim" })
 @Documented
+@Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
 public class Templates {
 
     @JsonPropertyDescription("Container template")
