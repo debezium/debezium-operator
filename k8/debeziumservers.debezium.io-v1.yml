@@ -115,29 +115,46 @@ spec:
                 description: Configuration allowing the modification of various aspects
                   of Debezium Server runtime.
                 properties:
-                  env:
-                    description: Additional environment variables set from ConfigMaps
-                      or Secrets in containers.
-                    items:
-                      properties:
-                        configMapRef:
+                  environment:
+                    description: Additional environment variables used by this Debezium
+                      Server.
+                    properties:
+                      from:
+                        description: Additional environment variables set from ConfigMaps
+                          or Secrets in containers.
+                        items:
+                          properties:
+                            configMapRef:
+                              properties:
+                                name:
+                                  type: string
+                                optional:
+                                  type: boolean
+                              type: object
+                            prefix:
+                              type: string
+                            secretRef:
+                              properties:
+                                name:
+                                  type: string
+                                optional:
+                                  type: boolean
+                              type: object
+                          type: object
+                        type: array
+                      vars:
+                        description: Environment variables applied to the container.
+                        items:
                           properties:
                             name:
+                              description: The environment variable name.
                               type: string
-                            optional:
-                              type: boolean
-                          type: object
-                        prefix:
-                          type: string
-                        secretRef:
-                          properties:
-                            name:
+                            value:
+                              description: The environment variable value.
                               type: string
-                            optional:
-                              type: boolean
                           type: object
-                      type: object
-                    type: array
+                        type: array
+                    type: object
                   jmx:
                     description: JMX configuration.
                     properties:
@@ -170,24 +187,707 @@ spec:
                     description: An existing service account used to run the Debezium
                       Server pod
                     type: string
+                  storage:
+                    description: Storage configuration
+                    properties:
+                      data:
+                        description: File storage configuration used by this instance
+                          of Debezium Server.
+                        properties:
+                          claimName:
+                            description: Name of persistent volume claim for persistent
+                              storage.
+                            type: string
+                          type:
+                            description: Storage type.
+                            enum:
+                            - ephemeral
+                            - persistent
+                            type: string
+                        type: object
+                      external:
+                        description: Additional volumes mounted to /debezium/external
+                        items:
+                          properties:
+                            awsElasticBlockStore:
+                              properties:
+                                fsType:
+                                  type: string
+                                partition:
+                                  type: integer
+                                readOnly:
+                                  type: boolean
+                                volumeID:
+                                  type: string
+                              type: object
+                            azureDisk:
+                              properties:
+                                cachingMode:
+                                  type: string
+                                diskName:
+                                  type: string
+                                diskURI:
+                                  type: string
+                                fsType:
+                                  type: string
+                                kind:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                              type: object
+                            azureFile:
+                              properties:
+                                readOnly:
+                                  type: boolean
+                                secretName:
+                                  type: string
+                                shareName:
+                                  type: string
+                              type: object
+                            cephfs:
+                              properties:
+                                monitors:
+                                  items:
+                                    type: string
+                                  type: array
+                                path:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                                secretFile:
+                                  type: string
+                                secretRef:
+                                  properties:
+                                    name:
+                                      type: string
+                                  type: object
+                                user:
+                                  type: string
+                              type: object
+                            cinder:
+                              properties:
+                                fsType:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                                secretRef:
+                                  properties:
+                                    name:
+                                      type: string
+                                  type: object
+                                volumeID:
+                                  type: string
+                              type: object
+                            configMap:
+                              properties:
+                                defaultMode:
+                                  type: integer
+                                items:
+                                  items:
+                                    properties:
+                                      key:
+                                        type: string
+                                      mode:
+                                        type: integer
+                                      path:
+                                        type: string
+                                    type: object
+                                  type: array
+                                name:
+                                  type: string
+                                optional:
+                                  type: boolean
+                              type: object
+                            csi:
+                              properties:
+                                driver:
+                                  type: string
+                                fsType:
+                                  type: string
+                                nodePublishSecretRef:
+                                  properties:
+                                    name:
+                                      type: string
+                                  type: object
+                                readOnly:
+                                  type: boolean
+                                volumeAttributes:
+                                  additionalProperties:
+                                    type: string
+                                  type: object
+                              type: object
+                            downwardAPI:
+                              properties:
+                                defaultMode:
+                                  type: integer
+                                items:
+                                  items:
+                                    properties:
+                                      fieldRef:
+                                        properties:
+                                          apiVersion:
+                                            type: string
+                                          fieldPath:
+                                            type: string
+                                        type: object
+                                      mode:
+                                        type: integer
+                                      path:
+                                        type: string
+                                      resourceFieldRef:
+                                        properties:
+                                          containerName:
+                                            type: string
+                                          divisor:
+                                            anyOf:
+                                            - type: integer
+                                            - type: string
+                                            x-kubernetes-int-or-string: true
+                                          resource:
+                                            type: string
+                                        type: object
+                                    type: object
+                                  type: array
+                              type: object
+                            emptyDir:
+                              properties:
+                                medium:
+                                  type: string
+                                sizeLimit:
+                                  anyOf:
+                                  - type: integer
+                                  - type: string
+                                  x-kubernetes-int-or-string: true
+                              type: object
+                            ephemeral:
+                              properties:
+                                volumeClaimTemplate:
+                                  properties:
+                                    metadata:
+                                      properties:
+                                        annotations:
+                                          additionalProperties:
+                                            type: string
+                                          type: object
+                                        creationTimestamp:
+                                          type: string
+                                        deletionGracePeriodSeconds:
+                                          type: integer
+                                        deletionTimestamp:
+                                          type: string
+                                        finalizers:
+                                          items:
+                                            type: string
+                                          type: array
+                                        generateName:
+                                          type: string
+                                        generation:
+                                          type: integer
+                                        labels:
+                                          additionalProperties:
+                                            type: string
+                                          type: object
+                                        managedFields:
+                                          items:
+                                            properties:
+                                              apiVersion:
+                                                type: string
+                                              fieldsType:
+                                                type: string
+                                              fieldsV1:
+                                                type: object
+                                              manager:
+                                                type: string
+                                              operation:
+                                                type: string
+                                              subresource:
+                                                type: string
+                                              time:
+                                                type: string
+                                            type: object
+                                          type: array
+                                        name:
+                                          type: string
+                                        namespace:
+                                          type: string
+                                        ownerReferences:
+                                          items:
+                                            properties:
+                                              apiVersion:
+                                                type: string
+                                              blockOwnerDeletion:
+                                                type: boolean
+                                              controller:
+                                                type: boolean
+                                              kind:
+                                                type: string
+                                              name:
+                                                type: string
+                                              uid:
+                                                type: string
+                                            type: object
+                                          type: array
+                                        resourceVersion:
+                                          type: string
+                                        selfLink:
+                                          type: string
+                                        uid:
+                                          type: string
+                                      type: object
+                                    spec:
+                                      properties:
+                                        accessModes:
+                                          items:
+                                            type: string
+                                          type: array
+                                        dataSource:
+                                          properties:
+                                            apiGroup:
+                                              type: string
+                                            kind:
+                                              type: string
+                                            name:
+                                              type: string
+                                          type: object
+                                        dataSourceRef:
+                                          properties:
+                                            apiGroup:
+                                              type: string
+                                            kind:
+                                              type: string
+                                            name:
+                                              type: string
+                                            namespace:
+                                              type: string
+                                          type: object
+                                        resources:
+                                          properties:
+                                            limits:
+                                              additionalProperties:
+                                                anyOf:
+                                                - type: integer
+                                                - type: string
+                                                x-kubernetes-int-or-string: true
+                                              type: object
+                                            requests:
+                                              additionalProperties:
+                                                anyOf:
+                                                - type: integer
+                                                - type: string
+                                                x-kubernetes-int-or-string: true
+                                              type: object
+                                          type: object
+                                        selector:
+                                          properties:
+                                            matchExpressions:
+                                              items:
+                                                properties:
+                                                  key:
+                                                    type: string
+                                                  operator:
+                                                    type: string
+                                                  values:
+                                                    items:
+                                                      type: string
+                                                    type: array
+                                                type: object
+                                              type: array
+                                            matchLabels:
+                                              additionalProperties:
+                                                type: string
+                                              type: object
+                                          type: object
+                                        storageClassName:
+                                          type: string
+                                        volumeAttributesClassName:
+                                          type: string
+                                        volumeMode:
+                                          type: string
+                                        volumeName:
+                                          type: string
+                                      type: object
+                                  type: object
+                              type: object
+                            fc:
+                              properties:
+                                fsType:
+                                  type: string
+                                lun:
+                                  type: integer
+                                readOnly:
+                                  type: boolean
+                                targetWWNs:
+                                  items:
+                                    type: string
+                                  type: array
+                                wwids:
+                                  items:
+                                    type: string
+                                  type: array
+                              type: object
+                            flexVolume:
+                              properties:
+                                driver:
+                                  type: string
+                                fsType:
+                                  type: string
+                                options:
+                                  additionalProperties:
+                                    type: string
+                                  type: object
+                                readOnly:
+                                  type: boolean
+                                secretRef:
+                                  properties:
+                                    name:
+                                      type: string
+                                  type: object
+                              type: object
+                            flocker:
+                              properties:
+                                datasetName:
+                                  type: string
+                                datasetUUID:
+                                  type: string
+                              type: object
+                            gcePersistentDisk:
+                              properties:
+                                fsType:
+                                  type: string
+                                partition:
+                                  type: integer
+                                pdName:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                              type: object
+                            gitRepo:
+                              properties:
+                                directory:
+                                  type: string
+                                repository:
+                                  type: string
+                                revision:
+                                  type: string
+                              type: object
+                            glusterfs:
+                              properties:
+                                endpoints:
+                                  type: string
+                                path:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                              type: object
+                            hostPath:
+                              properties:
+                                path:
+                                  type: string
+                                type:
+                                  type: string
+                              type: object
+                            iscsi:
+                              properties:
+                                chapAuthDiscovery:
+                                  type: boolean
+                                chapAuthSession:
+                                  type: boolean
+                                fsType:
+                                  type: string
+                                initiatorName:
+                                  type: string
+                                iqn:
+                                  type: string
+                                iscsiInterface:
+                                  type: string
+                                lun:
+                                  type: integer
+                                portals:
+                                  items:
+                                    type: string
+                                  type: array
+                                readOnly:
+                                  type: boolean
+                                secretRef:
+                                  properties:
+                                    name:
+                                      type: string
+                                  type: object
+                                targetPortal:
+                                  type: string
+                              type: object
+                            name:
+                              type: string
+                            nfs:
+                              properties:
+                                path:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                                server:
+                                  type: string
+                              type: object
+                            persistentVolumeClaim:
+                              properties:
+                                claimName:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                              type: object
+                            photonPersistentDisk:
+                              properties:
+                                fsType:
+                                  type: string
+                                pdID:
+                                  type: string
+                              type: object
+                            portworxVolume:
+                              properties:
+                                fsType:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                                volumeID:
+                                  type: string
+                              type: object
+                            projected:
+                              properties:
+                                defaultMode:
+                                  type: integer
+                                sources:
+                                  items:
+                                    properties:
+                                      clusterTrustBundle:
+                                        properties:
+                                          labelSelector:
+                                            properties:
+                                              matchExpressions:
+                                                items:
+                                                  properties:
+                                                    key:
+                                                      type: string
+                                                    operator:
+                                                      type: string
+                                                    values:
+                                                      items:
+                                                        type: string
+                                                      type: array
+                                                  type: object
+                                                type: array
+                                              matchLabels:
+                                                additionalProperties:
+                                                  type: string
+                                                type: object
+                                            type: object
+                                          name:
+                                            type: string
+                                          optional:
+                                            type: boolean
+                                          path:
+                                            type: string
+                                          signerName:
+                                            type: string
+                                        type: object
+                                      configMap:
+                                        properties:
+                                          items:
+                                            items:
+                                              properties:
+                                                key:
+                                                  type: string
+                                                mode:
+                                                  type: integer
+                                                path:
+                                                  type: string
+                                              type: object
+                                            type: array
+                                          name:
+                                            type: string
+                                          optional:
+                                            type: boolean
+                                        type: object
+                                      downwardAPI:
+                                        properties:
+                                          items:
+                                            items:
+                                              properties:
+                                                fieldRef:
+                                                  properties:
+                                                    apiVersion:
+                                                      type: string
+                                                    fieldPath:
+                                                      type: string
+                                                  type: object
+                                                mode:
+                                                  type: integer
+                                                path:
+                                                  type: string
+                                                resourceFieldRef:
+                                                  properties:
+                                                    containerName:
+                                                      type: string
+                                                    divisor:
+                                                      anyOf:
+                                                      - type: integer
+                                                      - type: string
+                                                      x-kubernetes-int-or-string: true
+                                                    resource:
+                                                      type: string
+                                                  type: object
+                                              type: object
+                                            type: array
+                                        type: object
+                                      secret:
+                                        properties:
+                                          items:
+                                            items:
+                                              properties:
+                                                key:
+                                                  type: string
+                                                mode:
+                                                  type: integer
+                                                path:
+                                                  type: string
+                                              type: object
+                                            type: array
+                                          name:
+                                            type: string
+                                          optional:
+                                            type: boolean
+                                        type: object
+                                      serviceAccountToken:
+                                        properties:
+                                          audience:
+                                            type: string
+                                          expirationSeconds:
+                                            type: integer
+                                          path:
+                                            type: string
+                                        type: object
+                                    type: object
+                                  type: array
+                              type: object
+                            quobyte:
+                              properties:
+                                group:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                                registry:
+                                  type: string
+                                tenant:
+                                  type: string
+                                user:
+                                  type: string
+                                volume:
+                                  type: string
+                              type: object
+                            rbd:
+                              properties:
+                                fsType:
+                                  type: string
+                                image:
+                                  type: string
+                                keyring:
+                                  type: string
+                                monitors:
+                                  items:
+                                    type: string
+                                  type: array
+                                pool:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                                secretRef:
+                                  properties:
+                                    name:
+                                      type: string
+                                  type: object
+                                user:
+                                  type: string
+                              type: object
+                            scaleIO:
+                              properties:
+                                fsType:
+                                  type: string
+                                gateway:
+                                  type: string
+                                protectionDomain:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                                secretRef:
+                                  properties:
+                                    name:
+                                      type: string
+                                  type: object
+                                sslEnabled:
+                                  type: boolean
+                                storageMode:
+                                  type: string
+                                storagePool:
+                                  type: string
+                                system:
+                                  type: string
+                                volumeName:
+                                  type: string
+                              type: object
+                            secret:
+                              properties:
+                                defaultMode:
+                                  type: integer
+                                items:
+                                  items:
+                                    properties:
+                                      key:
+                                        type: string
+                                      mode:
+                                        type: integer
+                                      path:
+                                        type: string
+                                    type: object
+                                  type: array
+                                optional:
+                                  type: boolean
+                                secretName:
+                                  type: string
+                              type: object
+                            storageos:
+                              properties:
+                                fsType:
+                                  type: string
+                                readOnly:
+                                  type: boolean
+                                secretRef:
+                                  properties:
+                                    name:
+                                      type: string
+                                  type: object
+                                volumeName:
+                                  type: string
+                                volumeNamespace:
+                                  type: string
+                              type: object
+                            vsphereVolume:
+                              properties:
+                                fsType:
+                                  type: string
+                                storagePolicyID:
+                                  type: string
+                                storagePolicyName:
+                                  type: string
+                                volumePath:
+                                  type: string
+                              type: object
+                          type: object
+                        type: array
+                    type: object
                   templates:
                     description: Debezium Server resource templates.
                     properties:
                       container:
                         description: Container template
                         properties:
-                          env:
-                            description: Environment variables applied to the container.
-                            items:
-                              properties:
-                                name:
-                                  description: The environment variable name.
-                                  type: string
-                                value:
-                                  description: The environment variable value.
-                                  type: string
-                              type: object
-                            type: array
                           probes:
                             description: Container probes configuration.
                             properties:
@@ -424,6 +1124,14 @@ spec:
                                                     type: string
                                                   type: object
                                               type: object
+                                            matchLabelKeys:
+                                              items:
+                                                type: string
+                                              type: array
+                                            mismatchLabelKeys:
+                                              items:
+                                                type: string
+                                              type: array
                                             namespaceSelector:
                                               properties:
                                                 matchExpressions:
@@ -478,6 +1186,14 @@ spec:
                                                 type: string
                                               type: object
                                           type: object
+                                        matchLabelKeys:
+                                          items:
+                                            type: string
+                                          type: array
+                                        mismatchLabelKeys:
+                                          items:
+                                            type: string
+                                          type: array
                                         namespaceSelector:
                                           properties:
                                             matchExpressions:
@@ -534,6 +1250,14 @@ spec:
                                                     type: string
                                                   type: object
                                               type: object
+                                            matchLabelKeys:
+                                              items:
+                                                type: string
+                                              type: array
+                                            mismatchLabelKeys:
+                                              items:
+                                                type: string
+                                              type: array
                                             namespaceSelector:
                                               properties:
                                                 matchExpressions:
@@ -588,6 +1312,14 @@ spec:
                                                 type: string
                                               type: object
                                           type: object
+                                        matchLabelKeys:
+                                          items:
+                                            type: string
+                                          type: array
+                                        mismatchLabelKeys:
+                                          items:
+                                            type: string
+                                          type: array
                                         namespaceSelector:
                                           properties:
                                             matchExpressions:
@@ -699,657 +1431,81 @@ spec:
                                 type: object
                             type: object
                         type: object
+                      volumeClaim:
+                        description: PVC template for data volume if no explicit claim
+                          is specified.
+                        properties:
+                          accessModes:
+                            items:
+                              type: string
+                            type: array
+                          dataSource:
+                            properties:
+                              apiGroup:
+                                type: string
+                              kind:
+                                type: string
+                              name:
+                                type: string
+                            type: object
+                          dataSourceRef:
+                            properties:
+                              apiGroup:
+                                type: string
+                              kind:
+                                type: string
+                              name:
+                                type: string
+                              namespace:
+                                type: string
+                            type: object
+                          resources:
+                            properties:
+                              limits:
+                                additionalProperties:
+                                  anyOf:
+                                  - type: integer
+                                  - type: string
+                                  x-kubernetes-int-or-string: true
+                                type: object
+                              requests:
+                                additionalProperties:
+                                  anyOf:
+                                  - type: integer
+                                  - type: string
+                                  x-kubernetes-int-or-string: true
+                                type: object
+                            type: object
+                          selector:
+                            properties:
+                              matchExpressions:
+                                items:
+                                  properties:
+                                    key:
+                                      type: string
+                                    operator:
+                                      type: string
+                                    values:
+                                      items:
+                                        type: string
+                                      type: array
+                                  type: object
+                                type: array
+                              matchLabels:
+                                additionalProperties:
+                                  type: string
+                                type: object
+                            type: object
+                          storageClassName:
+                            type: string
+                          volumeAttributesClassName:
+                            type: string
+                          volumeMode:
+                            type: string
+                          volumeName:
+                            type: string
+                        type: object
                     type: object
-                  volumes:
-                    description: Additional volumes mounted to containers.
-                    items:
-                      properties:
-                        awsElasticBlockStore:
-                          properties:
-                            fsType:
-                              type: string
-                            partition:
-                              type: integer
-                            readOnly:
-                              type: boolean
-                            volumeID:
-                              type: string
-                          type: object
-                        azureDisk:
-                          properties:
-                            cachingMode:
-                              type: string
-                            diskName:
-                              type: string
-                            diskURI:
-                              type: string
-                            fsType:
-                              type: string
-                            kind:
-                              type: string
-                            readOnly:
-                              type: boolean
-                          type: object
-                        azureFile:
-                          properties:
-                            readOnly:
-                              type: boolean
-                            secretName:
-                              type: string
-                            shareName:
-                              type: string
-                          type: object
-                        cephfs:
-                          properties:
-                            monitors:
-                              items:
-                                type: string
-                              type: array
-                            path:
-                              type: string
-                            readOnly:
-                              type: boolean
-                            secretFile:
-                              type: string
-                            secretRef:
-                              properties:
-                                name:
-                                  type: string
-                              type: object
-                            user:
-                              type: string
-                          type: object
-                        cinder:
-                          properties:
-                            fsType:
-                              type: string
-                            readOnly:
-                              type: boolean
-                            secretRef:
-                              properties:
-                                name:
-                                  type: string
-                              type: object
-                            volumeID:
-                              type: string
-                          type: object
-                        configMap:
-                          properties:
-                            defaultMode:
-                              type: integer
-                            items:
-                              items:
-                                properties:
-                                  key:
-                                    type: string
-                                  mode:
-                                    type: integer
-                                  path:
-                                    type: string
-                                type: object
-                              type: array
-                            name:
-                              type: string
-                            optional:
-                              type: boolean
-                          type: object
-                        csi:
-                          properties:
-                            driver:
-                              type: string
-                            fsType:
-                              type: string
-                            nodePublishSecretRef:
-                              properties:
-                                name:
-                                  type: string
-                              type: object
-                            readOnly:
-                              type: boolean
-                            volumeAttributes:
-                              additionalProperties:
-                                type: string
-                              type: object
-                          type: object
-                        downwardAPI:
-                          properties:
-                            defaultMode:
-                              type: integer
-                            items:
-                              items:
-                                properties:
-                                  fieldRef:
-                                    properties:
-                                      apiVersion:
-                                        type: string
-                                      fieldPath:
-                                        type: string
-                                    type: object
-                                  mode:
-                                    type: integer
-                                  path:
-                                    type: string
-                                  resourceFieldRef:
-                                    properties:
-                                      containerName:
-                                        type: string
-                                      divisor:
-                                        anyOf:
-                                        - type: integer
-                                        - type: string
-                                        x-kubernetes-int-or-string: true
-                                      resource:
-                                        type: string
-                                    type: object
-                                type: object
-                              type: array
-                          type: object
-                        emptyDir:
-                          properties:
-                            medium:
-                              type: string
-                            sizeLimit:
-                              anyOf:
-                              - type: integer
-                              - type: string
-                              x-kubernetes-int-or-string: true
-                          type: object
-                        ephemeral:
-                          properties:
-                            volumeClaimTemplate:
-                              properties:
-                                metadata:
-                                  properties:
-                                    annotations:
-                                      additionalProperties:
-                                        type: string
-                                      type: object
-                                    creationTimestamp:
-                                      type: string
-                                    deletionGracePeriodSeconds:
-                                      type: integer
-                                    deletionTimestamp:
-                                      type: string
-                                    finalizers:
-                                      items:
-                                        type: string
-                                      type: array
-                                    generateName:
-                                      type: string
-                                    generation:
-                                      type: integer
-                                    labels:
-                                      additionalProperties:
-                                        type: string
-                                      type: object
-                                    managedFields:
-                                      items:
-                                        properties:
-                                          apiVersion:
-                                            type: string
-                                          fieldsType:
-                                            type: string
-                                          fieldsV1:
-                                            type: object
-                                          manager:
-                                            type: string
-                                          operation:
-                                            type: string
-                                          subresource:
-                                            type: string
-                                          time:
-                                            type: string
-                                        type: object
-                                      type: array
-                                    name:
-                                      type: string
-                                    namespace:
-                                      type: string
-                                    ownerReferences:
-                                      items:
-                                        properties:
-                                          apiVersion:
-                                            type: string
-                                          blockOwnerDeletion:
-                                            type: boolean
-                                          controller:
-                                            type: boolean
-                                          kind:
-                                            type: string
-                                          name:
-                                            type: string
-                                          uid:
-                                            type: string
-                                        type: object
-                                      type: array
-                                    resourceVersion:
-                                      type: string
-                                    selfLink:
-                                      type: string
-                                    uid:
-                                      type: string
-                                  type: object
-                                spec:
-                                  properties:
-                                    accessModes:
-                                      items:
-                                        type: string
-                                      type: array
-                                    dataSource:
-                                      properties:
-                                        apiGroup:
-                                          type: string
-                                        kind:
-                                          type: string
-                                        name:
-                                          type: string
-                                      type: object
-                                    dataSourceRef:
-                                      properties:
-                                        apiGroup:
-                                          type: string
-                                        kind:
-                                          type: string
-                                        name:
-                                          type: string
-                                        namespace:
-                                          type: string
-                                      type: object
-                                    resources:
-                                      properties:
-                                        claims:
-                                          items:
-                                            properties:
-                                              name:
-                                                type: string
-                                            type: object
-                                          type: array
-                                        limits:
-                                          additionalProperties:
-                                            anyOf:
-                                            - type: integer
-                                            - type: string
-                                            x-kubernetes-int-or-string: true
-                                          type: object
-                                        requests:
-                                          additionalProperties:
-                                            anyOf:
-                                            - type: integer
-                                            - type: string
-                                            x-kubernetes-int-or-string: true
-                                          type: object
-                                      type: object
-                                    selector:
-                                      properties:
-                                        matchExpressions:
-                                          items:
-                                            properties:
-                                              key:
-                                                type: string
-                                              operator:
-                                                type: string
-                                              values:
-                                                items:
-                                                  type: string
-                                                type: array
-                                            type: object
-                                          type: array
-                                        matchLabels:
-                                          additionalProperties:
-                                            type: string
-                                          type: object
-                                      type: object
-                                    storageClassName:
-                                      type: string
-                                    volumeMode:
-                                      type: string
-                                    volumeName:
-                                      type: string
-                                  type: object
-                              type: object
-                          type: object
-                        fc:
-                          properties:
-                            fsType:
-                              type: string
-                            lun:
-                              type: integer
-                            readOnly:
-                              type: boolean
-                            targetWWNs:
-                              items:
-                                type: string
-                              type: array
-                            wwids:
-                              items:
-                                type: string
-                              type: array
-                          type: object
-                        flexVolume:
-                          properties:
-                            driver:
-                              type: string
-                            fsType:
-                              type: string
-                            options:
-                              additionalProperties:
-                                type: string
-                              type: object
-                            readOnly:
-                              type: boolean
-                            secretRef:
-                              properties:
-                                name:
-                                  type: string
-                              type: object
-                          type: object
-                        flocker:
-                          properties:
-                            datasetName:
-                              type: string
-                            datasetUUID:
-                              type: string
-                          type: object
-                        gcePersistentDisk:
-                          properties:
-                            fsType:
-                              type: string
-                            partition:
-                              type: integer
-                            pdName:
-                              type: string
-                            readOnly:
-                              type: boolean
-                          type: object
-                        gitRepo:
-                          properties:
-                            directory:
-                              type: string
-                            repository:
-                              type: string
-                            revision:
-                              type: string
-                          type: object
-                        glusterfs:
-                          properties:
-                            endpoints:
-                              type: string
-                            path:
-                              type: string
-                            readOnly:
-                              type: boolean
-                          type: object
-                        hostPath:
-                          properties:
-                            path:
-                              type: string
-                            type:
-                              type: string
-                          type: object
-                        iscsi:
-                          properties:
-                            chapAuthDiscovery:
-                              type: boolean
-                            chapAuthSession:
-                              type: boolean
-                            fsType:
-                              type: string
-                            initiatorName:
-                              type: string
-                            iqn:
-                              type: string
-                            iscsiInterface:
-                              type: string
-                            lun:
-                              type: integer
-                            portals:
-                              items:
-                                type: string
-                              type: array
-                            readOnly:
-                              type: boolean
-                            secretRef:
-                              properties:
-                                name:
-                                  type: string
-                              type: object
-                            targetPortal:
-                              type: string
-                          type: object
-                        name:
-                          type: string
-                        nfs:
-                          properties:
-                            path:
-                              type: string
-                            readOnly:
-                              type: boolean
-                            server:
-                              type: string
-                          type: object
-                        persistentVolumeClaim:
-                          properties:
-                            claimName:
-                              type: string
-                            readOnly:
-                              type: boolean
-                          type: object
-                        photonPersistentDisk:
-                          properties:
-                            fsType:
-                              type: string
-                            pdID:
-                              type: string
-                          type: object
-                        portworxVolume:
-                          properties:
-                            fsType:
-                              type: string
-                            readOnly:
-                              type: boolean
-                            volumeID:
-                              type: string
-                          type: object
-                        projected:
-                          properties:
-                            defaultMode:
-                              type: integer
-                            sources:
-                              items:
-                                properties:
-                                  configMap:
-                                    properties:
-                                      items:
-                                        items:
-                                          properties:
-                                            key:
-                                              type: string
-                                            mode:
-                                              type: integer
-                                            path:
-                                              type: string
-                                          type: object
-                                        type: array
-                                      name:
-                                        type: string
-                                      optional:
-                                        type: boolean
-                                    type: object
-                                  downwardAPI:
-                                    properties:
-                                      items:
-                                        items:
-                                          properties:
-                                            fieldRef:
-                                              properties:
-                                                apiVersion:
-                                                  type: string
-                                                fieldPath:
-                                                  type: string
-                                              type: object
-                                            mode:
-                                              type: integer
-                                            path:
-                                              type: string
-                                            resourceFieldRef:
-                                              properties:
-                                                containerName:
-                                                  type: string
-                                                divisor:
-                                                  anyOf:
-                                                  - type: integer
-                                                  - type: string
-                                                  x-kubernetes-int-or-string: true
-                                                resource:
-                                                  type: string
-                                              type: object
-                                          type: object
-                                        type: array
-                                    type: object
-                                  secret:
-                                    properties:
-                                      items:
-                                        items:
-                                          properties:
-                                            key:
-                                              type: string
-                                            mode:
-                                              type: integer
-                                            path:
-                                              type: string
-                                          type: object
-                                        type: array
-                                      name:
-                                        type: string
-                                      optional:
-                                        type: boolean
-                                    type: object
-                                  serviceAccountToken:
-                                    properties:
-                                      audience:
-                                        type: string
-                                      expirationSeconds:
-                                        type: integer
-                                      path:
-                                        type: string
-                                    type: object
-                                type: object
-                              type: array
-                          type: object
-                        quobyte:
-                          properties:
-                            group:
-                              type: string
-                            readOnly:
-                              type: boolean
-                            registry:
-                              type: string
-                            tenant:
-                              type: string
-                            user:
-                              type: string
-                            volume:
-                              type: string
-                          type: object
-                        rbd:
-                          properties:
-                            fsType:
-                              type: string
-                            image:
-                              type: string
-                            keyring:
-                              type: string
-                            monitors:
-                              items:
-                                type: string
-                              type: array
-                            pool:
-                              type: string
-                            readOnly:
-                              type: boolean
-                            secretRef:
-                              properties:
-                                name:
-                                  type: string
-                              type: object
-                            user:
-                              type: string
-                          type: object
-                        scaleIO:
-                          properties:
-                            fsType:
-                              type: string
-                            gateway:
-                              type: string
-                            protectionDomain:
-                              type: string
-                            readOnly:
-                              type: boolean
-                            secretRef:
-                              properties:
-                                name:
-                                  type: string
-                              type: object
-                            sslEnabled:
-                              type: boolean
-                            storageMode:
-                              type: string
-                            storagePool:
-                              type: string
-                            system:
-                              type: string
-                            volumeName:
-                              type: string
-                          type: object
-                        secret:
-                          properties:
-                            defaultMode:
-                              type: integer
-                            items:
-                              items:
-                                properties:
-                                  key:
-                                    type: string
-                                  mode:
-                                    type: integer
-                                  path:
-                                    type: string
-                                type: object
-                              type: array
-                            optional:
-                              type: boolean
-                            secretName:
-                              type: string
-                          type: object
-                        storageos:
-                          properties:
-                            fsType:
-                              type: string
-                            readOnly:
-                              type: boolean
-                            secretRef:
-                              properties:
-                                name:
-                                  type: string
-                              type: object
-                            volumeName:
-                              type: string
-                            volumeNamespace:
-                              type: string
-                          type: object
-                        vsphereVolume:
-                          properties:
-                            fsType:
-                              type: string
-                            storagePolicyID:
-                              type: string
-                            storagePolicyName:
-                              type: string
-                            volumePath:
-                              type: string
-                          type: object
-                      type: object
-                    type: array
                 type: object
               sink:
                 description: Sink configuration.
@@ -1384,20 +1540,6 @@ spec:
                         x-kubernetes-preserve-unknown-fields: true
                     type: object
                     x-kubernetes-preserve-unknown-fields: true
-                type: object
-              storage:
-                description: Storage configuration to be used by this instance of
-                  Debezium Server.
-                properties:
-                  claimName:
-                    description: Name of persistent volume claim for persistent storage.
-                    type: string
-                  type:
-                    description: Storage type.
-                    enum:
-                    - ephemeral
-                    - persistent
-                    type: string
                 type: object
               transforms:
                 description: Single Message Transformations employed by this instance

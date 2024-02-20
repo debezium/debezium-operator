@@ -3,7 +3,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   annotations:
-    app.quarkus.io/vcs-uri: https://github.com/debezium/debezium-operator.git
+    app.quarkus.io/quarkus-version: 3.7.2
+    app.quarkus.io/vcs-uri: git@github.com:jcechace/debezium-operator.git
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -31,18 +32,6 @@ rules:
   - apiGroups:
       - ""
     resources:
-      - serviceaccounts
-    verbs:
-      - get
-      - list
-      - watch
-      - patch
-      - update
-      - delete
-      - create
-  - apiGroups:
-      - ""
-    resources:
       - configmaps
     verbs:
       - get
@@ -56,18 +45,6 @@ rules:
       - rbac.authorization.k8s.io
     resources:
       - rolebindings
-    verbs:
-      - get
-      - list
-      - watch
-      - patch
-      - update
-      - delete
-      - create
-  - apiGroups:
-      - rbac.authorization.k8s.io
-    resources:
-      - roles
     verbs:
       - get
       - list
@@ -92,6 +69,42 @@ rules:
       - ""
     resources:
       - services
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - delete
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - persistentvolumeclaims
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - delete
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - serviceaccounts
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - delete
+      - create
+  - apiGroups:
+      - rbac.authorization.k8s.io
+    resources:
+      - roles
     verbs:
       - get
       - list
