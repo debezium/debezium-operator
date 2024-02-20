@@ -11,10 +11,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.debezium.operator.docs.annotations.Documented;
+import io.sundr.builder.annotations.Buildable;
 
 @JsonPropertyOrder({ "enabled", "secret", "accessFile", "secretFile" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Documented
+@Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
 public class JmxAuthentication {
 
     public static final String JMX_DEFAULT_ACCESS_FILE = "jmxremote.access";
