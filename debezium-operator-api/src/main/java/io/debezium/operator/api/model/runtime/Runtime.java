@@ -13,9 +13,11 @@ import io.debezium.operator.api.model.runtime.jmx.JmxConfig;
 import io.debezium.operator.api.model.runtime.storage.RuntimeStorage;
 import io.debezium.operator.api.model.runtime.templates.Templates;
 import io.debezium.operator.docs.annotations.Documented;
+import io.sundr.builder.annotations.Buildable;
 
 @JsonPropertyOrder({ "storage", "environment", "jmx", "templates" })
 @Documented
+@Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
 public class Runtime {
     @JsonPropertyDescription("Storage configuration")
     private RuntimeStorage storage;

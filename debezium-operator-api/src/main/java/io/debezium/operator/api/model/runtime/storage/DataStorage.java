@@ -9,8 +9,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.docs.annotations.Documented;
+import io.sundr.builder.annotations.Buildable;
 
 @Documented
+@Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
 public class DataStorage {
 
     @JsonPropertyDescription("Storage type.")

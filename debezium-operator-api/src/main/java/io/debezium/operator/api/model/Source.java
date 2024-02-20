@@ -11,8 +11,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.docs.annotations.Documented;
+import io.sundr.builder.annotations.Buildable;
 
 @Documented
+@Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
 public class Source implements ConfigMappable {
 
     @JsonPropertyDescription("Fully qualified name of source connector Java class.")

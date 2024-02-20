@@ -10,8 +10,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.docs.annotations.Documented;
+import io.sundr.builder.annotations.Buildable;
 
 @Documented
+@Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
 public class Format implements ConfigMappable {
 
     @JsonPropertyDescription("Message key format configuration.")
