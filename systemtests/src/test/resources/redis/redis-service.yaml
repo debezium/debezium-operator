@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  labels:
+    app: redis
+    test-component: sink
+spec:
+  selector:
+    app: redis
+    test-component: sink
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379

@@ -1,0 +1,41 @@
+name: "Maven build core dependencies"
+description: "Maven build core dependencies from Debezium"
+
+inputs:
+  shell:
+    description: "The shell to use"
+    required: false
+    default: bash
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout core repository
+      uses: actions/checkout@v4
+      with:
+        repository: debezium/debezium
+        ref: main
+        path: core
+
+    - name: Checkout Debezium Operator
+      uses: actions/checkout@v4
+      with:
+        path: operator
+
+    - uses: ./operator/.github/actions/setup-java
+
+    - name: Maven build core dependencies
+      shell: ${{ inputs.shell }}
+      run: >
+        ./operator/mvnw clean install -f core/pom.xml 
+        -DskipTests 
+        -DskipITs 
+        -Dformat.formatter.goal=validate
+        -Dformat.imports.goal=check 
+        -Dhttp.keepAlive=false 
+        -Dmaven.wagon.http.pool=false
+        -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+        -Dmaven.javadoc.skip=true 
+        -Dstyle.color=always 
+        --no-transfer-progress
+        -T4

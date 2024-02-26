@@ -1,0 +1,42 @@
+name: "Build Operator"
+description: "Set up the desired version of Java"
+
+inputs:
+  shell:
+    description: "The shell to use"
+    required: false
+    default: bash
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout core repository
+      uses: actions/checkout@v4
+      with:
+        repository: debezium/debezium
+        ref: main
+        path: core
+
+    - name: Checkout Debezium Operator
+      uses: actions/checkout@v4
+      with:
+        path: operator
+
+    - uses: ./operator/.github/actions/install-core
+
+    - name: Build operator
+      working-directory: operator
+      shell: ${{ inputs.shell }}
+      run: >
+        ./mvnw clean install 
+        -pl '!:systemtests'
+        -fae 
+        -Dformat.formatter.goal=validate 
+        -Dformat.imports.goal=check 
+        -Dhttp.keepAlive=false 
+        -Dmaven.wagon.http.pool=false 
+        -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 
+        -DskipNonCore
+        -Dstyle.color=always 
+        --no-transfer-progress
+        -T4

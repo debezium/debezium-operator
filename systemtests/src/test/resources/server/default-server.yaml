@@ -1,0 +1,30 @@
+apiVersion: debezium.io/v1alpha1
+kind: DebeziumServer
+metadata:
+  name: my-debezium
+spec:
+  image: quay.io/obabec/debezium-server:latest
+  quarkus:
+    config:
+      log.console.json: false
+      kubernetes-config.enabled: true
+      kubernetes-config.secrets: mysql-credentials
+  sink:
+    type: redis
+    config:
+      address: 'redis-service:6379'
+
+  source:
+    class: io.debezium.connector.mysql.MySqlConnector
+    config:
+      tasks.max: 1
+      offset.storage.file.filename: /debezium/data/offsets.dat
+      database.history: io.debezium.relational.history.FileDatabaseHistory
+      database.hostname: mysql-dbz-svc
+      database.port: 3306
+      database.user: ${DBZ_USER}
+      database.password: ${DBZ_PASSWORD}
+      database.server.id: 32268
+      topic.prefix: inventory
+      schema.history.internal: io.debezium.storage.redis.history.RedisSchemaHistory
+      schema.history.internal.redis.address: 'redis-service:6379'
