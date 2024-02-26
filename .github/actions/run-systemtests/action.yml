@@ -1,0 +1,29 @@
+name: "Run Systemtests"
+description: "Execute System Tests"
+
+inputs:
+  shell:
+    description: "The shell to use"
+    required: false
+    default: bash
+
+runs:
+  using: composite
+  steps:
+    - uses: ./operator/.github/actions/setup-java
+
+    - uses: ./operator/.github/actions/install-core
+
+    - uses: ./operator/.github/actions/build-operator
+
+    - name: Create k8s Kind Cluster
+      uses: helm/kind-action@v1
+
+    - name: Execute Systemtests
+      working-directory: operator
+      shell: ${{ inputs.shell }}
+      run: >
+        ./mvnw verify 
+        -Psystemtests 
+        -pl systemtests
+        -Dstyle.color=always 
