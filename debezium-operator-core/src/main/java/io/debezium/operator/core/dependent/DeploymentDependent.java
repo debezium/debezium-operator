@@ -138,6 +138,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var podSpec = pod.getSpec();
         var podMeta = pod.getMetadata();
 
+        podSpec.setSecurityContext(template.getSecurityContext());
         podSpec.setAffinity(template.getAffinity());
         podSpec.setImagePullSecrets(template.getImagePullSecrets());
         podMeta.getLabels().putAll(templateMeta.getLabels());
