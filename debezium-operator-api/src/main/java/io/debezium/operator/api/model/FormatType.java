@@ -46,9 +46,8 @@ public class FormatType implements ConfigMappable {
 
     @Override
     public ConfigMapping asConfiguration() {
-        var config = ConfigMapping.empty();
-        config.putAll(this.config);
-        config.rootValue(type);
-        return config;
+        return ConfigMapping.empty()
+                .putAll(this.config)
+                .rootValue(type);
     }
 }

@@ -46,9 +46,8 @@ public class Source implements ConfigMappable {
 
     @Override
     public ConfigMapping asConfiguration() {
-        var config = ConfigMapping.empty();
-        config.put("connector.class", sourceClass);
-        config.putAll(this.config);
-        return config;
+        return ConfigMapping.empty()
+                .put("connector.class", sourceClass)
+                .putAll(this.config);
     }
 }

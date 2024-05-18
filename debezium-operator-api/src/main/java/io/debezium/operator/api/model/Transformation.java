@@ -63,11 +63,10 @@ public class Transformation implements ConfigMappable {
 
     @Override
     public ConfigMapping asConfiguration() {
-        var config = ConfigMapping.empty();
-        config.put("type", type);
-        config.put("predicate", predicate);
-        config.put("negate", negate);
-        config.putAll(this.config);
-        return config;
+        return ConfigMapping.empty()
+                .put("type", type)
+                .put("predicate", predicate)
+                .put("negate", negate)
+                .putAll(this.config);
     }
 }
