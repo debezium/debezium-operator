@@ -19,7 +19,9 @@ import io.debezium.operator.docs.annotations.Documented;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Documented
-@JsonPropertyOrder({ "image", "version", "image", "quarkus", "runtime", "format", "transforms", "predicates", "source", "sink" })
+@JsonPropertyOrder({
+        "image", "version", "image", "quarkus", "runtime", "format", "transforms", "predicates", "source", "sink"
+})
 public class DebeziumServerSpec implements ConfigMappable {
 
     @JsonPropertyDescription("Image used for Debezium Server container. This property takes precedence over version.")
@@ -136,17 +138,15 @@ public class DebeziumServerSpec implements ConfigMappable {
 
     @Override
     public ConfigMapping asConfiguration() {
-        var dbzConfig = ConfigMapping.prefixed("debezium");
-        dbzConfig.putAll("source", source);
-        dbzConfig.putAll("sink", sink);
-        dbzConfig.putAll("format", format);
-        dbzConfig.putList("transforms", transforms, "t");
-        dbzConfig.putMap("predicates", predicates);
+        var dbzConfig = ConfigMapping.prefixed("debezium")
+                .putAll("source", source)
+                .putAll("sink", sink)
+                .putAll("format", format)
+                .putList("transforms", transforms, "t")
+                .putMap("predicates", predicates);
 
-        var config = ConfigMapping.empty();
-        config.putAll("quarkus", quarkus);
-        config.putAll(dbzConfig);
-
-        return config;
+        return ConfigMapping.empty()
+                .putAll("quarkus", quarkus)
+                .putAll(dbzConfig);
     }
 }

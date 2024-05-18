@@ -46,10 +46,8 @@ public class Predicate implements ConfigMappable {
 
     @Override
     public ConfigMapping asConfiguration() {
-        var config = ConfigMapping.empty();
-        config.put("type", type);
-        config.putAll(this.config);
-        return config;
-
+        return ConfigMapping.empty()
+                .put("type", type)
+                .putAll(this.config);
     }
 }

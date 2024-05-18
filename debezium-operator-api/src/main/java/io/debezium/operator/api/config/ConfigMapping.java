@@ -55,37 +55,44 @@ public final class ConfigMapping {
                 .collect(Collectors.joining(System.lineSeparator()));
     }
 
-    public void rootValue(Object value) {
+    public ConfigMapping rootValue(Object value) {
         putInternal(value);
+        return this;
     }
 
-    public void put(String key, Object value) {
+    public ConfigMapping put(String key, Object value) {
         putInternal(value, key);
+        return this;
     }
 
-    public void putAll(ConfigMappable resource) {
+    public ConfigMapping putAll(ConfigMappable resource) {
         putAll(resource.asConfiguration());
+        return this;
     }
 
-    public void putAll(String key, ConfigMappable resource) {
+    public ConfigMapping putAll(String key, ConfigMappable resource) {
         putAll(key, resource.asConfiguration());
+        return this;
     }
 
-    public void putAll(ConfigMapping config) {
+    public ConfigMapping putAll(ConfigMapping config) {
         config.getAsMap().forEach((key, value) -> putInternal(value, key));
+        return this;
     }
 
-    public void putAll(String key, ConfigMapping config) {
+    public ConfigMapping putAll(String key, ConfigMapping config) {
         config.getAsMap().forEach((subKey, value) -> putInternal(value, key, subKey));
+        return this;
     }
 
-    public void putAll(Map<String, ?> props) {
+    public ConfigMapping putAll(Map<String, ?> props) {
         props.forEach((key, value) -> putInternal(value, key));
+        return this;
     }
 
-    public <T extends ConfigMappable> void putList(String key, List<T> items, String name) {
+    public <T extends ConfigMappable> ConfigMapping putList(String key, List<T> items, String name) {
         if (items.isEmpty()) {
-            return;
+            return this;
         }
 
         record NamedItem(String name, ConfigMappable item) {
@@ -103,16 +110,16 @@ public final class ConfigMapping {
 
 
         named.forEach(item -> putAll(key + "." + item.name, item.item));
-
+        return this;
     }
 
-    public <T extends ConfigMappable> void putMap(String key, Map<String, T> items) {
+    public <T extends ConfigMappable> ConfigMapping putMap(String key, Map<String, T> items) {
         items.keySet().stream()
                 .reduce((x, y) -> String.join(","))
                 .ifPresent(names -> put(key, names));
 
         items.forEach((name, item) -> putAll(key + "." + name, item));
-
+        return this;
     }
 
     private void putInternal(Object value, String... keys) {

@@ -46,9 +46,8 @@ public class Sink implements ConfigMappable {
 
     @Override
     public ConfigMapping asConfiguration() {
-        var config = ConfigMapping.empty();
-        config.put("type", type);
-        config.putAll(type, this.config);
-        return config;
+        return ConfigMapping.empty()
+                .put("type", type)
+                .putAll(type, this.config);
     }
 }
