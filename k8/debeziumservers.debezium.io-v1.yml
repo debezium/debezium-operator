@@ -1540,6 +1540,211 @@ spec:
                         x-kubernetes-preserve-unknown-fields: true
                     type: object
                     x-kubernetes-preserve-unknown-fields: true
+                  offset:
+                    description: Offset store configuration
+                    properties:
+                      file:
+                        description: File backed offset store configuration
+                        properties:
+                          config:
+                            description: Additional store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          fileName:
+                            description: Name of the offset file (relative to data
+                              root)
+                            type: string
+                        type: object
+                      flushMs:
+                        description: Interval at which to try commiting offsets
+                        type: integer
+                      memory:
+                        description: Memory backed offset store configuration
+                        properties:
+                          config:
+                            description: Additional store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                        type: object
+                      redis:
+                        description: Redis backed offset store configuration
+                        properties:
+                          address:
+                            description: Redis host:port used to connect
+                            type: string
+                          config:
+                            description: Additional store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          key:
+                            description: Redis hash key
+                            type: string
+                          password:
+                            description: Redis password
+                            type: string
+                          sslEnabled:
+                            description: Redis username
+                            type: boolean
+                          user:
+                            description: Redis username
+                            type: string
+                          wait:
+                            description: Configures verification of replica writes
+                            properties:
+                              enabled:
+                                description: "In case of Redis with replica, this\
+                                  \ allows to verify that the data has been written\
+                                  \ to replica"
+                                type: boolean
+                              retry:
+                                description: Enables retry on wait for replica
+                                type: boolean
+                              retryDelayMs:
+                                description: Delay of retry on wait
+                                type: integer
+                              timeoutMs:
+                                description: Timeout in ms when waiting for replica
+                                type: integer
+                            type: object
+                        type: object
+                      store:
+                        description: Arbitrary offset store configuration
+                        properties:
+                          config:
+                            description: Store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          type:
+                            description: Fully qualified name of Java class implementing
+                              the store.
+                            type: string
+                        type: object
+                    type: object
+                  schemaHistory:
+                    description: Schema history store configuration
+                    properties:
+                      file:
+                        description: File backed schema history store configuration
+                        properties:
+                          config:
+                            description: Additional store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          fileName:
+                            description: Name of the offset file (relative to data
+                              root)
+                            type: string
+                        type: object
+                      memory:
+                        description: Memory backed schema history store configuration
+                        properties:
+                          config:
+                            description: Additional store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                        type: object
+                      redis:
+                        description: Redis backed schema history store configuration
+                        properties:
+                          address:
+                            description: Redis host:port used to connect
+                            type: string
+                          config:
+                            description: Additional store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          key:
+                            description: Redis hash key
+                            type: string
+                          password:
+                            description: Redis password
+                            type: string
+                          sslEnabled:
+                            description: Redis username
+                            type: boolean
+                          user:
+                            description: Redis username
+                            type: string
+                          wait:
+                            description: Configures verification of replica writes
+                            properties:
+                              enabled:
+                                description: "In case of Redis with replica, this\
+                                  \ allows to verify that the data has been written\
+                                  \ to replica"
+                                type: boolean
+                              retry:
+                                description: Enables retry on wait for replica
+                                type: boolean
+                              retryDelayMs:
+                                description: Delay of retry on wait
+                                type: integer
+                              timeoutMs:
+                                description: Timeout in ms when waiting for replica
+                                type: integer
+                            type: object
+                        type: object
+                      store:
+                        description: Arbitrary schema history store configuration
+                        properties:
+                          config:
+                            description: Store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          type:
+                            description: Fully qualified name of Java class implementing
+                              the store.
+                            type: string
+                        type: object
+                    type: object
                 type: object
               transforms:
                 description: Single Message Transformations employed by this instance

@@ -5,7 +5,10 @@
  */
 package io.debezium.operator.docs;
 
+import static java.util.function.Predicate.not;
+
 import java.lang.annotation.Annotation;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -14,7 +17,10 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.NoType;
 import javax.lang.model.type.TypeMirror;
+
+import io.debezium.operator.docs.annotations.Documented;
 
 public final class Processing {
 
@@ -59,15 +65,26 @@ public final class Processing {
     }
 
     /**
+     * Return type mirror as {@link TypeElement} if it represents specified kind
+     *
+     * @param type type mirror instance
+     * @param kind element kind
+     * @return type mirror as {@link TypeElement} or empty
+     */
+    public static Optional<TypeElement> asTypeElement(TypeMirror type, ElementKind kind) {
+        return asElement(type)
+                .filter(e -> e.getKind() == kind)
+                .map(TypeElement.class::cast);
+    }
+
+    /**
      * Return type mirror as {@link TypeElement} if it represents an Enum type
      *
      * @param type type mirror instance
      * @return type mirror as {@link TypeElement} or empty
      */
     public static Optional<TypeElement> asEnum(TypeMirror type) {
-        return asElement(type)
-                .filter(e -> e.getKind() == ElementKind.ENUM)
-                .map(TypeElement.class::cast);
+        return asTypeElement(type, ElementKind.ENUM);
     }
 
     /**
@@ -76,7 +93,7 @@ public final class Processing {
      * @param element parent element
      * @return stream of enclosed elements cast to given type
      */
-    public static <T extends Element> Stream<T> enclosedElements(Element element, ElementKind kind, Class<T> clazz) {
+    public static <T extends Element> Stream<T> enclosedElements(TypeElement element, ElementKind kind, Class<T> clazz) {
         return enclosedElements(element, kind).map(clazz::cast);
     }
 
@@ -86,7 +103,7 @@ public final class Processing {
      * @param element parent element
      * @return stream of enclosed elements
      */
-    public static Stream<? extends Element> enclosedElements(Element element, ElementKind kind) {
+    public static Stream<? extends Element> enclosedElements(TypeElement element, ElementKind kind) {
         return enclosedElements(element).filter(e -> e.getKind() == kind);
     }
 
@@ -94,8 +111,33 @@ public final class Processing {
      * @param element parent element
      * @return stream of enclosed elements
      */
-    public static Stream<? extends Element> enclosedElements(Element element) {
-        return element.getEnclosedElements().stream();
+    public static Stream<? extends Element> enclosedElements(TypeElement element) {
+        var parents = annotation(element, Documented.class)
+                .map(Documented::parent)
+                .orElse(false);
+
+        var allEnclosed = new LinkedList<Element>();
+        var current = element;
+        do {
+            var enclosed = current.getEnclosedElements();
+            allEnclosed.addAll(enclosed);
+            current = parent(current);
+        } while (parents && current != null);
+
+        return allEnclosed.stream();
+    }
+
+    /**
+     * Returns parent class of given element
+     * @param element the type element
+     * @return parent or null in case that the parent is {@link java.lang.Object}
+     */
+    public static TypeElement parent(TypeElement element) {
+        var parent = element.getSuperclass();
+        return Optional.of(parent)
+                .filter(not(p -> p instanceof NoType))
+                .flatMap(p -> asTypeElement(p, ElementKind.CLASS))
+                .orElse(null);
     }
 
     public static Stream<? extends TypeMirror> typeArguments(DeclaredType type) {

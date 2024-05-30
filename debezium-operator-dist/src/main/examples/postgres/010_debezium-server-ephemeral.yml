@@ -17,10 +17,11 @@ spec:
       producer.value.serializer: org.apache.kafka.common.serialization.StringSerializer
   source:
     class: io.debezium.connector.postgresql.PostgresConnector
+    offset:
+      memory: { }
+    schemaHistory:
+      memory: { }
     config:
-      tasks.max:
-      offset.storage.file.filename: /debezium/data/offsets.dat
-      database.history: io.debezium.relational.history.FileDatabaseHistory
       database.hostname: postgresql
       database.port: 5432
       database.user: ${POSTGRES_USER}

@@ -42,6 +42,19 @@ Used in: <<debezium-operator-schema-reference-templates, `+Templates+`>>
 | [[debezium-operator-schema-reference-containertemplate-probes]]<<debezium-operator-schema-reference-containertemplate-probes, `+probes+`>> | <<debezium-operator-schema-reference-probes, `+Probes+`>> |  | Container probes configuration.
 |===
 
+[#debezium-operator-schema-reference-customstore]
+==== CustomStore Schema Reference
+Used in: <<debezium-operator-schema-reference-offset, `+Offset+`>>, <<debezium-operator-schema-reference-schemahistory, `+SchemaHistory+`>>
+
+
+.CustomStore properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-customstore-type]]<<debezium-operator-schema-reference-customstore-type, `+type+`>> | String |  | Fully qualified name of Java class implementing the store.
+| [[debezium-operator-schema-reference-customstore-config]]<<debezium-operator-schema-reference-customstore-config, `+config+`>> | Map |  | Store configuration properties.
+|===
+
 [#debezium-operator-schema-reference-datastorage]
 ==== DataStorage Schema Reference
 Used in: <<debezium-operator-schema-reference-runtimestorage, `+RuntimeStorage+`>>
@@ -99,6 +112,32 @@ Used in: <<debezium-operator-schema-reference-debeziumserver, `+DebeziumServer+`
 | [[debezium-operator-schema-reference-debeziumserverstatus-conditions]]<<debezium-operator-schema-reference-debeziumserverstatus-conditions, `+conditions+`>> | <<debezium-operator-schema-reference-condition, `+List<Condition>+`>> |  | List of status conditions
 |===
 
+[#debezium-operator-schema-reference-fileoffsetstore]
+==== FileOffsetStore Schema Reference
+Used in: <<debezium-operator-schema-reference-offset, `+Offset+`>>
+
+
+.FileOffsetStore properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-fileoffsetstore-filename]]<<debezium-operator-schema-reference-fileoffsetstore-filename, `+fileName+`>> | String |  | Name of the offset file (relative to data root)
+| [[debezium-operator-schema-reference-fileoffsetstore-config]]<<debezium-operator-schema-reference-fileoffsetstore-config, `+config+`>> | Map |  | Additional store configuration properties.
+|===
+
+[#debezium-operator-schema-reference-fileschemahistorystore]
+==== FileSchemaHistoryStore Schema Reference
+Used in: <<debezium-operator-schema-reference-schemahistory, `+SchemaHistory+`>>
+
+
+.FileSchemaHistoryStore properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-fileschemahistorystore-filename]]<<debezium-operator-schema-reference-fileschemahistorystore-filename, `+fileName+`>> | String |  | Name of the offset file (relative to data root)
+| [[debezium-operator-schema-reference-fileschemahistorystore-config]]<<debezium-operator-schema-reference-fileschemahistorystore-config, `+config+`>> | Map |  | Additional store configuration properties.
+|===
+
 [#debezium-operator-schema-reference-format]
 ==== Format Schema Reference
 Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
@@ -124,6 +163,30 @@ Used in: <<debezium-operator-schema-reference-format, `+Format+`>>
 | Property | Type | Default | Description
 | [[debezium-operator-schema-reference-formattype-type]]<<debezium-operator-schema-reference-formattype-type, `+type+`>> | String | json | Format type recognised by Debezium Server.
 | [[debezium-operator-schema-reference-formattype-config]]<<debezium-operator-schema-reference-formattype-config, `+config+`>> | Map |  | Format configuration properties.
+|===
+
+[#debezium-operator-schema-reference-inmemoryoffsetstore]
+==== InMemoryOffsetStore Schema Reference
+Used in: <<debezium-operator-schema-reference-offset, `+Offset+`>>
+
+
+.InMemoryOffsetStore properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-inmemoryoffsetstore-config]]<<debezium-operator-schema-reference-inmemoryoffsetstore-config, `+config+`>> | Map |  | Additional store configuration properties.
+|===
+
+[#debezium-operator-schema-reference-inmemoryschemahistorystore]
+==== InMemorySchemaHistoryStore Schema Reference
+Used in: <<debezium-operator-schema-reference-schemahistory, `+SchemaHistory+`>>
+
+
+.InMemorySchemaHistoryStore properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-inmemoryschemahistorystore-config]]<<debezium-operator-schema-reference-inmemoryschemahistorystore-config, `+config+`>> | Map |  | Additional store configuration properties.
 |===
 
 [#debezium-operator-schema-reference-jmxauthentication]
@@ -166,6 +229,22 @@ Used in: <<debezium-operator-schema-reference-podtemplate, `+PodTemplate+`>>
 | Property | Type | Default | Description
 | [[debezium-operator-schema-reference-metadatatemplate-labels]]<<debezium-operator-schema-reference-metadatatemplate-labels, `+labels+`>> | Map<String, String> |  | Labels added to the Kubernetes resource
 | [[debezium-operator-schema-reference-metadatatemplate-annotations]]<<debezium-operator-schema-reference-metadatatemplate-annotations, `+annotations+`>> | Map<String, String> |  | Annotations added to the Kubernetes resource
+|===
+
+[#debezium-operator-schema-reference-offset]
+==== Offset Schema Reference
+Used in: <<debezium-operator-schema-reference-source, `+Source+`>>
+
+
+.Offset properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-offset-file]]<<debezium-operator-schema-reference-offset-file, `+file+`>> | <<debezium-operator-schema-reference-fileoffsetstore, `+FileOffsetStore+`>> |  | File backed offset store configuration
+| [[debezium-operator-schema-reference-offset-memory]]<<debezium-operator-schema-reference-offset-memory, `+memory+`>> | <<debezium-operator-schema-reference-inmemoryoffsetstore, `+InMemoryOffsetStore+`>> |  | Memory backed offset store configuration
+| [[debezium-operator-schema-reference-offset-redis]]<<debezium-operator-schema-reference-offset-redis, `+redis+`>> | <<debezium-operator-schema-reference-redisoffsetstore, `+RedisOffsetStore+`>> |  | Redis backed offset store configuration
+| [[debezium-operator-schema-reference-offset-store]]<<debezium-operator-schema-reference-offset-store, `+store+`>> | <<debezium-operator-schema-reference-customstore, `+CustomStore+`>> |  | Arbitrary offset store configuration
+| [[debezium-operator-schema-reference-offset-flushms]]<<debezium-operator-schema-reference-offset-flushms, `+flushMs+`>> | long | 60000 | Interval at which to try commiting offsets
 |===
 
 [#debezium-operator-schema-reference-podtemplate]
@@ -236,6 +315,57 @@ Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServ
 | [[debezium-operator-schema-reference-quarkus-config]]<<debezium-operator-schema-reference-quarkus-config, `+config+`>> | Map |  | Quarkus configuration properties.
 |===
 
+[#debezium-operator-schema-reference-redisoffsetstore]
+==== RedisOffsetStore Schema Reference
+Used in: <<debezium-operator-schema-reference-offset, `+Offset+`>>
+
+
+.RedisOffsetStore properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-redisoffsetstore-address]]<<debezium-operator-schema-reference-redisoffsetstore-address, `+address+`>> | String |  | Redis host:port used to connect
+| [[debezium-operator-schema-reference-redisoffsetstore-user]]<<debezium-operator-schema-reference-redisoffsetstore-user, `+user+`>> | String |  | Redis username
+| [[debezium-operator-schema-reference-redisoffsetstore-password]]<<debezium-operator-schema-reference-redisoffsetstore-password, `+password+`>> | String |  | Redis password
+| [[debezium-operator-schema-reference-redisoffsetstore-sslenabled]]<<debezium-operator-schema-reference-redisoffsetstore-sslenabled, `+sslEnabled+`>> | boolean | false | Redis username
+| [[debezium-operator-schema-reference-redisoffsetstore-key]]<<debezium-operator-schema-reference-redisoffsetstore-key, `+key+`>> | String |  | Redis hash key
+| [[debezium-operator-schema-reference-redisoffsetstore-wait]]<<debezium-operator-schema-reference-redisoffsetstore-wait, `+wait+`>> | <<debezium-operator-schema-reference-redisstorewaitconfig, `+RedisStoreWaitConfig+`>> |  | Configures verification of replica writes
+| [[debezium-operator-schema-reference-redisoffsetstore-config]]<<debezium-operator-schema-reference-redisoffsetstore-config, `+config+`>> | Map |  | Additional store configuration properties.
+|===
+
+[#debezium-operator-schema-reference-redisschemahistorystore]
+==== RedisSchemaHistoryStore Schema Reference
+Used in: <<debezium-operator-schema-reference-schemahistory, `+SchemaHistory+`>>
+
+
+.RedisSchemaHistoryStore properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-redisschemahistorystore-address]]<<debezium-operator-schema-reference-redisschemahistorystore-address, `+address+`>> | String |  | Redis host:port used to connect
+| [[debezium-operator-schema-reference-redisschemahistorystore-user]]<<debezium-operator-schema-reference-redisschemahistorystore-user, `+user+`>> | String |  | Redis username
+| [[debezium-operator-schema-reference-redisschemahistorystore-password]]<<debezium-operator-schema-reference-redisschemahistorystore-password, `+password+`>> | String |  | Redis password
+| [[debezium-operator-schema-reference-redisschemahistorystore-sslenabled]]<<debezium-operator-schema-reference-redisschemahistorystore-sslenabled, `+sslEnabled+`>> | boolean | false | Redis username
+| [[debezium-operator-schema-reference-redisschemahistorystore-key]]<<debezium-operator-schema-reference-redisschemahistorystore-key, `+key+`>> | String |  | Redis hash key
+| [[debezium-operator-schema-reference-redisschemahistorystore-wait]]<<debezium-operator-schema-reference-redisschemahistorystore-wait, `+wait+`>> | <<debezium-operator-schema-reference-redisstorewaitconfig, `+RedisStoreWaitConfig+`>> |  | Configures verification of replica writes
+| [[debezium-operator-schema-reference-redisschemahistorystore-config]]<<debezium-operator-schema-reference-redisschemahistorystore-config, `+config+`>> | Map |  | Additional store configuration properties.
+|===
+
+[#debezium-operator-schema-reference-redisstorewaitconfig]
+==== RedisStoreWaitConfig Schema Reference
+Used in: <<debezium-operator-schema-reference-redisoffsetstore, `+RedisOffsetStore+`>>, <<debezium-operator-schema-reference-redisschemahistorystore, `+RedisSchemaHistoryStore+`>>
+
+
+.RedisStoreWaitConfig properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-redisstorewaitconfig-enabled]]<<debezium-operator-schema-reference-redisstorewaitconfig-enabled, `+enabled+`>> | boolean | false | In case of Redis with replica, this allows to verify that the data has been written to replica
+| [[debezium-operator-schema-reference-redisstorewaitconfig-timeoutms]]<<debezium-operator-schema-reference-redisstorewaitconfig-timeoutms, `+timeoutMs+`>> | long | 1000 | Timeout in ms when waiting for replica
+| [[debezium-operator-schema-reference-redisstorewaitconfig-retry]]<<debezium-operator-schema-reference-redisstorewaitconfig-retry, `+retry+`>> | boolean | false | Enables retry on wait for replica
+| [[debezium-operator-schema-reference-redisstorewaitconfig-retrydelayms]]<<debezium-operator-schema-reference-redisstorewaitconfig-retrydelayms, `+retryDelayMs+`>> | long | 1000 | Delay of retry on wait
+|===
+
 [#debezium-operator-schema-reference-runtime]
 ==== Runtime Schema Reference
 Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
@@ -278,6 +408,21 @@ Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
 | [[debezium-operator-schema-reference-runtimestorage-external]]<<debezium-operator-schema-reference-runtimestorage-external, `+external+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#volume-v1-core[`+List<Volume>+`] |  | Additional volumes mounted to /debezium/external
 |===
 
+[#debezium-operator-schema-reference-schemahistory]
+==== SchemaHistory Schema Reference
+Used in: <<debezium-operator-schema-reference-source, `+Source+`>>
+
+
+.SchemaHistory properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-schemahistory-file]]<<debezium-operator-schema-reference-schemahistory-file, `+file+`>> | <<debezium-operator-schema-reference-fileschemahistorystore, `+FileSchemaHistoryStore+`>> |  | File backed schema history store configuration
+| [[debezium-operator-schema-reference-schemahistory-memory]]<<debezium-operator-schema-reference-schemahistory-memory, `+memory+`>> | <<debezium-operator-schema-reference-inmemoryschemahistorystore, `+InMemorySchemaHistoryStore+`>> |  | Memory backed schema history store configuration
+| [[debezium-operator-schema-reference-schemahistory-redis]]<<debezium-operator-schema-reference-schemahistory-redis, `+redis+`>> | <<debezium-operator-schema-reference-redisschemahistorystore, `+RedisSchemaHistoryStore+`>> |  | Redis backed schema history store configuration
+| [[debezium-operator-schema-reference-schemahistory-store]]<<debezium-operator-schema-reference-schemahistory-store, `+store+`>> | <<debezium-operator-schema-reference-customstore, `+CustomStore+`>> |  | Arbitrary schema history store configuration
+|===
+
 [#debezium-operator-schema-reference-sink]
 ==== Sink Schema Reference
 Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServerSpec+`>>
@@ -301,6 +446,8 @@ Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServ
 |===
 | Property | Type | Default | Description
 | [[debezium-operator-schema-reference-source-sourceclass]]<<debezium-operator-schema-reference-source-sourceclass, `+sourceClass+`>> | String |  | Fully qualified name of source connector Java class.
+| [[debezium-operator-schema-reference-source-offset]]<<debezium-operator-schema-reference-source-offset, `+offset+`>> | <<debezium-operator-schema-reference-offset, `+Offset+`>> |  | Offset store configuration
+| [[debezium-operator-schema-reference-source-schemahistory]]<<debezium-operator-schema-reference-source-schemahistory, `+schemaHistory+`>> | <<debezium-operator-schema-reference-schemahistory, `+SchemaHistory+`>> |  | Schema history store configuration
 | [[debezium-operator-schema-reference-source-config]]<<debezium-operator-schema-reference-source-config, `+config+`>> | Map |  | Source connector configuration properties.
 |===
 

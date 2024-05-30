@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.api.model.runtime.Runtime;
+import io.debezium.operator.api.model.source.Source;
 import io.debezium.operator.docs.annotations.Documented;
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
