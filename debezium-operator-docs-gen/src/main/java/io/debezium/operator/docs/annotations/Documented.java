@@ -16,6 +16,8 @@ public @interface Documented {
 
     String K8_API_DOCS_ADDR = "https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/";
 
+    boolean parent() default true;
+
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.SOURCE)
     @interface Field {

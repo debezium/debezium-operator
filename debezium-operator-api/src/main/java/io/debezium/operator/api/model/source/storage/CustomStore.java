@@ -3,37 +3,31 @@
  *
  * Licensed under the Apache Software License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package io.debezium.operator.api.model;
+package io.debezium.operator.api.model.source.storage;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.api.model.ConfigProperties;
 import io.debezium.operator.docs.annotations.Documented;
 import io.sundr.builder.annotations.Buildable;
 
 @Documented
 @Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
-public class Source implements ConfigMappable {
+public class CustomStore implements Store {
 
-    @JsonPropertyDescription("Fully qualified name of source connector Java class.")
-    @JsonProperty(value = "class", required = true)
-    private String sourceClass;
+    @JsonPropertyDescription("Fully qualified name of Java class implementing the store.")
+    private String type;
 
-    @JsonPropertyDescription("Source connector configuration properties.")
+    @JsonPropertyDescription("Store configuration properties.")
     private ConfigProperties config;
 
-    public Source() {
-        this.config = new ConfigProperties();
+    public String getType() {
+        return type;
     }
 
-    public String getSourceClass() {
-        return sourceClass;
-    }
-
-    public void setSourceClass(String clazz) {
-        this.sourceClass = clazz;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public ConfigProperties getConfig() {
@@ -47,7 +41,7 @@ public class Source implements ConfigMappable {
     @Override
     public ConfigMapping asConfiguration() {
         return ConfigMapping.empty()
-                .put("connector.class", sourceClass)
-                .putAll(this.config);
+                .rootValue(type)
+                .putAll(config);
     }
 }

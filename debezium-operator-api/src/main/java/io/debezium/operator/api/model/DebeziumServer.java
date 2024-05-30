@@ -29,7 +29,7 @@ import io.sundr.builder.annotations.BuildableReference;
 @Documented(fields = {
         @Documented.Field(name = "spec", type = "DebeziumServerSpec", description = "The specification of Debezium Server"),
         @Documented.Field(name = "status", type = "DebeziumServerStatus", description = "The status of Debezium")
-})
+}, parent = false)
 public class DebeziumServer
         extends CustomResource<DebeziumServerSpec, DebeziumServerStatus>
         implements Namespaced, ConfigMappable {
