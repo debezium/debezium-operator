@@ -183,6 +183,28 @@ spec:
                         description: JMX port.
                         type: integer
                     type: object
+                  metrics:
+                    description: Metrics configuration
+                    properties:
+                      jmxExporter:
+                        description: Prometheus JMX exporter configuration
+                        properties:
+                          configFrom:
+                            description: Config map key reference which value will
+                              be used as configuration file
+                            properties:
+                              key:
+                                type: string
+                              name:
+                                type: string
+                              optional:
+                                type: boolean
+                            type: object
+                          enabled:
+                            description: Enables JMX Prometheus exporter
+                            type: boolean
+                        type: object
+                    type: object
                   serviceAccount:
                     description: An existing service account used to run the Debezium
                       Server pod

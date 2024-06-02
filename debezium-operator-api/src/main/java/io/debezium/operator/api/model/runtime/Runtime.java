@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.debezium.operator.api.model.runtime.jmx.JmxConfig;
+import io.debezium.operator.api.model.runtime.metrics.Metrics;
 import io.debezium.operator.api.model.runtime.storage.RuntimeStorage;
 import io.debezium.operator.api.model.runtime.templates.Templates;
 import io.debezium.operator.docs.annotations.Documented;
@@ -35,11 +36,15 @@ public class Runtime {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String serviceAccount;
 
+    @JsonPropertyDescription("Metrics configuration")
+    private Metrics metrics;
+
     public Runtime() {
         this.storage = new RuntimeStorage();
         this.environment = new RuntimeEnvironment();
         this.jmx = new JmxConfig();
         this.templates = new Templates();
+        this.metrics = new Metrics();
     }
 
     public Templates getTemplates() {
@@ -80,5 +85,13 @@ public class Runtime {
 
     public void setEnvironment(RuntimeEnvironment environment) {
         this.environment = environment;
+    }
+
+    public Metrics getMetrics() {
+        return metrics;
+    }
+
+    public void setMetrics(Metrics metrics) {
+        this.metrics = metrics;
     }
 }

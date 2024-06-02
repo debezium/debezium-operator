@@ -218,6 +218,19 @@ Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
 | [[debezium-operator-schema-reference-jmxconfig-authentication]]<<debezium-operator-schema-reference-jmxconfig-authentication, `+authentication+`>> | <<debezium-operator-schema-reference-jmxauthentication, `+JmxAuthentication+`>> |  | JMX authentication config.
 |===
 
+[#debezium-operator-schema-reference-jmxexporter]
+==== JmxExporter Schema Reference
+Used in: <<debezium-operator-schema-reference-metrics, `+Metrics+`>>
+
+
+.JmxExporter properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-jmxexporter-enabled]]<<debezium-operator-schema-reference-jmxexporter-enabled, `+enabled+`>> | boolean |  | Enables JMX Prometheus exporter
+| [[debezium-operator-schema-reference-jmxexporter-configfrom]]<<debezium-operator-schema-reference-jmxexporter-configfrom, `+configFrom+`>> | ConfigMapKeySelector |  | Config map key reference which value will be used as configuration file
+|===
+
 [#debezium-operator-schema-reference-metadatatemplate]
 ==== MetadataTemplate Schema Reference
 Used in: <<debezium-operator-schema-reference-podtemplate, `+PodTemplate+`>>
@@ -229,6 +242,18 @@ Used in: <<debezium-operator-schema-reference-podtemplate, `+PodTemplate+`>>
 | Property | Type | Default | Description
 | [[debezium-operator-schema-reference-metadatatemplate-labels]]<<debezium-operator-schema-reference-metadatatemplate-labels, `+labels+`>> | Map<String, String> |  | Labels added to the Kubernetes resource
 | [[debezium-operator-schema-reference-metadatatemplate-annotations]]<<debezium-operator-schema-reference-metadatatemplate-annotations, `+annotations+`>> | Map<String, String> |  | Annotations added to the Kubernetes resource
+|===
+
+[#debezium-operator-schema-reference-metrics]
+==== Metrics Schema Reference
+Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
+
+
+.Metrics properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-metrics-jmxexporter]]<<debezium-operator-schema-reference-metrics-jmxexporter, `+jmxExporter+`>> | <<debezium-operator-schema-reference-jmxexporter, `+JmxExporter+`>> |  | Prometheus JMX exporter configuration
 |===
 
 [#debezium-operator-schema-reference-offset]
@@ -380,6 +405,7 @@ Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServ
 | [[debezium-operator-schema-reference-runtime-jmx]]<<debezium-operator-schema-reference-runtime-jmx, `+jmx+`>> | <<debezium-operator-schema-reference-jmxconfig, `+JmxConfig+`>> |  | JMX configuration.
 | [[debezium-operator-schema-reference-runtime-templates]]<<debezium-operator-schema-reference-runtime-templates, `+templates+`>> | <<debezium-operator-schema-reference-templates, `+Templates+`>> |  | Debezium Server resource templates.
 | [[debezium-operator-schema-reference-runtime-serviceaccount]]<<debezium-operator-schema-reference-runtime-serviceaccount, `+serviceAccount+`>> | String |  | An existing service account used to run the Debezium Server pod
+| [[debezium-operator-schema-reference-runtime-metrics]]<<debezium-operator-schema-reference-runtime-metrics, `+metrics+`>> | <<debezium-operator-schema-reference-metrics, `+Metrics+`>> |  | Metrics configuration
 |===
 
 [#debezium-operator-schema-reference-runtimeenvironment]
