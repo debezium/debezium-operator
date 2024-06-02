@@ -19,6 +19,7 @@ import io.debezium.operator.api.model.CommonLabels;
 import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.api.model.runtime.RuntimeEnvironment;
 import io.debezium.operator.api.model.runtime.jmx.JmxConfig;
+import io.debezium.operator.api.model.runtime.metrics.Metrics;
 import io.debezium.operator.api.model.runtime.storage.RuntimeStorage;
 import io.debezium.operator.api.model.runtime.templates.ContainerTemplate;
 import io.debezium.operator.api.model.runtime.templates.PodTemplate;
@@ -57,6 +58,9 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     public static final String CONFIG_FILE_NAME = "application.properties";
     public static final String CONFIG_DIR_PATH = "/debezium/conf";
     public static final String CONFIG_FILE_PATH = CONFIG_DIR_PATH + "/" + CONFIG_FILE_NAME;
+    public static final String METRICS_VOLUME_NAME = "ds-metrics";
+    public static final String METRICS_DIR_PATH = "/debezium/metrics";
+    public static final String METRICS_FILE_PATH = METRICS_DIR_PATH + "/%s";
     public static final String DATA_VOLUME_NAME = "ds-data";
     public static final String DATA_VOLUME_PATH = "/debezium/data";
     public static final String JMX_CONFIG_VOLUME_NAME = "ds-jmx-config";
@@ -65,6 +69,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     public static final String JMX_CONFIG_VOLUME_INIT_PATH = "/jmx";
     public static final String EXTERNAL_VOLUME_PATH = "/debezium/external/%s";
     public static final int DEFAULT_HTTP_PORT = 8080;
+    public static final int DEFAULT_METRICS_PORT = 9090;
     private static final String CONFIG_MD5_ANNOTATION = "debezium.io/server-config-md5";
 
     @ConfigProperty(name = "debezium.image", defaultValue = DEFAULT_IMAGE)
@@ -110,6 +115,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         addTemplateConfigurationToPod(templates.getPod(), pod);
         addStorageVolumesToPod(primary, storage, pod);
         addJmxConfigurationToPod(primary, pod);
+        addMetricConfigurationToPod(primary, pod);
 
         return new DeploymentBuilder()
                 .withMetadata(new ObjectMetaBuilder()
@@ -125,6 +131,31 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                         .withTemplate(pod)
                         .build())
                 .build();
+    }
+
+    private void addMetricConfigurationToPod(DebeziumServer primary, PodTemplateSpec pod) {
+        var metrics = primary.getSpec().getRuntime().getMetrics();
+        var jmxExporter = metrics.getJmxExporter();
+        var volumes = pod.getSpec().getVolumes();
+
+        if (!jmxExporter.isEnabled()) {
+            return;
+        }
+
+        // Add config map volume if required
+        var configMapRef = jmxExporter.getConfigFrom();
+        if (configMapRef == null) {
+            return;
+        }
+
+        var metricsVolume = new VolumeBuilder()
+                .withName(METRICS_VOLUME_NAME)
+                .withConfigMap(new ConfigMapVolumeSourceBuilder()
+                        .withName(configMapRef.getName())
+                        .build())
+                .build();
+
+        volumes.add(metricsVolume);
     }
 
     /**
@@ -245,7 +276,8 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var template = runtime.getTemplates().getContainer();
         var storage = runtime.getStorage();
         var environment = runtime.getEnvironment();
-        var jmx = primary.getSpec().getRuntime().getJmx();
+        var jmx = runtime.getJmx();
+        var metrics = runtime.getMetrics();
         var probePort = quarkus.getConfig().getProps().getOrDefault("http.port", 8080);
         var livenessProbe = template.getProbes().getLiveness();
         var readinessProbe = template.getProbes().getReadiness();
@@ -290,7 +322,43 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         addEnvVariablesToContainer(environment, container);
         addStorageVolumeMountsToContainer(storage, container);
         addJmxConfigurationToContainer(jmx, container);
+        addMetricConfigurationToContainer(metrics, container);
         return container;
+    }
+
+    private void addMetricConfigurationToContainer(Metrics metrics, Container container) {
+        var jmxExporter = metrics.getJmxExporter();
+
+        if (!jmxExporter.isEnabled()) {
+            return;
+        }
+
+        // Add metrics port
+        var portEnv = new EnvVar("JMX_EXPORTER_PORT", String.valueOf(DEFAULT_METRICS_PORT), null);
+        var port = new ContainerPortBuilder()
+                .withName("exporter-metrics")
+                .withProtocol("TCP")
+                .withContainerPort(DEFAULT_METRICS_PORT)
+                .build();
+
+        container.getEnv().add(portEnv);
+        container.getPorts().add(port);
+
+        // Mount metrics config file if required
+        var configMapRef = metrics.getJmxExporter().getConfigFrom();
+        if (configMapRef == null) {
+            return;
+        }
+
+        var configFile = METRICS_FILE_PATH.formatted(configMapRef.getKey());
+        var configEnv = new EnvVar("JMX_EXPORTER_CONFIG", configFile, null);
+        var mount = new VolumeMountBuilder()
+                .withName(METRICS_VOLUME_NAME)
+                .withMountPath(METRICS_DIR_PATH)
+                .build();
+
+        container.getEnv().add(configEnv);
+        container.getVolumeMounts().add(mount);
     }
 
     /**
@@ -414,7 +482,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     }
 
     /**
-     * Adds JAVA_OPTS environment variable is not set on container.
+     * Adds JAVA_OPTS environment variable if not set on container.
      * If JAVA_OPTS already exists then new (and only new) options are added
      *
      * @param newValue  additional JAVA_OPTS in form of a map

@@ -15,6 +15,7 @@ import io.debezium.operator.api.model.status.DebeziumServerStatus;
 import io.debezium.operator.commons.OperatorConstants;
 import io.debezium.operator.core.dependent.ConfigMapDependent;
 import io.debezium.operator.core.dependent.DeploymentDependent;
+import io.debezium.operator.core.dependent.JmxExporterServiceDependent;
 import io.debezium.operator.core.dependent.JmxServiceDependent;
 import io.debezium.operator.core.dependent.PvcDependent;
 import io.debezium.operator.core.dependent.RoleBindingDependent;
@@ -24,6 +25,7 @@ import io.debezium.operator.core.dependent.conditions.CreatePvc;
 import io.debezium.operator.core.dependent.conditions.CreateServiceAccount;
 import io.debezium.operator.core.dependent.conditions.DeploymentReady;
 import io.debezium.operator.core.dependent.conditions.JmxEnabled;
+import io.debezium.operator.core.dependent.conditions.JmxExporterEnabled;
 import io.debezium.operator.core.dependent.conditions.PvcReady;
 import io.javaoperatorsdk.operator.api.reconciler.Constants;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
@@ -49,7 +51,8 @@ import io.quarkus.logging.Log;
                 "config",
                 "role-binding",
         }, reconcilePrecondition = PvcReady.class, readyPostcondition = DeploymentReady.class),
-        @Dependent(name = "jmx-service", type = JmxServiceDependent.class, dependsOn = "deployment", reconcilePrecondition = JmxEnabled.class)
+        @Dependent(name = "jmx-service", type = JmxServiceDependent.class, dependsOn = "deployment", reconcilePrecondition = JmxEnabled.class),
+        @Dependent(name = "jmx-exporter-service", type = JmxExporterServiceDependent.class, dependsOn = "deployment", reconcilePrecondition = JmxExporterEnabled.class)
 })
 @CSVMetadata(name = OperatorConstants.CSV_INTERNAL_BUNDLE_NAME)
 @RBACRule(verbs = { RBACVerbs.GET, RBACVerbs.LIST, RBACVerbs.WATCH }, apiGroups = "", resources = "secrets")
