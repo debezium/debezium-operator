@@ -27,7 +27,7 @@ public class ConfigMappingTest {
         var config = ConfigMapping.empty();
         config.put("invalid", null);
 
-        assertThat(config.getAsMap()).isEmpty();
+        assertThat(config.getAsMapSimple()).isEmpty();
         assertThat(config.getAsString()).isEmpty();
     }
 
@@ -36,17 +36,101 @@ public class ConfigMappingTest {
         var config = ConfigMapping.empty();
         config.rootValue("json");
 
-        assertThat(config.getAsMap()).containsEntry("", "json");
+        assertThat(config.getAsMapSimple()).containsEntry("", "json");
         assertThat(config.getAsString()).isEqualTo("=json");
     }
 
     @Test
     void shouldAddKeyAndValue() {
         var config = ConfigMapping.empty();
-        config.put("key", "value");
+        config.put("name", "value");
 
-        assertThat(config.getAsMap()).containsEntry("key", "value");
-        assertThat(config.getAsString()).isEqualTo("key=value");
+        assertThat(config.getAsMapSimple()).containsEntry("name", "value");
+        assertThat(config.getAsString()).isEqualTo("name=value");
+    }
+
+    @Test
+    void shouldAddKeyAndValueWithPrefix() {
+        var config = ConfigMapping.prefixed("prefix");
+        config.put("name", "value");
+
+        assertThat(config.getAsMapSimple()).containsEntry("prefix.name", "value");
+        assertThat(config.getAsString()).isEqualTo("prefix.name=value");
+    }
+
+    @Test
+    void shouldAddKeyAndValueWithAbsKeyWithPrefix() {
+        var config = ConfigMapping.prefixed("prefix");
+        config.putAbs("name", "value");
+
+        assertThat(config.getAsMapSimple()).containsEntry("name", "value");
+        assertThat(config.getAsString()).isEqualTo("name=value");
+    }
+
+    @Test
+    void shouldAddChildConfigDirectly() {
+        var childConfig = ConfigMapping.empty();
+        childConfig.put("childName", "childValue");
+        var parent = ConfigMapping.empty();
+        parent.put("name", "value");
+        parent.putAll(childConfig);
+
+        assertThat(parent.getAsMapSimple())
+                .contains(entry("name", "value"), entry("childName", "childValue"));
+        assertThat(parent.getAsString()).isEqualTo("childName=childValue\nname=value");
+    }
+
+    @Test
+    void shouldAddChildConfigWithPrefixDirectly() {
+        var childConfig = ConfigMapping.prefixed("prefix");
+        childConfig.put("childName", "childValue");
+        var parent = ConfigMapping.empty();
+        parent.put("name", "value");
+        parent.putAll(childConfig);
+
+        assertThat(parent.getAsMapSimple())
+                .contains(entry("name", "value"), entry("prefix.childName", "childValue"));
+        assertThat(parent.getAsString()).isEqualTo("name=value\nprefix.childName=childValue");
+    }
+
+    @Test
+    void shouldAddChildConfigWithKey() {
+        var childConfig = ConfigMapping.empty();
+        childConfig.put("name", "value");
+        var parent = ConfigMapping.empty();
+        parent.put("name", "value");
+        parent.putAll("child", childConfig);
+
+        assertThat(parent.getAsMapSimple())
+                .contains(entry("name", "value"), entry("child.name", "value"));
+        assertThat(parent.getAsString()).isEqualTo("child.name=value\nname=value");
+    }
+
+    @Test
+    void shouldAddChildConfigWithPrefixWithKey() {
+        var childConfig = ConfigMapping.prefixed("prefix");
+        childConfig.put("name", "value");
+        var parent = ConfigMapping.empty();
+        parent.put("name", "value");
+        parent.putAll("child", childConfig);
+
+        assertThat(parent.getAsMapSimple())
+                .contains(entry("name", "value"), entry("child.prefix.name", "value"));
+        assertThat(parent.getAsString()).isEqualTo("child.prefix.name=value\nname=value");
+    }
+
+    @Test
+    void shouldAddChildConfigWithAbsoluteKeyWithKey() {
+        var childConfig = ConfigMapping.empty();
+        childConfig.put("name", "value");
+        childConfig.putAbs("name2", "value2");
+        var parent = ConfigMapping.empty();
+        parent.put("name", "value");
+        parent.putAll("child", childConfig);
+
+        assertThat(parent.getAsMapSimple())
+                .contains(entry("name", "value"), entry("child.name", "value"), entry("name2", "value2"));
+        assertThat(parent.getAsString()).isEqualTo("child.name=value\nname2=value2\nname=value");
     }
 
     @Test
@@ -58,7 +142,7 @@ public class ConfigMappingTest {
         var config = ConfigMapping.empty();
         config.putAll(properties);
 
-        assertThat(config.getAsMap()).contains(entry("key1", "value1"), entry("key2", "value2"));
+        assertThat(config.getAsMapSimple()).contains(entry("key1", "value1"), entry("key2", "value2"));
         assertThat(config.getAsString()).isEqualTo("key1=value1\nkey2=value2");
     }
 
@@ -83,12 +167,11 @@ public class ConfigMappingTest {
 
         config.putList("transforms", transformations, "Reroute");
 
-        assertThat(config.getAsMap()).containsEntry("transforms", "Reroute0,Reroute1");
-        assertThat(config.getAsMap()).containsEntry("transforms.Reroute0.type", "io.debezium.transforms.ByLogicalTableRouter");
-        assertThat(config.getAsMap()).containsEntry("transforms.Reroute0.negate", "false");
-        assertThat(config.getAsMap()).containsEntry("transforms.Reroute1.type", "io.debezium.transforms.ByLogicalTableRouter");
-        assertThat(config.getAsMap()).containsEntry("transforms.Reroute1.negate", "true");
-
+        assertThat(config.getAsMapSimple()).containsEntry("transforms", "Reroute0,Reroute1");
+        assertThat(config.getAsMapSimple()).containsEntry("transforms.Reroute0.type", "io.debezium.transforms.ByLogicalTableRouter");
+        assertThat(config.getAsMapSimple()).containsEntry("transforms.Reroute0.negate", "false");
+        assertThat(config.getAsMapSimple()).containsEntry("transforms.Reroute1.type", "io.debezium.transforms.ByLogicalTableRouter");
+        assertThat(config.getAsMapSimple()).containsEntry("transforms.Reroute1.negate", "true");
         assertThat(config.getAsString()).isEqualTo("transforms.Reroute0.negate=false\n" +
                 "transforms.Reroute0.type=io.debezium.transforms.ByLogicalTableRouter\n" +
                 "transforms.Reroute1.negate=true\n" +
@@ -107,8 +190,8 @@ public class ConfigMappingTest {
         Map<String, Predicate> predicateMap = Map.of("predicates", predicate);
         config.putMap("map", predicateMap);
 
-        assertThat(config.getAsMap()).containsEntry("map", "predicates");
-        assertThat(config.getAsMap()).containsEntry("map.predicates.type", "IsOutboxTable");
+        assertThat(config.getAsMapSimple()).containsEntry("map", "predicates");
+        assertThat(config.getAsMapSimple()).containsEntry("map.predicates.type", "IsOutboxTable");
         assertThat(config.getAsString()).isEqualTo("map.predicates.type=IsOutboxTable\n" +
                 "map=predicates");
     }

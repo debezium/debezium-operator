@@ -22,7 +22,50 @@ import java.util.stream.Stream;
  */
 public final class ConfigMapping {
 
-    private final Map<String, String> config;
+    /**
+     * Represents a key in the configuration
+     */
+    public enum KeyType {
+        /**
+         * The key is relative to the current prefix
+         */
+        RELATIVE,
+
+        /**
+         * The key is absolute and will never be prefixed (unless specifically documented),
+         * including situations when the mapping is put into another mapping
+         */
+        ABSOLUTE;
+    }
+
+    public record Key(String name, KeyType type) {
+        public static Key rel(String key) {
+            return new Key(key, KeyType.RELATIVE);
+        }
+
+        public static Key abs(String key) {
+            return new Key(key, KeyType.ABSOLUTE);
+        }
+
+        public static Key root() {
+            return new Key(null, null);
+        }
+
+        public Key asAbs() {
+            return abs(name);
+        }
+
+        public Key asRel() {
+            return rel(name);
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    private final Map<Key, String> config;
     private final String prefix;
 
     public static ConfigMapping from(Map<String, ?> properties) {
@@ -44,7 +87,31 @@ public final class ConfigMapping {
         this.prefix = prefix;
     }
 
-    public Map<String, String> getAsMap() {
+    /**
+     * Creates new ConfigMapping, with the same prefix as this one, but sets all keys as absolute
+     *
+     * @return new ConfigMapping with all keys as absolute
+     */
+    public ConfigMapping asAbsolute() {
+        return ConfigMapping.prefixed(prefix).putAllAbs(this);
+    }
+
+    /**
+     * Creates new ConfigMapping, with the same prefix as this one, but sets all keys as relative
+     *
+     * @return new ConfigMapping with all keys as relative
+     */
+    public ConfigMapping asRelative() {
+        return ConfigMapping.prefixed(prefix).putAllRel(this);
+    }
+
+    public Map<String, String> getAsMapSimple() {
+        return config.entrySet()
+                .stream()
+                .collect(Collectors.toMap(e -> e.getKey().name(), Map.Entry::getValue));
+    }
+
+    public Map<Key, String> getAsMap() {
         return config;
     }
 
@@ -56,23 +123,33 @@ public final class ConfigMapping {
     }
 
     public ConfigMapping rootValue(Object value) {
-        putInternal(value);
+        putInternal(value, Key.root());
         return this;
     }
 
     public ConfigMapping put(String key, Object value) {
-        putInternal(value, key);
+        putInternal(value, Key.rel(key));
+        return this;
+    }
+
+    /**
+     * Puts the value with the given key as absolute key (that is the key will never be prefixed)
+     *
+     * @param key the absolute key to put the value under
+     * @param value the value to put
+     * @return this mapping
+     */
+    public ConfigMapping putAbs(String key, Object value) {
+        putInternal(value, Key.abs(key));
         return this;
     }
 
     public ConfigMapping putAll(ConfigMappable resource) {
-        putAll(resource.asConfiguration());
-        return this;
+        return putAll(resource.asConfiguration());
     }
 
     public ConfigMapping putAll(String key, ConfigMappable resource) {
-        putAll(key, resource.asConfiguration());
-        return this;
+        return putAll(key, resource.asConfiguration());
     }
 
     public ConfigMapping putAll(ConfigMapping config) {
@@ -86,7 +163,27 @@ public final class ConfigMapping {
     }
 
     public ConfigMapping putAll(Map<String, ?> props) {
-        props.forEach((key, value) -> putInternal(value, key));
+        props.forEach((key, value) -> putInternal(value, Key.rel(key)));
+        return this;
+    }
+
+    /**
+     * Puts all values from the given configuration, but sets all keys as absolute
+     * @param config the configuration to put
+     * @return this mapping
+     */
+    public ConfigMapping putAllAbs(ConfigMapping config) {
+        config.getAsMap().forEach((key, value) -> putInternal(value, key.asAbs()));
+        return this;
+    }
+
+    /**
+     * Puts all values from the given configuration, but sets all keys as relative
+     * @param config the configuration to put
+     * @return this mapping
+     */
+    public ConfigMapping putAllRel(ConfigMapping config) {
+        config.getAsMap().forEach((key, value) -> putInternal(value, key.asRel()));
         return this;
     }
 
@@ -121,19 +218,29 @@ public final class ConfigMapping {
         return this;
     }
 
-    private void putInternal(Object value, String... keys) {
+    private void putInternal(Object value, Key key) {
+        putInternal(value, null, key);
+    }
+
+    private void putInternal(Object value, String key, Key subKey) {
         if (value == null) {
             return;
         }
-        var key = prefix(keys);
-        config.put(key, String.valueOf(value));
+        var combined = prefix(key, subKey);
+        config.put(combined, String.valueOf(value));
     }
 
-    private String prefix(String... keys) {
-        return Stream.concat(Stream.of(prefix), Stream.of(keys))
+    private Key prefix(String key, Key subKey) {
+        if (subKey.type == KeyType.ABSOLUTE) {
+            return subKey;
+        }
+
+        var combined = Stream.concat(Stream.of(prefix), Stream.of(key, subKey.name))
                 .filter(Objects::nonNull)
                 .filter(not(String::isBlank))
                 .collect(Collectors.joining("."));
+
+        return Key.rel(combined);
     }
 
     public String md5Sum() {
