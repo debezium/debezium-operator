@@ -46,10 +46,10 @@ public class JmxExporterServiceDependent extends CRUDKubernetesDependentResource
                 .withSpec(new ServiceSpecBuilder()
                         .withSelector(selector)
                         .withPorts(new ServicePortBuilder()
-                                .withName("exporter-metrics")
+                                .withName(DeploymentDependent.JMX_EXPORTER_METRICS_PORT_NAME)
                                 .withProtocol("TCP")
-                                .withTargetPort(new IntOrString(DeploymentDependent.DEFAULT_METRICS_PORT))
-                                .withPort(DeploymentDependent.DEFAULT_METRICS_PORT)
+                                .withTargetPort(new IntOrString(DeploymentDependent.DEFAULT_JMX_EXPORTER_METRICS_PORT))
+                                .withPort(DeploymentDependent.DEFAULT_JMX_EXPORTER_METRICS_PORT)
                                 .build())
                         .build())
                 .build();
