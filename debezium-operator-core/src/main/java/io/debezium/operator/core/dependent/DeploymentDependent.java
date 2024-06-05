@@ -69,7 +69,8 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     public static final String JMX_CONFIG_VOLUME_INIT_PATH = "/jmx";
     public static final String EXTERNAL_VOLUME_PATH = "/debezium/external/%s";
     public static final int DEFAULT_HTTP_PORT = 8080;
-    public static final int DEFAULT_METRICS_PORT = 9090;
+    public static final int DEFAULT_JMX_EXPORTER_METRICS_PORT = 9090;
+    public static final String JMX_EXPORTER_METRICS_PORT_NAME = "metrics-jmx";
     private static final String CONFIG_MD5_ANNOTATION = "debezium.io/server-config-md5";
 
     @ConfigProperty(name = "debezium.image", defaultValue = DEFAULT_IMAGE)
@@ -334,11 +335,11 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         }
 
         // Add metrics port
-        var portEnv = new EnvVar("JMX_EXPORTER_PORT", String.valueOf(DEFAULT_METRICS_PORT), null);
+        var portEnv = new EnvVar("JMX_EXPORTER_PORT", String.valueOf(DEFAULT_JMX_EXPORTER_METRICS_PORT), null);
         var port = new ContainerPortBuilder()
-                .withName("exporter-metrics")
+                .withName(JMX_EXPORTER_METRICS_PORT_NAME)
                 .withProtocol("TCP")
-                .withContainerPort(DEFAULT_METRICS_PORT)
+                .withContainerPort(DEFAULT_JMX_EXPORTER_METRICS_PORT)
                 .build();
 
         container.getEnv().add(portEnv);
