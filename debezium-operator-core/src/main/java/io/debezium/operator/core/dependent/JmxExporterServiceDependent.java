@@ -40,7 +40,7 @@ public class JmxExporterServiceDependent extends CRUDKubernetesDependentResource
         return new ServiceBuilder()
                 .withMetadata(new ObjectMetaBuilder()
                         .withNamespace(primary.getMetadata().getNamespace())
-                        .withName(name + "exporter-metrics")
+                        .withName(name + "-exporter-metrics")
                         .withLabels(labels)
                         .build())
                 .withSpec(new ServiceSpecBuilder()
