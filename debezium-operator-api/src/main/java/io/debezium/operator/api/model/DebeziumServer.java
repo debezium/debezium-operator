@@ -5,8 +5,11 @@
  */
 package io.debezium.operator.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.api.model.status.Condition;
 import io.debezium.operator.api.model.status.DebeziumServerStatus;
 import io.debezium.operator.commons.OperatorConstants;
 import io.debezium.operator.docs.annotations.Documented;
@@ -41,5 +44,20 @@ public class DebeziumServer
 
     public ConfigMapping asConfiguration() {
         return spec.asConfiguration();
+    }
+
+    @JsonIgnore
+    public boolean isStopped() {
+        var annotation = getMetadata().getAnnotations().getOrDefault(CommonAnnotations.KEY_DBZ_STOP, Condition.FALSE);
+        return annotation.equalsIgnoreCase(Condition.TRUE);
+    }
+
+    public void setStopped(boolean stopped) {
+        if (stopped) {
+            getMetadata().getAnnotations().put(CommonAnnotations.KEY_DBZ_STOP, Condition.TRUE);
+        }
+        else {
+            getMetadata().getAnnotations().remove(CommonAnnotations.KEY_DBZ_STOP);
+        }
     }
 }

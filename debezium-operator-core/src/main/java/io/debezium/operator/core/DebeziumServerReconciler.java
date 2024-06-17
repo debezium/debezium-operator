@@ -12,6 +12,10 @@ import java.util.Arrays;
 import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.api.model.status.Condition;
 import io.debezium.operator.api.model.status.DebeziumServerStatus;
+import io.debezium.operator.api.model.status.ServerNotReadyCondition;
+import io.debezium.operator.api.model.status.ServerReadyCondition;
+import io.debezium.operator.api.model.status.ServerRunningCondition;
+import io.debezium.operator.api.model.status.ServerStoppedCondition;
 import io.debezium.operator.commons.OperatorConstants;
 import io.debezium.operator.core.dependent.ConfigMapDependent;
 import io.debezium.operator.core.dependent.DeploymentDependent;
@@ -71,28 +75,17 @@ public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
                     else {
                         var delay = Duration.ofSeconds(10);
                         Log.infof("Server %s not ready yet, rescheduling after %ds", name, delay.toSeconds());
-                        initializeNotReadyStatus(debeziumServer);
+                        initializeConditions(debeziumServer, new ServerNotReadyCondition(name));
                         return UpdateControl.patchStatus(debeziumServer).rescheduleAfter(delay);
                     }
                 }).orElseThrow();
     }
 
     private void initializeReadyStatus(DebeziumServer debeziumServer) {
-        var condition = new Condition();
-        condition.setType("Ready");
-        condition.setStatus("True");
-        condition.setMessage("Server %s is ready".formatted(debeziumServer.getMetadata().getName()));
-
-        initializeConditions(debeziumServer, condition);
-    }
-
-    private void initializeNotReadyStatus(DebeziumServer debeziumServer) {
-        var condition = new Condition();
-        condition.setType("Ready");
-        condition.setStatus("False");
-        condition.setMessage("Server %s deployment in progress".formatted(debeziumServer.getMetadata().getName()));
-
-        initializeConditions(debeziumServer, condition);
+        var name = debeziumServer.getMetadata().getName();
+        var ready = new ServerReadyCondition(name);
+        var running = debeziumServer.isStopped() ? new ServerStoppedCondition(name) : new ServerRunningCondition(name);
+        initializeConditions(debeziumServer, ready, running);
     }
 
     private void initializeConditions(DebeziumServer debeziumServer, Condition... conditions) {

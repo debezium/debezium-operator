@@ -8,9 +8,14 @@ package io.debezium.operator.api.model.status;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.docs.annotations.Documented;
+import io.sundr.builder.annotations.Buildable;
 
+@Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
 @Documented
 public class Condition {
+
+    public static final String TRUE = "True";
+    public static final String FALSE = "False";
 
     @JsonPropertyDescription("The status of the condition, either True, False or Unknown.")
     private String status;
@@ -18,6 +23,15 @@ public class Condition {
     private String message;
     @JsonPropertyDescription("Unique identifier of a condition.")
     private String type;
+
+    public Condition() {
+    }
+
+    public Condition(String type, String status, String message) {
+        this.status = status;
+        this.message = message;
+        this.type = type;
+    }
 
     public String getStatus() {
         return status;
