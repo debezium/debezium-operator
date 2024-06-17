@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 
 import io.debezium.operator.api.model.CommonLabels;
 import io.debezium.operator.api.model.DebeziumServer;
@@ -79,6 +80,9 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     @Inject
     ServerImageProvider imageProvider;
 
+    @Inject
+    Logger logger;
+
     public DeploymentDependent() {
         super(Deployment.class);
     }
@@ -90,7 +94,9 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var templates = runtime.getTemplates();
         var name = primary.getMetadata().getName();
         var labels = CommonLabels.serverComponent(name).getMap();
+        var primaryLabels = primary.getMetadata().getLabels();
         var annotations = Map.of(CONFIG_MD5_ANNOTATION, primary.asConfiguration().md5Sum());
+        var replicas = desiredReplicas(primary);
 
         var sa = ServiceAccountDependent.serviceAccountNameFor(primary);
 
@@ -98,7 +104,8 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
 
         var pod = new PodTemplateSpecBuilder()
                 .withMetadata(new ObjectMetaBuilder()
-                        .withLabels(labels)
+                        .withLabels(primaryLabels)
+                        .addToLabels(labels)
                         .withAnnotations(annotations)
                         .build())
                 .withSpec(new PodSpecBuilder()
@@ -122,16 +129,22 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                 .withMetadata(new ObjectMetaBuilder()
                         .withNamespace(primary.getMetadata().getNamespace())
                         .withName(name)
-                        .withLabels(labels)
+                        .withLabels(primaryLabels)
+                        .addToLabels(labels)
                         .withAnnotations(annotations)
                         .build())
                 .withSpec(new DeploymentSpecBuilder()
+                        .withReplicas(replicas)
                         .withSelector(new LabelSelectorBuilder()
                                 .addToMatchLabels(labels)
                                 .build())
                         .withTemplate(pod)
                         .build())
                 .build();
+    }
+
+    private int desiredReplicas(DebeziumServer primary) {
+        return primary.isStopped() ? 0 : 1;
     }
 
     private void addMetricConfigurationToPod(DebeziumServer primary, PodTemplateSpec pod) {
