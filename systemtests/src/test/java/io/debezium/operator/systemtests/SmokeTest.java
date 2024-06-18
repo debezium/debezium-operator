@@ -23,7 +23,7 @@ public class SmokeTest extends TestBase {
         String namespace = NamespaceHolder.INSTANCE.getCurrentNamespace();
         DebeziumOperatorBundleResource operatorBundleResource = new DebeziumOperatorBundleResource();
         operatorBundleResource.configureAsDefault(namespace);
-        logger.info("Deploying Operator");
+        logger.info("Deploying Operator asdsddadfds");
         operatorBundleResource.deploy();
         logger.info("Deploying Debezium Server");
         DebeziumServer server = DebeziumServerGenerator.generateDefaultMysqlToRedis(namespace);
