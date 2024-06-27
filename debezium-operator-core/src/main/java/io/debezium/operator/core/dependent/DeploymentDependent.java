@@ -24,7 +24,7 @@ import io.debezium.operator.api.model.runtime.storage.RuntimeStorage;
 import io.debezium.operator.api.model.runtime.templates.ContainerTemplate;
 import io.debezium.operator.api.model.runtime.templates.PodTemplate;
 import io.debezium.operator.commons.util.StringUtils;
-import io.debezium.operator.core.VersionProvider;
+import io.debezium.operator.core.ServerImageProvider;
 import io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder;
 import io.fabric8.kubernetes.api.model.Container;
 import io.fabric8.kubernetes.api.model.ContainerBuilder;
@@ -73,11 +73,11 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     public static final String JMX_EXPORTER_METRICS_PORT_NAME = "metrics-jmx";
     private static final String CONFIG_MD5_ANNOTATION = "debezium.io/server-config-md5";
 
-    @ConfigProperty(name = "debezium.image", defaultValue = DEFAULT_IMAGE)
+    @ConfigProperty(name = "debezium.server.image.name", defaultValue = DEFAULT_IMAGE)
     String defaultImage;
 
     @Inject
-    VersionProvider version;
+    ServerImageProvider imageProvider;
 
     public DeploymentDependent() {
         super(Deployment.class);
@@ -255,7 +255,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         volumes.add(jmxConfigVolume);
 
         // Add JMX init container
-        var image = getTaggedImage(primary);
+        var image = imageProvider.getImage(primary);
         var container = desiredJmxInitContainer(jmx, image);
         container.ifPresent(initContainers::add);
     }
@@ -282,7 +282,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         var probePort = quarkus.getConfig().getProps().getOrDefault("http.port", 8080);
         var livenessProbe = template.getProbes().getLiveness();
         var readinessProbe = template.getProbes().getReadiness();
-        var image = getTaggedImage(primary);
+        var image = imageProvider.getImage(primary);
 
         var container = new ContainerBuilder()
                 .withName("server")
@@ -516,22 +516,6 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         mergedProperties.putAll(additionalProperties);
 
         env.add(new EnvVar(name, StringUtils.joinAsJavaOpts(mergedProperties), null));
-    }
-
-    /**
-     * Determines the debezium server image tag
-     *
-     * @param primary primary CR
-     * @return image tag
-     */
-    private String getTaggedImage(DebeziumServer primary) {
-        var image = primary.getSpec().getImage();
-
-        if (image == null) {
-            image = defaultImage + ":" + version.getImageTag(primary);
-        }
-
-        return image;
     }
 
     /**
