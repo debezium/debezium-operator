@@ -55,7 +55,7 @@ public class DebeziumOperatorBundleResource implements DeployableResourceGroup {
                         break;
                     default:
                         this.deployment = (Deployment) object;
-                        this.deployment.getSpec().getTemplate().getSpec().getContainers().get(0).setImage("quay.io/debezium/operator:latest");
+                        this.deployment.getSpec().getTemplate().getSpec().getContainers().get(0).setImage("quay.io/debezium/operator:nightly");
                         break;
                 }
             }
