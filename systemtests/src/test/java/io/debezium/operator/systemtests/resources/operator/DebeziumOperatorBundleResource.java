@@ -5,6 +5,8 @@
  */
 package io.debezium.operator.systemtests.resources.operator;
 
+import static io.debezium.operator.systemtests.ConfigProperties.BUNDLE_PATH;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -20,7 +22,6 @@ import io.fabric8.kubernetes.api.model.rbac.RoleBinding;
 import io.skodjob.testframe.resources.KubeResourceManager;
 
 public class DebeziumOperatorBundleResource implements DeployableResourceGroup {
-    private static final String DEFAULT_BUNDLE_PATH = System.getProperty("user.dir") + "/../k8/";
     CustomResourceDefinition crd;
     ServiceAccount serviceAccount;
     ClusterRole clusterRole;
@@ -32,7 +33,7 @@ public class DebeziumOperatorBundleResource implements DeployableResourceGroup {
     @Override
     public void configureAsDefault(String namespace) {
         try {
-            List<HasMetadata> res = KubeResourceManager.getKubeClient().readResourcesFromFile(Paths.get(DEFAULT_BUNDLE_PATH + "kubernetes.yml"));
+            List<HasMetadata> res = KubeResourceManager.getKubeClient().readResourcesFromFile(Paths.get(BUNDLE_PATH + "kubernetes.yml"));
             for (HasMetadata object : res) {
                 object.getMetadata().setNamespace(namespace);
                 switch (object.getKind()) {
@@ -59,7 +60,7 @@ public class DebeziumOperatorBundleResource implements DeployableResourceGroup {
                         break;
                 }
             }
-            res = KubeResourceManager.getKubeClient().readResourcesFromFile(Paths.get(DEFAULT_BUNDLE_PATH + "/debeziumservers.debezium.io-v1.yml"));
+            res = KubeResourceManager.getKubeClient().readResourcesFromFile(Paths.get(BUNDLE_PATH + "/debeziumservers.debezium.io-v1.yml"));
             if (res.size() != 1) {
                 throw new IOException("Specified file cannot be found or is in wrong format!");
             }

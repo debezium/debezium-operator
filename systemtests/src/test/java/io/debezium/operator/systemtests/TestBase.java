@@ -5,7 +5,8 @@
  */
 package io.debezium.operator.systemtests;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static io.debezium.operator.systemtests.ConfigProperties.HTTP_POLL_INTERVAL;
+import static io.debezium.operator.systemtests.ConfigProperties.HTTP_POLL_TIMEOUT;
 import static org.awaitility.Awaitility.await;
 
 import java.io.IOException;
@@ -26,8 +27,6 @@ import io.debezium.operator.systemtests.resources.sinks.RedisResource;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.skodjob.testframe.annotations.ResourceManager;
 import io.skodjob.testframe.annotations.TestVisualSeparator;
-
-import okhttp3.Response;
 
 @ResourceManager
 @TestVisualSeparator
@@ -61,13 +60,9 @@ public class TestBase {
     void cleanUp() {
         String namespace = NamespaceHolder.INSTANCE.getCurrentNamespace();
         try (LocalPortForward lcp = dmtResource.portForward(portForwardPort, namespace)) {
-            DmtClient.waitForDmt(portForwardHost, portForwardPort, Duration.ofSeconds(5));
-            Response redis = DmtClient.resetRedis(portForwardHost, portForwardPort);
-            assertThat(redis.code()).isEqualTo(200);
-            redis.close();
-            Response mysql = DmtClient.resetMysql(portForwardHost, portForwardPort);
-            assertThat(mysql.code()).isEqualTo(200);
-            mysql.close();
+            DmtClient.waitForDmt(portForwardHost, portForwardPort, Duration.ofSeconds(HTTP_POLL_TIMEOUT));
+            DmtClient.resetRedis(portForwardHost, portForwardPort);
+            DmtClient.resetMysql(portForwardHost, portForwardPort);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
@@ -77,10 +72,11 @@ public class TestBase {
     public void assertStreamingWorks() {
         String namespace = NamespaceHolder.INSTANCE.getCurrentNamespace();
         try (LocalPortForward lcp = dmtResource.portForward(8080, namespace)) {
-            DmtClient.waitForDmt(portForwardHost, portForwardPort, Duration.ofSeconds(5));
+            DmtClient.waitForDmt(portForwardHost, portForwardPort, Duration.ofSeconds(HTTP_POLL_TIMEOUT));
             DmtClient.insertTestDataToDatabase(portForwardHost, portForwardPort, 10);
             DmtClient.waitForFilledRedis(portForwardHost, portForwardPort, Duration.ofSeconds(40), "inventory.inventory.operator_test");
-            await().atMost(Duration.ofMinutes(5)).pollInterval(Duration.ofMillis(500))
+            await().atMost(Duration.ofMinutes(HTTP_POLL_TIMEOUT))
+                    .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
                     .until(() -> DmtClient.digStreamedData(portForwardHost, portForwardPort, 10) == 10);
         }
         catch (IOException e) {
