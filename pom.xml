@@ -33,8 +33,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.release>17</maven.compiler.release>
-        <maven.compiler.testRelease>17</maven.compiler.testRelease>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
 
         <!-- Debezium version -->
@@ -87,8 +85,6 @@
         <quarkus.kubernetes.vcs-uri.enabled>false</quarkus.kubernetes.vcs-uri.enabled>
         <quarkus.operator-sdk.helm.enabled>true</quarkus.operator-sdk.helm.enabled>
 
-        <!-- Formatting configuration -->
-        <format.imports.source.compliance>17</format.imports.source.compliance>
         <!-- Example properties -->
         <examples.image.tag>${quarkus.container-image.tag}</examples.image.tag>
         <!-- Outputting dollar sign has to be done through property-->
