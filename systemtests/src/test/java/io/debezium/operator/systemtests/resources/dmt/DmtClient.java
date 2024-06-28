@@ -5,6 +5,8 @@
  */
 package io.debezium.operator.systemtests.resources.dmt;
 
+import static io.debezium.operator.systemtests.ConfigProperties.HTTP_POLL_INTERVAL;
+import static io.debezium.operator.systemtests.ConfigProperties.HTTP_POLL_TIMEOUT;
 import static org.awaitility.Awaitility.await;
 
 import java.io.IOException;
@@ -13,6 +15,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,28 +36,58 @@ import okhttp3.Response;
 
 public class DmtClient {
     private static final MediaType MEDIATYPE_JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final Logger LOGGER = LoggerFactory.getLogger(DmtClient.class);
 
-    public static Response resetRedis(String host, int port) {
-        return sendGetRequest(host, port, "/Redis/reset");
+    private static OkHttpClient defaultClient() {
+        return new OkHttpClient.Builder()
+                .writeTimeout(Duration.ofSeconds(10))
+                .callTimeout(Duration.ofSeconds(10))
+                .connectTimeout(Duration.ofSeconds(10))
+                .readTimeout(Duration.ofSeconds(10))
+                .build();
     }
 
-    public static Response resetMysql(String host, int port) {
-        return sendGetRequest(host, port, "/Main/ResetDatabase");
+    public static void resetRedis(String host, int port) {
+        await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT)).pollInterval(Duration.ofMillis(200))
+                .until(() -> {
+                    try (Response response = DmtClient.sendGetRequest(host, port, "/Redis/reset")) {
+                        return response.isSuccessful();
+                    }
+                    catch (Exception e) {
+                        return false;
+                    }
+                });
+    }
+
+    public static void resetMysql(String host, int port) {
+        await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT)).pollInterval(Duration.ofMillis(200))
+                .until(() -> {
+                    try (Response response = DmtClient.sendGetRequest(host, port, "/Main/ResetDatabase")) {
+                        return response.isSuccessful();
+                    }
+                    catch (Exception e) {
+                        return false;
+                    }
+                });
     }
 
     public static void waitForDmt(String host, int port, Duration atMost) {
         await().atMost(atMost)
-                .pollInterval(Duration.ofMillis(100))
+                .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
                 .until(() -> {
                     try (Response response = DmtClient.sendGetRequest(host, port, "/")) {
                         return response.isSuccessful();
+                    }
+                    catch (Exception e) {
+                        LOGGER.trace("DMT is not ready yet!");
+                        return false;
                     }
                 });
     }
 
     public static void waitForFilledRedis(String host, int port, Duration atMost, String channel) {
         await().atMost(atMost)
-                .pollInterval(Duration.ofMillis(200))
+                .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
                 .until(() -> readRedisChannel(host, port, channel, 100).length() > 100);
     }
 
@@ -128,22 +164,35 @@ public class DmtClient {
     }
 
     public static Response sendPostRequest(String host, int port, String command, String body) {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = defaultClient();
         Request request = new Request.Builder()
                 .url("http://" + host + ":" + port + command)
                 .post(RequestBody.create(body, MEDIATYPE_JSON))
                 .build();
         Call call = client.newCall(request);
-        try (Response response = call.execute()) {
-            return response;
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+        AtomicReference<Response> responseAtomicReference = new AtomicReference<>();
+        await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT))
+                .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
+                .until(() -> {
+                    try (Response response = call.execute()) {
+                        if (response.isSuccessful()) {
+                            responseAtomicReference.set(response);
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                    catch (Exception e) {
+                        return false;
+                    }
+                });
+        return responseAtomicReference.get();
     }
 
     public static String sendPostRequest(String host, int port, String command, Map<String, String> params, String body) {
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient client = defaultClient();
 
         HttpUrl.Builder builder = new HttpUrl.Builder()
                 .scheme("http")
@@ -165,28 +214,32 @@ public class DmtClient {
                 .method("POST", requestBody)
                 .build();
         Call call = client.newCall(request);
-        try (Response response = call.execute()) {
-            if (response.isSuccessful()) {
-                return response.body().string();
-            }
-            return null;
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        AtomicReference<String> responseAtomicReference = new AtomicReference<>();
+        await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT))
+                .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
+                .until(() -> {
+                    try (Response response = call.execute()) {
+                        if (response.isSuccessful()) {
+                            responseAtomicReference.set(response.body().string());
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                    catch (Exception e) {
+                        return false;
+                    }
+                });
+        return responseAtomicReference.get();
     }
 
-    public static Response sendGetRequest(String host, int port, String command) {
-        OkHttpClient client = new OkHttpClient();
+    public static Response sendGetRequest(String host, int port, String command) throws IOException {
+        OkHttpClient client = defaultClient();
         Request request = new Request.Builder()
                 .url("http://" + host + ":" + port + command)
                 .build();
         Call call = client.newCall(request);
-        try (Response response = call.execute()) {
-            return response;
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return call.execute();
     }
 }
