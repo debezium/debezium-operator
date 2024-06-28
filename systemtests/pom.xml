@@ -124,7 +124,7 @@
         <dependency>
             <groupId>io.debezium</groupId>
             <artifactId>debezium-operator-api</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>io.skodjob</groupId>
