@@ -11,12 +11,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.debezium.operator.api.config.ConfigMapping;
 
 public class FileStore extends AbstractStore {
+    public static final String CONFIG_PREFIX = "file";
+
     @JsonPropertyDescription("Name of the offset file (relative to data root)")
     @JsonProperty(required = false)
     private String fileName;
 
     public FileStore(String fileName, String type) {
-        super(type);
+        super(CONFIG_PREFIX, type);
         this.fileName = fileName;
     }
 
@@ -29,8 +31,8 @@ public class FileStore extends AbstractStore {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return super.asConfiguration()
+    public ConfigMapping typeConfiguration() {
+        return ConfigMapping.empty()
                 .put("filename", fileName);
     }
 }

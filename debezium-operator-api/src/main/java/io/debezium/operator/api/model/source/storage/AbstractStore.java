@@ -14,12 +14,19 @@ import io.debezium.operator.api.model.ConfigProperties;
 public abstract class AbstractStore implements Store {
     @JsonIgnore
     private final String type;
+    @JsonIgnore
+    private final String configPrefix;
 
     @JsonPropertyDescription("Additional store configuration properties.")
     private ConfigProperties config = new ConfigProperties();
 
-    public AbstractStore(String type) {
+    public AbstractStore(String configPrefix, String type) {
+        this.configPrefix = configPrefix;
         this.type = type;
+    }
+
+    public AbstractStore(String type) {
+        this(null, type);
     }
 
     public String getType() {
@@ -36,9 +43,14 @@ public abstract class AbstractStore implements Store {
 
     @Override
     public ConfigMapping asConfiguration() {
-        return ConfigMapping.empty()
+        var typeConfig = ConfigMapping.prefixed(configPrefix)
                 .putAll(config)
-                .rootValue(type);
+                .putAll(typeConfiguration());
 
+        return ConfigMapping.empty()
+                .rootValue(type)
+                .putAll(typeConfig);
     }
+
+    public abstract ConfigMapping typeConfiguration();
 }
