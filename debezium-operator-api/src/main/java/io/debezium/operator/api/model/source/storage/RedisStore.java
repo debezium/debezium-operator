@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.debezium.operator.api.config.ConfigMapping;
 
 public class RedisStore extends AbstractStore {
+    public static final String CONFIG_PREFIX = "redis";
 
     @JsonPropertyDescription("Redis host:port used to connect")
     @JsonProperty(required = true)
@@ -31,7 +32,7 @@ public class RedisStore extends AbstractStore {
     private RedisStoreWaitConfig wait = new RedisStoreWaitConfig();
 
     public RedisStore(String type) {
-        super(type);
+        super(CONFIG_PREFIX, type);
     }
 
     public String getAddress() {
@@ -83,8 +84,8 @@ public class RedisStore extends AbstractStore {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return super.asConfiguration()
+    public ConfigMapping typeConfiguration() {
+        return ConfigMapping.empty()
                 .put("address", address)
                 .put("user", user)
                 .put("password", password)
