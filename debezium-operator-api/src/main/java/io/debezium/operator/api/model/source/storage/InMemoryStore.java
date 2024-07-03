@@ -5,16 +5,10 @@
  */
 package io.debezium.operator.api.model.source.storage;
 
-import io.debezium.operator.api.config.ConfigMapping;
-
 public class InMemoryStore extends AbstractStore {
 
     public InMemoryStore(String type) {
         super(type);
     }
 
-    @Override
-    public ConfigMapping typeConfiguration() {
-        return ConfigMapping.empty();
-    }
 }

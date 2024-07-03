@@ -31,7 +31,7 @@ public class FileStore extends AbstractStore {
     }
 
     @Override
-    public ConfigMapping typeConfiguration() {
+    protected ConfigMapping typeConfiguration() {
         return ConfigMapping.empty()
                 .put("filename", fileName);
     }
