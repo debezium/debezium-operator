@@ -35,6 +35,17 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
 
+        <!-- JDK version is controlled by Debezium Parent, do not change! -->
+        <!--    the compiler setting may be different from the parent -->
+        <!--    thus the setting must be here and use the referenced properties -->
+        <!--    e.g. different setting may be required due to quarkus version -->
+        <maven.compiler.source>${debezium.java.source}</maven.compiler.source>
+        <maven.compiler.target>${debezium.java.specific.target}</maven.compiler.target>
+        <maven.compiler.release>${debezium.java.specific.target}</maven.compiler.release>
+        <maven.compiler.testSource>${debezium.java.source}</maven.compiler.testSource>
+        <maven.compiler.testTarget>${debezium.java.specific.target}</maven.compiler.testTarget>
+        <maven.compiler.testRelease>${debezium.java.specific.target}</maven.compiler.testRelease>
+
         <!-- Debezium version -->
         <version.debezium>${project.version}</version.debezium>
         <version.debezium.qualifier.prefix>-</version.debezium.qualifier.prefix>
