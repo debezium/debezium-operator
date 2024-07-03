@@ -13,10 +13,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.api.model.ConfigProperties;
 import io.debezium.operator.api.model.source.storage.CustomStore;
 import io.debezium.operator.api.model.source.storage.Store;
 import io.debezium.operator.api.model.source.storage.schema.FileSchemaHistoryStore;
 import io.debezium.operator.api.model.source.storage.schema.InMemorySchemaHistoryStore;
+import io.debezium.operator.api.model.source.storage.schema.KafkaSchemaHistoryStore;
 import io.debezium.operator.api.model.source.storage.schema.RedisSchemaHistoryStore;
 import io.debezium.operator.docs.annotations.Documented;
 import io.sundr.builder.annotations.Buildable;
@@ -31,8 +33,12 @@ public class SchemaHistory implements ConfigMappable {
     private InMemorySchemaHistoryStore memory;
     @JsonPropertyDescription("Redis backed schema history store configuration")
     private RedisSchemaHistoryStore redis;
+    @JsonPropertyDescription("Kafka backed schema history store configuration")
+    private KafkaSchemaHistoryStore kafka;
     @JsonPropertyDescription("Arbitrary schema history store configuration")
     private CustomStore store;
+    @JsonPropertyDescription("Additional common schema history store configuration properties.")
+    private ConfigProperties config = new ConfigProperties();;
 
     public FileSchemaHistoryStore getFile() {
         return file;
@@ -58,6 +64,14 @@ public class SchemaHistory implements ConfigMappable {
         this.redis = redis;
     }
 
+    public KafkaSchemaHistoryStore getKafka() {
+        return kafka;
+    }
+
+    public void setKafka(KafkaSchemaHistoryStore kafka) {
+        this.kafka = kafka;
+    }
+
     public CustomStore getStore() {
         return store;
     }
@@ -66,9 +80,17 @@ public class SchemaHistory implements ConfigMappable {
         this.store = store;
     }
 
+    public ConfigProperties getConfig() {
+        return config;
+    }
+
+    public void setConfig(ConfigProperties config) {
+        this.config = config;
+    }
+
     @JsonIgnore
     public Store getActiveStore() {
-        return Stream.of(file, memory, redis, store)
+        return Stream.of(file, memory, redis, kafka, store)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElseGet(InMemorySchemaHistoryStore::new);
@@ -76,6 +98,8 @@ public class SchemaHistory implements ConfigMappable {
 
     @Override
     public ConfigMapping asConfiguration() {
-        return getActiveStore().asConfiguration();
+        return ConfigMapping.empty()
+                .putAll(config)
+                .putAll(getActiveStore());
     }
 }
