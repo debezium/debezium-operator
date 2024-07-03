@@ -84,7 +84,7 @@ public class RedisStore extends AbstractStore {
     }
 
     @Override
-    public ConfigMapping typeConfiguration() {
+    protected ConfigMapping typeConfiguration() {
         return ConfigMapping.empty()
                 .put("address", address)
                 .put("user", user)
