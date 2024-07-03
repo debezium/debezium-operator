@@ -1586,6 +1586,47 @@ spec:
                       flushMs:
                         description: Interval at which to try commiting offsets
                         type: integer
+                      kafka:
+                        description: Kafka backing store configuration
+                        properties:
+                          bootstrapServers:
+                            description: A list of host/port pairs that the connector
+                              uses for establishing an initial connection to the Kafka
+                              cluster
+                            type: string
+                          config:
+                            description: Additional store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          partitions:
+                            description: The number of partitions used when creating
+                              the offset storage topic
+                            type: integer
+                          props:
+                            description: Additional Kafka client properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          replicationFactor:
+                            description: Replication factor used when creating the
+                              offset storage topic
+                            type: integer
+                          topic:
+                            description: The name of the Kafka topic where offsets
+                              are to be stored
+                            type: string
+                        type: object
                       memory:
                         description: Memory backed offset store configuration
                         properties:
@@ -1669,6 +1710,17 @@ spec:
                   schemaHistory:
                     description: Schema history store configuration
                     properties:
+                      config:
+                        description: Additional common schema history store configuration
+                          properties.
+                        properties:
+                          props:
+                            additionalProperties:
+                              type: object
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
                       file:
                         description: File backed schema history store configuration
                         properties:
@@ -1685,6 +1737,37 @@ spec:
                           fileName:
                             description: Name of the offset file (relative to data
                               root)
+                            type: string
+                        type: object
+                      kafka:
+                        description: Kafka backed schema history store configuration
+                        properties:
+                          bootstrapServers:
+                            description: A list of host/port pairs that the connector
+                              uses for establishing an initial connection to the Kafka
+                              cluster
+                            type: string
+                          config:
+                            description: Additional store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          partitions:
+                            description: The number of partitions used when creating
+                              the offset storage topic
+                            type: integer
+                          replicationFactor:
+                            description: Replication factor used when creating the
+                              offset storage topic
+                            type: integer
+                          topic:
+                            description: The name of the Kafka topic where offsets
+                              are to be stored
                             type: string
                         type: object
                       memory:
