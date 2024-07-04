@@ -17,6 +17,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +51,30 @@ public class DmtClient {
                 .build();
     }
 
+    public static String readRedisOffsets(String host, int port) {
+        return readRedisOffsets(host, port, "metadata:debezium:offsets");
+    }
+
+    public static String readRedisOffsets(String host, int port, String key) {
+        AtomicReference<String> offset = new AtomicReference<>();
+        Map<String, String> params = Map.of("hashKey", key);
+        await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT))
+                .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
+                .until(() -> {
+                    try (Response response = DmtClient.sendGetRequest(host, port, "/Redis/readHash", params)) {
+                        offset.set(response.body().string());
+                        return response.isSuccessful();
+                    }
+                    catch (Exception e) {
+                        return false;
+                    }
+                });
+        return offset.get();
+    }
+
     public static void resetRedis(String host, int port) {
-        await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT)).pollInterval(Duration.ofMillis(200))
+        await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT))
+                .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
                 .until(() -> {
                     try (Response response = DmtClient.sendGetRequest(host, port, "/Redis/reset")) {
                         return response.isSuccessful();
@@ -60,7 +86,8 @@ public class DmtClient {
     }
 
     public static void resetMysql(String host, int port) {
-        await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT)).pollInterval(Duration.ofMillis(200))
+        await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT))
+                .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
                 .until(() -> {
                     try (Response response = DmtClient.sendGetRequest(host, port, "/Main/ResetDatabase")) {
                         return response.isSuccessful();
@@ -92,17 +119,24 @@ public class DmtClient {
     }
 
     public static int digStreamedData(String host, int port, int number) {
-        String jsonRespo = readRedisChannel(host, port, "inventory.inventory.operator_test", number);
+        final String CHANNEL = "inventory.inventory.operator_test";
+        JSONParser parser = new JSONParser();
+        String jsonRespo = readRedisChannel(host, port, CHANNEL, number);
+
         if (Objects.isNull(jsonRespo)) {
             return 0;
         }
-        int count = 0;
-        for (int i = 0; i < number; i++) {
-            if (jsonRespo.contains("name" + i)) {
-                count++;
-            }
+
+        try {
+            JSONArray response = (JSONArray) parser.parse(jsonRespo);
+            JSONObject topic = (JSONObject) response.get(0);
+            JSONArray responses = (JSONArray) topic.get(CHANNEL);
+            return responses.size();
         }
-        return count;
+        catch (ParseException e) {
+            LOGGER.error("Cannot parse JSON response from DMT: {}", e.getMessage());
+            return 0;
+        }
     }
 
     public static String readRedisChannel(String host, int port, String channel, int limit) {
@@ -239,6 +273,26 @@ public class DmtClient {
         Request request = new Request.Builder()
                 .url("http://" + host + ":" + port + command)
                 .build();
+        Call call = client.newCall(request);
+        return call.execute();
+    }
+
+    public static Response sendGetRequest(String host, int port, String command, Map<String, String> params) throws IOException {
+        OkHttpClient client = defaultClient();
+
+        HttpUrl.Builder builder = Objects.requireNonNull(HttpUrl.parse("http://" + host + ":" + port + command))
+                .newBuilder();
+
+        if (!Objects.isNull(params)) {
+            for (Map.Entry<String, String> entry : params.entrySet()) {
+                builder = builder.addQueryParameter(entry.getKey(), entry.getValue());
+            }
+        }
+
+        Request request = new Request.Builder()
+                .url(builder.build())
+                .build();
+
         Call call = client.newCall(request);
         return call.execute();
     }

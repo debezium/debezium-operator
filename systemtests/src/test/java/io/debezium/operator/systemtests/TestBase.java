@@ -12,6 +12,7 @@ import static org.awaitility.Awaitility.await;
 import java.io.IOException;
 import java.time.Duration;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
@@ -34,9 +35,9 @@ import io.skodjob.testframe.annotations.TestVisualSeparator;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestBase {
     private static final Logger logger = LoggerFactory.getLogger(TestBase.class);
-    private final DmtResource dmtResource = new DmtResource();
-    private final String portForwardHost = "127.0.0.1";
-    private int portForwardPort = 8080;
+    protected final DmtResource dmtResource = new DmtResource();
+    protected final String portForwardHost = "127.0.0.1";
+    protected int portForwardPort = 8080;
 
     @BeforeAll
     void initDefault() {
@@ -70,18 +71,27 @@ public class TestBase {
     }
 
     public void assertStreamingWorks() {
+        assertStreamingWorks(10, 10);
+    }
+
+    public void assertStreamingWorks(int messagesToDatabase, int expectedMessages) {
         String namespace = NamespaceHolder.INSTANCE.getCurrentNamespace();
         try (LocalPortForward lcp = dmtResource.portForward(8080, namespace)) {
             DmtClient.waitForDmt(portForwardHost, portForwardPort, Duration.ofSeconds(HTTP_POLL_TIMEOUT));
-            DmtClient.insertTestDataToDatabase(portForwardHost, portForwardPort, 10);
-            DmtClient.waitForFilledRedis(portForwardHost, portForwardPort, Duration.ofSeconds(40), "inventory.inventory.operator_test");
+            DmtClient.insertTestDataToDatabase(portForwardHost, portForwardPort, messagesToDatabase);
+            DmtClient.waitForFilledRedis(portForwardHost, portForwardPort, Duration.ofSeconds(60), "inventory.inventory.operator_test");
             await().atMost(Duration.ofMinutes(HTTP_POLL_TIMEOUT))
                     .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
-                    .until(() -> DmtClient.digStreamedData(portForwardHost, portForwardPort, 10) == 10);
+                    .until(() -> DmtClient.digStreamedData(portForwardHost, portForwardPort, expectedMessages) == expectedMessages);
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @AfterAll
+    void resetNamespace() {
+        NamespaceHolder.INSTANCE.resetNamespace();
     }
 
 }

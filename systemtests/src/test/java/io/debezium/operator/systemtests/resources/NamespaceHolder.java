@@ -40,6 +40,10 @@ public enum NamespaceHolder {
         return currentNamespace;
     }
 
+    public void resetNamespace() {
+        this.currentNamespace = null;
+    }
+
     public DmtResource getNamespacedDmt() {
         return namespacedDmt;
     }
