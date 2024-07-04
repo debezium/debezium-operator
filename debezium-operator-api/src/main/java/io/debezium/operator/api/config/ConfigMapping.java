@@ -105,9 +105,8 @@ public final class ConfigMapping {
 
         named.stream()
                 .map(NamedItem::name)
-                .reduce((x, y) -> String.join(","))
+                .reduce((x, y) -> x + "," + y)
                 .ifPresent(names -> put(key, names));
-
 
         named.forEach(item -> putAll(key + "." + item.name, item.item));
         return this;
