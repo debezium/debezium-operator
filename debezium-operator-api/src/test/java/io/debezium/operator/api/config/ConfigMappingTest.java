@@ -83,7 +83,7 @@ public class ConfigMappingTest {
 
         config.putList("transforms", transformations, "Reroute");
 
-        assertThat(config.getAsMap()).containsEntry("transforms", "");
+        assertThat(config.getAsMap()).containsEntry("transforms", "Reroute0,Reroute1");
         assertThat(config.getAsMap()).containsEntry("transforms.Reroute0.type", "io.debezium.transforms.ByLogicalTableRouter");
         assertThat(config.getAsMap()).containsEntry("transforms.Reroute0.negate", "false");
         assertThat(config.getAsMap()).containsEntry("transforms.Reroute1.type", "io.debezium.transforms.ByLogicalTableRouter");
@@ -93,7 +93,7 @@ public class ConfigMappingTest {
                 "transforms.Reroute0.type=io.debezium.transforms.ByLogicalTableRouter\n" +
                 "transforms.Reroute1.negate=true\n" +
                 "transforms.Reroute1.type=io.debezium.transforms.ByLogicalTableRouter\n" +
-                "transforms=");
+                "transforms=Reroute0,Reroute1");
     }
 
     @Test
