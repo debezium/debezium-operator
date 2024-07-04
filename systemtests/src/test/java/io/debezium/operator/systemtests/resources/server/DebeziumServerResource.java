@@ -5,9 +5,16 @@
  */
 package io.debezium.operator.systemtests.resources.server;
 
+import static io.debezium.operator.systemtests.ConfigProperties.FABRIC8_POLL_INTERVAL;
+import static io.debezium.operator.systemtests.ConfigProperties.FABRIC8_POLL_TIMEOUT;
+import static org.awaitility.Awaitility.await;
+
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import java.util.function.Consumer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.debezium.operator.api.model.DebeziumServer;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
@@ -15,12 +22,12 @@ import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.internal.HasMetadataOperationsImpl;
 import io.skodjob.testframe.interfaces.ResourceType;
-import io.skodjob.testframe.resources.DeploymentType;
 import io.skodjob.testframe.resources.KubeResourceManager;
 
 public class DebeziumServerResource implements ResourceType<DebeziumServer> {
 
     private final MixedOperation<DebeziumServer, DebeziumServerList, Resource<DebeziumServer>> client;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     public DebeziumServerResource() {
         this.client = KubeResourceManager.getKubeClient().getClient().resources(DebeziumServer.class, DebeziumServerList.class);
@@ -65,11 +72,22 @@ public class DebeziumServerResource implements ResourceType<DebeziumServer> {
 
     @Override
     public boolean waitForReadiness(DebeziumServer debeziumServer) {
-        new DeploymentType().getClient()
-                .inNamespace(debeziumServer.getMetadata().getNamespace())
-                .withName(debeziumServer.getMetadata().getName()).waitUntilReady(1, TimeUnit.MINUTES);
+        await().atMost(Duration.ofSeconds(FABRIC8_POLL_TIMEOUT)).pollInterval(Duration.ofSeconds(FABRIC8_POLL_INTERVAL))
+                .until(() -> {
+                    DebeziumServer dbzServer = client.inNamespace(debeziumServer.getMetadata().getNamespace())
+                            .withName(debeziumServer.getMetadata().getName()).get();
 
-        return client.resource(debeziumServer).isReady();
+                    boolean ready = dbzServer.getStatus().getConditions().stream()
+                            .anyMatch(condition -> condition.getType().equals("Ready") && condition.getStatus().equals("True"));
+                    if (ready) {
+                        return true;
+                    }
+                    else {
+                        logger.info("Waiting for readiness of Debezium Server...");
+                        return false;
+                    }
+                });
+        return true;
     }
 
     @Override

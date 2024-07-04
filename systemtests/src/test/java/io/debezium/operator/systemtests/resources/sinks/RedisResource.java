@@ -50,6 +50,10 @@ public class RedisResource implements DeployableResourceGroup {
         }
     }
 
+    public static String getDefaultRedisAddress() {
+        return "redis-service:6379";
+    }
+
     @Override
     public void deploy() {
         KubeResourceManager.getInstance().createResourceWithoutWait(configMap, service, persistentVolumeClaim);

@@ -13,16 +13,16 @@
         <fabric8.version>6.10.0</fabric8.version>
         <junit.jupiter.version>5.10.2</junit.jupiter.version>
         <junit.platform.launcher.version>1.10.2</junit.platform.launcher.version>
-        <log4j.version>2.17.2</log4j.version>
-        <slf4j.version>1.7.36</slf4j.version>
+        <log4j2.version>2.23.1</log4j2.version>
         <assertj.version>3.25.3</assertj.version>
-        <testframe.version>0.1.1</testframe.version>
+        <testframe.version>0.2.1</testframe.version>
         <dmt.version>0.0.1-alpha1</dmt.version>
         <okhttp.version>5.0.0-alpha.12</okhttp.version>
         <awaitility.version>4.2.1</awaitility.version>
         <jackson.version>2.16.1</jackson.version>
         <lombok.version>1.18.34</lombok.version>
         <apache.commons.lang.version>3.14.0</apache.commons.lang.version>
+        <google.json.simple.version>1.1.1</google.json.simple.version>
     </properties>
 
     <dependencies>
@@ -75,23 +75,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
+            <artifactId>log4j-slf4j2-impl</artifactId>
+            <version>${log4j2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -138,6 +123,11 @@
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <version>${awaitility.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>${google.json.simple.version}</version>
         </dependency>
     </dependencies>
 
