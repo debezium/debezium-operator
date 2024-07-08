@@ -8,6 +8,8 @@ package io.debezium.operator.core;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.api.model.status.Condition;
@@ -69,31 +71,32 @@ public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
                 .map(result -> {
                     if (result.allDependentResourcesReady()) {
                         Log.infof("Server %s is ready", name);
-                        initializeReadyStatus(debeziumServer);
-                        return UpdateControl.patchStatus(debeziumServer);
+                        initializeReadyStatus(name, debeziumServer);
+                        return UpdateControl.updateStatus(debeziumServer);
                     }
                     else {
                         var delay = Duration.ofSeconds(10);
-                        Log.infof("Server %s not ready yet, rescheduling after %ds", name, delay.toSeconds());
-                        initializeConditions(debeziumServer, new ServerNotReadyCondition(name));
-                        return UpdateControl.patchStatus(debeziumServer).rescheduleAfter(delay);
+                        Log.infof("Server %s not ready yet, rescheduling after %d seconds", name, delay.toSeconds());
+                        initializeNotReadyStatus(name, debeziumServer);
+                        return UpdateControl.updateStatus(debeziumServer).rescheduleAfter(delay);
                     }
                 }).orElseThrow();
     }
 
-    private void initializeReadyStatus(DebeziumServer debeziumServer) {
-        var name = debeziumServer.getMetadata().getName();
+    private void initializeReadyStatus(String name, DebeziumServer debeziumServer) {
         var ready = new ServerReadyCondition(name);
         var running = debeziumServer.isStopped() ? new ServerStoppedCondition(name) : new ServerRunningCondition(name);
-        initializeConditions(debeziumServer, ready, running);
+        var status = new DebeziumServerStatus();
+        status.setConditions(new ArrayList<>(Arrays.asList(ready, running)));
+        status.setObservedGeneration(debeziumServer.getMetadata().getGeneration());
+        debeziumServer.setStatus(status);
     }
 
-    private void initializeConditions(DebeziumServer debeziumServer, Condition... conditions) {
-        var list = new ArrayList<>(Arrays.asList(conditions));
-
+    private void initializeNotReadyStatus(String name, DebeziumServer debeziumServer) {
+        var condition = new ServerNotReadyCondition(name);
+        List<Condition> list = Collections.singletonList(condition);
         var status = new DebeziumServerStatus();
         status.setConditions(list);
-
         debeziumServer.setStatus(status);
     }
 }
