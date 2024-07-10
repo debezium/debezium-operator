@@ -13,7 +13,7 @@ import com.google.auto.service.AutoService;
 
 import io.debezium.operator.docs.output.AsciidocFormatter;
 
-@SupportedSourceVersion(SourceVersion.RELEASE_17)
+@SupportedSourceVersion(SourceVersion.RELEASE_21)
 @AutoService(Processor.class)
 public class DebeziumOperatorDocsProcessor extends AbstractDocsProcessor {
     public static final String DOCS_FILE_NAME = "reference.adoc";
