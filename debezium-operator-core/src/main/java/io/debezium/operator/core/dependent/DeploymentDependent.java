@@ -49,6 +49,7 @@ import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.api.model.apps.DeploymentSpecBuilder;
+import io.fabric8.kubernetes.api.model.apps.DeploymentStrategyBuilder;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernetesDependentResource;
 
@@ -139,6 +140,9 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
                                 .addToMatchLabels(labels)
                                 .build())
                         .withTemplate(pod)
+                        .withStrategy(new DeploymentStrategyBuilder()
+                                .withType("Recreate")
+                                .build())
                         .build())
                 .build();
     }
