@@ -7,7 +7,6 @@ package io.debezium.operator.core.dependent;
 
 import io.debezium.operator.api.model.DebeziumServer;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
-import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.rbac.Role;
 import io.fabric8.kubernetes.api.model.rbac.RoleBinding;
 import io.fabric8.kubernetes.api.model.rbac.RoleBindingBuilder;
@@ -26,9 +25,7 @@ public class RoleBindingDependent
 
     @Override
     protected RoleBinding desired(DebeziumServer primary, Context<DebeziumServer> context) {
-        var sa = context.getSecondaryResource(ServiceAccount.class)
-                .map(r -> r.getMetadata().getName())
-                .orElseThrow();
+        var sa = ServiceAccountDependent.serviceAccountNameFor(primary);
 
         var role = context.getSecondaryResource(Role.class)
                 .map(r -> r.getMetadata().getName())
