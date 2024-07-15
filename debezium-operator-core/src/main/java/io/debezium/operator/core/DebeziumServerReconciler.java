@@ -31,6 +31,7 @@ import io.debezium.operator.core.dependent.conditions.DeploymentReady;
 import io.debezium.operator.core.dependent.conditions.JmxEnabled;
 import io.debezium.operator.core.dependent.conditions.JmxExporterEnabled;
 import io.debezium.operator.core.dependent.conditions.PvcReady;
+import io.debezium.operator.core.dependent.conditions.ServiceAccountReady;
 import io.javaoperatorsdk.operator.api.reconciler.Constants;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.api.reconciler.ControllerConfiguration;
@@ -47,9 +48,8 @@ import io.quarkus.logging.Log;
         @Dependent(name = "pvc", type = PvcDependent.class, reconcilePrecondition = CreatePvc.class),
         @Dependent(name = "role", type = RoleDependent.class),
         @Dependent(name = "role-binding", type = RoleBindingDependent.class, dependsOn = {
-                "service-account",
                 "role"
-        }),
+        }, reconcilePrecondition = ServiceAccountReady.class),
         @Dependent(name = "config", type = ConfigMapDependent.class),
         @Dependent(name = "deployment", type = DeploymentDependent.class, dependsOn = {
                 "config",
