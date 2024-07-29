@@ -1,0 +1,24 @@
+name: "Build Operator Image"
+description: "Build Operator Image"
+
+inputs:
+  shell:
+    description: "The shell to use"
+    required: false
+    default: bash
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout Debezium Operator
+      uses: actions/checkout@v4
+      with:
+        path: operator
+
+    - name: Build operator image
+      working-directory: operator
+      shell: ${{ inputs.shell }}
+      run: >
+        ./mvnw package -Dquarkus.container-image.build=true
+        --no-transfer-progress
+        -T4
