@@ -1,5 +1,5 @@
 name: "Build Operator"
-description: "Set up the desired version of Java"
+description: "Build operator code"
 
 inputs:
   shell:

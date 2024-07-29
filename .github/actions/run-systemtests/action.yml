@@ -16,8 +16,17 @@ runs:
 
     - uses: ./operator/.github/actions/build-operator
 
+    - uses: ./operator/.github/actions/build-operator-image
+
     - name: Create k8s Kind Cluster
       uses: helm/kind-action@v1
+      with:
+        cluster_name: debezium-kind
+
+    - name: Import operator image
+      shell: ${{ inputs.shell }}
+      run: >
+        kind load docker-image quay.io/debezium/operator:nightly --name debezium-kind
 
     - name: Execute Systemtests
       working-directory: operator
