@@ -61,11 +61,15 @@ public class TestBase {
     void cleanUp() {
         String namespace = NamespaceHolder.INSTANCE.getCurrentNamespace();
         try (LocalPortForward lcp = dmtResource.portForward(portForwardPort, namespace)) {
+            logger.info("Waiting for DMT available");
             DmtClient.waitForDmt(portForwardHost, portForwardPort, Duration.ofSeconds(HTTP_POLL_TIMEOUT));
+            logger.info("Reseting Redis");
             DmtClient.resetRedis(portForwardHost, portForwardPort);
+            logger.info("Resetting MySQL");
             DmtClient.resetMysql(portForwardHost, portForwardPort);
         }
         catch (IOException e) {
+            logger.error("Error cleaning up Redis and MySQL", e);
             throw new RuntimeException(e);
         }
     }
