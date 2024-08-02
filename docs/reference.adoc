@@ -110,6 +110,7 @@ Used in: <<debezium-operator-schema-reference-debeziumserver, `+DebeziumServer+`
 |===
 | Property | Type | Default | Description
 | [[debezium-operator-schema-reference-debeziumserverstatus-conditions]]<<debezium-operator-schema-reference-debeziumserverstatus-conditions, `+conditions+`>> | <<debezium-operator-schema-reference-condition, `+List<Condition>+`>> |  | List of status conditions
+| [[debezium-operator-schema-reference-debeziumserverstatus-observedgeneration]]<<debezium-operator-schema-reference-debeziumserverstatus-observedgeneration, `+observedGeneration+`>> | Long | 0L | Latest observed generation
 |===
 
 [#debezium-operator-schema-reference-fileoffsetstore]
