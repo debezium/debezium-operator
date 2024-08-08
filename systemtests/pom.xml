@@ -21,7 +21,7 @@
         <okhttp.version>5.0.0-alpha.12</okhttp.version>
         <awaitility.version>4.2.1</awaitility.version>
         <jackson.version>2.16.1</jackson.version>
-        <lombok.version>1.18.28</lombok.version>
+        <lombok.version>1.18.34</lombok.version>
         <apache.commons.lang.version>3.14.0</apache.commons.lang.version>
     </properties>
 
