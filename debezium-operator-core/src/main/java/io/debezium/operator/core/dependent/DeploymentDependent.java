@@ -58,7 +58,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     public static final String DEFAULT_IMAGE = "quay.io/debezium/server";
     public static final String CONFIG_VOLUME_NAME = "ds-config";
     public static final String CONFIG_FILE_NAME = "application.properties";
-    public static final String CONFIG_DIR_PATH = "/debezium/conf";
+    public static final String CONFIG_DIR_PATH = "/debezium/config";
     public static final String CONFIG_FILE_PATH = CONFIG_DIR_PATH + "/" + CONFIG_FILE_NAME;
     public static final String METRICS_VOLUME_NAME = "ds-metrics";
     public static final String METRICS_DIR_PATH = "/debezium/metrics";
