@@ -3,14 +3,26 @@
 Debezium operator provides an easy way to run the Debezium Server on Kubernetes or Openshift.
 
 ## Installation steps
-The debezium operator currently support only per namespace installation unless installing via OLM. To install the operator to your kubernetes cluster,
-simply create the descriptors available in the `k8` directory.
+The operator can be installed via OLM, Helm chart or by creating the resources directly. 
+
+### Helm Chart Installation
+Helm is the preferred way to install the operator releases. The operator is available in the [Debezium Helm Chart Repository](https://charts.debezium.io).
+
+```bash
+helm repo add debezium https://charts.debezium.io
+helm install my-debezium-operator debezium/debezium-operator --version $DO_VERSION -n $NAMESPACE
+```
+Available versions can be found in the [Debezium Helm Chart Repository](https://charts.debezium.io/index.yaml).
+
+### OLM Installation
+Released versions of the operator can be installed via the Operator Lifecycle Manager (OLM). The operator is available in the [OperatorHub](https://operatorhub.io/operator/debezium-operator).
+
+### Direct Installation
+This method currently support only per namespace installation. To install the operator to your Kubernetes cluster, simply create the descriptors available in the `k8` directory.
 
 ```bash
 kubectl create -f k8/ -n $NAMESPACE 
 ```
-
-_Note: In the future the operator will support OLM  and Helm chart installations._ 
 
 ### Quickstart Example
 
