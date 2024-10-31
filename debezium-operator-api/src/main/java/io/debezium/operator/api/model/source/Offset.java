@@ -17,6 +17,7 @@ import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.api.model.source.storage.CustomStore;
 import io.debezium.operator.api.model.source.storage.Store;
+import io.debezium.operator.api.model.source.storage.offset.ConfigMapOffsetStore;
 import io.debezium.operator.api.model.source.storage.offset.FileOffsetStore;
 import io.debezium.operator.api.model.source.storage.offset.InMemoryOffsetStore;
 import io.debezium.operator.api.model.source.storage.offset.KafkaOffsetStore;
@@ -36,6 +37,8 @@ public class Offset implements ConfigMappable<DebeziumServer> {
     private RedisOffsetStore redis;
     @JsonPropertyDescription("Kafka backing store configuration")
     private KafkaOffsetStore kafka;
+    @JsonPropertyDescription("Config map backed offset store configuration")
+    private ConfigMapOffsetStore configMap;
     @JsonPropertyDescription("Arbitrary offset store configuration")
     private CustomStore store;
     @JsonPropertyDescription("Interval at which to try commiting offsets")
@@ -82,6 +85,14 @@ public class Offset implements ConfigMappable<DebeziumServer> {
         this.kafka = kafka;
     }
 
+    public ConfigMapOffsetStore getConfigMap() {
+        return configMap;
+    }
+
+    public void setConfigMap(ConfigMapOffsetStore configmap) {
+        this.configMap = configmap;
+    }
+
     public CustomStore getStore() {
         return store;
     }
@@ -92,7 +103,7 @@ public class Offset implements ConfigMappable<DebeziumServer> {
 
     @JsonIgnore
     public Store getActiveStore() {
-        return Stream.of(file, memory, redis, kafka, store)
+        return Stream.of(file, memory, redis, kafka, configMap, store)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElseGet(InMemoryOffsetStore::new);

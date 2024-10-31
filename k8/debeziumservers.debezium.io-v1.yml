@@ -1577,6 +1577,23 @@ spec:
                   offset:
                     description: Offset store configuration
                     properties:
+                      configMap:
+                        description: Config map backed offset store configuration
+                        properties:
+                          config:
+                            description: Additional store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          name:
+                            description: Name of the offset config map
+                            type: string
+                        type: object
                       file:
                         description: File backed offset store configuration
                         properties:
