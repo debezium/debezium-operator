@@ -11,6 +11,7 @@ import java.util.List;
 import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.api.model.source.storage.offset.ConfigMapOffsetStore;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
+import io.fabric8.kubernetes.api.model.rbac.PolicyRule;
 import io.fabric8.kubernetes.api.model.rbac.PolicyRuleBuilder;
 import io.fabric8.kubernetes.api.model.rbac.Role;
 import io.fabric8.kubernetes.api.model.rbac.RoleBuilder;
@@ -28,30 +29,36 @@ public class RoleDependent
     @Override
     protected Role desired(DebeziumServer primary, Context<DebeziumServer> context) {
 
+        List<PolicyRule> policyRules = new ArrayList<>();
+
+        policyRules.add(new PolicyRuleBuilder()
+                .withApiGroups("")
+                .withResources("secrets")
+                .withVerbs("get", "list", "watch")
+                .build());
+
+        policyRules.add(new PolicyRuleBuilder()
+                .withApiGroups("")
+                .withResources("configmaps")
+                .withVerbs(List.of("get", "list", "watch"))
+                .build());
+
+        if (primary.getSpec().getSource().getOffset().getActiveStore() instanceof ConfigMapOffsetStore) {
+            policyRules.add(new PolicyRuleBuilder()
+                    .withApiGroups("")
+                    .withResources("configmaps")
+                    .withResourceNames(primary.getSpec().getSource().getOffset().getConfigMap().getName())
+                    .withVerbs(List.of("get", "list", "watch", "update", "patch"))
+                    .build());
+        }
+
         return new RoleBuilder()
                 .withMetadata(new ObjectMetaBuilder()
                         .withName(ROLE_NAME.formatted(primary.getMetadata().getName()))
                         .withNamespace(primary.getMetadata().getNamespace())
                         .build())
-                .withRules(new PolicyRuleBuilder()
-                        .withApiGroups("")
-                        .withResources("secrets")
-                        .withVerbs("get", "list", "watch")
-                        .build(),
-                        new PolicyRuleBuilder()
-                                .withApiGroups("")
-                                .withResources("configmaps")
-                                .withVerbs(getConfigMapPermissions(primary))
-                                .build())
+                .withRules(policyRules)
                 .build();
     }
 
-    private static List<String> getConfigMapPermissions(DebeziumServer primary) {
-
-        List<String> configMapPermissions = new ArrayList<>(List.of("get", "list", "watch"));
-        if (primary.getSpec().getSource().getOffset().getActiveStore() instanceof ConfigMapOffsetStore) {
-            configMapPermissions.addAll(List.of("create", "update", "patch"));
-        }
-        return configMapPermissions;
-    }
 }
