@@ -15,6 +15,19 @@ Used in: <<debezium-operator-schema-reference-debeziumserverstatus, `+DebeziumSe
 | [[debezium-operator-schema-reference-condition-type]]<<debezium-operator-schema-reference-condition-type, `+type+`>> | String |  | Unique identifier of a condition.
 |===
 
+[#debezium-operator-schema-reference-configmapoffsetstore]
+==== ConfigMapOffsetStore Schema Reference
+Used in: <<debezium-operator-schema-reference-offset, `+Offset+`>>
+
+
+.ConfigMapOffsetStore properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-configmapoffsetstore-name]]<<debezium-operator-schema-reference-configmapoffsetstore-name, `+name+`>> | String |  | Name of the offset config map
+| [[debezium-operator-schema-reference-configmapoffsetstore-config]]<<debezium-operator-schema-reference-configmapoffsetstore-config, `+config+`>> | Map |  | Additional store configuration properties.
+|===
+
 [#debezium-operator-schema-reference-containerenvvar]
 ==== ContainerEnvVar Schema Reference
 Used in: <<debezium-operator-schema-reference-runtimeenvironment, `+RuntimeEnvironment+`>>
@@ -303,6 +316,7 @@ Used in: <<debezium-operator-schema-reference-source, `+Source+`>>
 | [[debezium-operator-schema-reference-offset-memory]]<<debezium-operator-schema-reference-offset-memory, `+memory+`>> | <<debezium-operator-schema-reference-inmemoryoffsetstore, `+InMemoryOffsetStore+`>> |  | Memory backed offset store configuration
 | [[debezium-operator-schema-reference-offset-redis]]<<debezium-operator-schema-reference-offset-redis, `+redis+`>> | <<debezium-operator-schema-reference-redisoffsetstore, `+RedisOffsetStore+`>> |  | Redis backed offset store configuration
 | [[debezium-operator-schema-reference-offset-kafka]]<<debezium-operator-schema-reference-offset-kafka, `+kafka+`>> | <<debezium-operator-schema-reference-kafkaoffsetstore, `+KafkaOffsetStore+`>> |  | Kafka backing store configuration
+| [[debezium-operator-schema-reference-offset-configmap]]<<debezium-operator-schema-reference-offset-configmap, `+configMap+`>> | <<debezium-operator-schema-reference-configmapoffsetstore, `+ConfigMapOffsetStore+`>> |  | Config map backed offset store configuration
 | [[debezium-operator-schema-reference-offset-store]]<<debezium-operator-schema-reference-offset-store, `+store+`>> | <<debezium-operator-schema-reference-customstore, `+CustomStore+`>> |  | Arbitrary offset store configuration
 | [[debezium-operator-schema-reference-offset-flushms]]<<debezium-operator-schema-reference-offset-flushms, `+flushMs+`>> | long | 60000 | Interval at which to try commiting offsets
 |===
