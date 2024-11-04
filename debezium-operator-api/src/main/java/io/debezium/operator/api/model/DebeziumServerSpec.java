@@ -140,6 +140,7 @@ public class DebeziumServerSpec implements ConfigMappable {
     @Override
     public ConfigMapping asConfiguration() {
         var dbzConfig = ConfigMapping.prefixed("debezium")
+                .putAll(runtime)
                 .putAll("source", source)
                 .putAll("sink", sink)
                 .putAll("format", format)

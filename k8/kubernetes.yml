@@ -53,6 +53,18 @@ rules:
       - delete
       - create
   - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+      - delete
+      - create
+  - apiGroups:
       - apps
     resources:
       - deployments

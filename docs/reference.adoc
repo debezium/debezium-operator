@@ -435,12 +435,25 @@ Used in: <<debezium-operator-schema-reference-debeziumserverspec, `+DebeziumServ
 [cols="20%a,25%s,15%a,40%a",options="header"]
 |===
 | Property | Type | Default | Description
+| [[debezium-operator-schema-reference-runtime-api]]<<debezium-operator-schema-reference-runtime-api, `+api+`>> | <<debezium-operator-schema-reference-runtimeapi, `+RuntimeApi+`>> |  | API configuration
 | [[debezium-operator-schema-reference-runtime-storage]]<<debezium-operator-schema-reference-runtime-storage, `+storage+`>> | <<debezium-operator-schema-reference-runtimestorage, `+RuntimeStorage+`>> |  | Storage configuration
 | [[debezium-operator-schema-reference-runtime-environment]]<<debezium-operator-schema-reference-runtime-environment, `+environment+`>> | <<debezium-operator-schema-reference-runtimeenvironment, `+RuntimeEnvironment+`>> |  | Additional environment variables used by this Debezium Server.
 | [[debezium-operator-schema-reference-runtime-jmx]]<<debezium-operator-schema-reference-runtime-jmx, `+jmx+`>> | <<debezium-operator-schema-reference-jmxconfig, `+JmxConfig+`>> |  | JMX configuration.
 | [[debezium-operator-schema-reference-runtime-templates]]<<debezium-operator-schema-reference-runtime-templates, `+templates+`>> | <<debezium-operator-schema-reference-templates, `+Templates+`>> |  | Debezium Server resource templates.
 | [[debezium-operator-schema-reference-runtime-serviceaccount]]<<debezium-operator-schema-reference-runtime-serviceaccount, `+serviceAccount+`>> | String |  | An existing service account used to run the Debezium Server pod
 | [[debezium-operator-schema-reference-runtime-metrics]]<<debezium-operator-schema-reference-runtime-metrics, `+metrics+`>> | <<debezium-operator-schema-reference-metrics, `+Metrics+`>> |  | Metrics configuration
+|===
+
+[#debezium-operator-schema-reference-runtimeapi]
+==== RuntimeApi Schema Reference
+Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
+
+
+.RuntimeApi properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-runtimeapi-enabled]]<<debezium-operator-schema-reference-runtimeapi-enabled, `+enabled+`>> | boolean |  | Whether the API should be enabled for this instance of Debezium Server
 |===
 
 [#debezium-operator-schema-reference-runtimeenvironment]

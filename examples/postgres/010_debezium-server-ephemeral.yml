@@ -9,6 +9,9 @@ spec:
       log.console.json: false
       kubernetes-config.enabled: true
       kubernetes-config.secrets: postgresql-credentials
+  runtime:
+    api:
+      enabled: true
   sink:
     type: kafka
     config:

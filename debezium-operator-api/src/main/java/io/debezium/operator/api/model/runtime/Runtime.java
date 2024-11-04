@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import io.debezium.operator.api.config.ConfigMappable;
+import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.api.model.runtime.jmx.JmxConfig;
 import io.debezium.operator.api.model.runtime.metrics.Metrics;
 import io.debezium.operator.api.model.runtime.storage.RuntimeStorage;
@@ -16,10 +18,14 @@ import io.debezium.operator.api.model.runtime.templates.Templates;
 import io.debezium.operator.docs.annotations.Documented;
 import io.sundr.builder.annotations.Buildable;
 
-@JsonPropertyOrder({ "storage", "environment", "jmx", "templates" })
+@JsonPropertyOrder({ "api", "storage", "environment", "jmx", "templates", "serviceAccount", "metrics" })
 @Documented
 @Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
-public class Runtime {
+public class Runtime implements ConfigMappable {
+
+    @JsonPropertyDescription("API configuration")
+    private RuntimeApi api;
+
     @JsonPropertyDescription("Storage configuration")
     private RuntimeStorage storage;
 
@@ -40,11 +46,20 @@ public class Runtime {
     private Metrics metrics;
 
     public Runtime() {
+        this.api = new RuntimeApi();
         this.storage = new RuntimeStorage();
         this.environment = new RuntimeEnvironment();
         this.jmx = new JmxConfig();
         this.templates = new Templates();
         this.metrics = new Metrics();
+    }
+
+    public RuntimeApi getApi() {
+        return api;
+    }
+
+    public void setApi(RuntimeApi api) {
+        this.api = api;
     }
 
     public Templates getTemplates() {
@@ -93,5 +108,11 @@ public class Runtime {
 
     public void setMetrics(Metrics metrics) {
         this.metrics = metrics;
+    }
+
+    @Override
+    public ConfigMapping asConfiguration() {
+        return ConfigMapping.empty()
+                .putAll("api", api);
     }
 }

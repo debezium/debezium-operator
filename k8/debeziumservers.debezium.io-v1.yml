@@ -115,6 +115,14 @@ spec:
                 description: Configuration allowing the modification of various aspects
                   of Debezium Server runtime.
                 properties:
+                  api:
+                    description: API configuration
+                    properties:
+                      enabled:
+                        description: Whether the API should be enabled for this instance
+                          of Debezium Server
+                        type: boolean
+                    type: object
                   environment:
                     description: Additional environment variables used by this Debezium
                       Server.
