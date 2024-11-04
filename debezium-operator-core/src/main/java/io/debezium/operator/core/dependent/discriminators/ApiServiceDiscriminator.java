@@ -11,17 +11,17 @@ import java.util.Optional;
 
 import io.debezium.operator.api.model.CommonLabels;
 import io.debezium.operator.api.model.DebeziumServer;
-import io.debezium.operator.core.dependent.JmxExporterServiceDependent;
+import io.debezium.operator.core.dependent.JmxServiceDependent;
 import io.fabric8.kubernetes.api.model.Service;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.api.reconciler.ResourceDiscriminator;
 
-public class JmxExporterServiceDiscriminator implements ResourceDiscriminator<Service, DebeziumServer> {
+public class ApiServiceDiscriminator implements ResourceDiscriminator<Service, DebeziumServer> {
 
     @Override
     public Optional<Service> distinguish(Class<Service> resource, DebeziumServer primary, Context<DebeziumServer> context) {
         return context.getSecondaryResourcesAsStream(Service.class)
-                .filter(s -> hasLabel(s, CommonLabels.KEY_DBZ_CLASSIFIER, JmxExporterServiceDependent.JMX_EXPORTER_CLASSIFIER))
+                .filter(s -> hasLabel(s, CommonLabels.KEY_DBZ_CLASSIFIER, JmxServiceDependent.JMX_CLASSIFIER))
                 .findFirst();
     }
 }

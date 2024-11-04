@@ -8,6 +8,8 @@ package io.debezium.operator.api.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.fabric8.kubernetes.api.model.HasMetadata;
+
 public final class CommonLabels {
 
     public static final String KEY_APP_K8_INSTANCE = "app.kubernetes.io/instance";
@@ -50,6 +52,13 @@ public final class CommonLabels {
 
     public Map<String, String> getMap() {
         return new HashMap<>(map);
+    }
+
+    public static boolean hasLabel(HasMetadata resource, String key, String expectedValue) {
+        var labels = resource.getMetadata().getLabels();
+        var actualValue = labels.get(key);
+
+        return actualValue != null && actualValue.equals(expectedValue);
     }
 
 }

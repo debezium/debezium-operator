@@ -19,6 +19,7 @@ import io.debezium.operator.api.model.status.ServerReadyCondition;
 import io.debezium.operator.api.model.status.ServerRunningCondition;
 import io.debezium.operator.api.model.status.ServerStoppedCondition;
 import io.debezium.operator.commons.OperatorConstants;
+import io.debezium.operator.core.dependent.ApiServiceDependent;
 import io.debezium.operator.core.dependent.ConfigMapDependent;
 import io.debezium.operator.core.dependent.DeploymentDependent;
 import io.debezium.operator.core.dependent.JmxExporterServiceDependent;
@@ -27,6 +28,7 @@ import io.debezium.operator.core.dependent.PvcDependent;
 import io.debezium.operator.core.dependent.RoleBindingDependent;
 import io.debezium.operator.core.dependent.RoleDependent;
 import io.debezium.operator.core.dependent.ServiceAccountDependent;
+import io.debezium.operator.core.dependent.conditions.ApiEnabled;
 import io.debezium.operator.core.dependent.conditions.CreatePvc;
 import io.debezium.operator.core.dependent.conditions.CreateServiceAccount;
 import io.debezium.operator.core.dependent.conditions.DeploymentReady;
@@ -58,7 +60,8 @@ import io.quarkus.logging.Log;
                 "role-binding",
         }, reconcilePrecondition = PvcReady.class, readyPostcondition = DeploymentReady.class),
         @Dependent(name = "jmx-service", type = JmxServiceDependent.class, dependsOn = "deployment", reconcilePrecondition = JmxEnabled.class),
-        @Dependent(name = "jmx-exporter-service", type = JmxExporterServiceDependent.class, dependsOn = "deployment", reconcilePrecondition = JmxExporterEnabled.class)
+        @Dependent(name = "jmx-exporter-service", type = JmxExporterServiceDependent.class, dependsOn = "deployment", reconcilePrecondition = JmxExporterEnabled.class),
+        @Dependent(name = "api-service", type = ApiServiceDependent.class, dependsOn = "deployment", reconcilePrecondition = ApiEnabled.class)
 })
 @CSVMetadata(name = OperatorConstants.CSV_INTERNAL_BUNDLE_NAME)
 @RBACRule(verbs = { RBACVerbs.GET, RBACVerbs.LIST, RBACVerbs.WATCH }, apiGroups = "", resources = "secrets")
