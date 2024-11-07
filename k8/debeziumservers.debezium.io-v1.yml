@@ -122,6 +122,10 @@ spec:
                         description: Whether the API should be enabled for this instance
                           of Debezium Server
                         type: boolean
+                      port:
+                        description: Port number used by the k8s service exposing
+                          the API
+                        type: integer
                     type: object
                   environment:
                     description: Additional environment variables used by this Debezium

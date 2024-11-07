@@ -454,6 +454,7 @@ Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
 |===
 | Property | Type | Default | Description
 | [[debezium-operator-schema-reference-runtimeapi-enabled]]<<debezium-operator-schema-reference-runtimeapi-enabled, `+enabled+`>> | boolean |  | Whether the API should be enabled for this instance of Debezium Server
+| [[debezium-operator-schema-reference-runtimeapi-port]]<<debezium-operator-schema-reference-runtimeapi-port, `+port+`>> | int | 8080 | Port number used by the k8s service exposing the API
 |===
 
 [#debezium-operator-schema-reference-runtimeenvironment]

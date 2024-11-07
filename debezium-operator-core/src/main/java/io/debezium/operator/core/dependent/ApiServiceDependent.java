@@ -22,7 +22,6 @@ import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDep
 public class ApiServiceDependent extends CRUDKubernetesDependentResource<Service, DebeziumServer> {
 
     public static final String CLASSIFIER = "api";
-    public static final int API_PORT = DeploymentDependent.DEFAULT_HTTP_PORT;
 
     public ApiServiceDependent() {
         super(Service.class);
@@ -31,6 +30,7 @@ public class ApiServiceDependent extends CRUDKubernetesDependentResource<Service
     @Override
     protected Service desired(DebeziumServer primary, Context<DebeziumServer> context) {
         var name = primary.getMetadata().getName();
+        var apiConfig = primary.getSpec().getRuntime().getApi();
 
         var labels = CommonLabels.serverComponent(name)
                 .withDbzClassifier(CLASSIFIER)
@@ -50,7 +50,7 @@ public class ApiServiceDependent extends CRUDKubernetesDependentResource<Service
                                 .withName("http")
                                 .withProtocol("TCP")
                                 .withTargetPort(new IntOrString(DeploymentDependent.DEFAULT_HTTP_PORT))
-                                .withPort(API_PORT)
+                                .withPort(apiConfig.getPort())
                                 .build())
                         .build())
                 .build();
