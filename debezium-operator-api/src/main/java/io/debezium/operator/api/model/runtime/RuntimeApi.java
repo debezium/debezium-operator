@@ -5,6 +5,7 @@
  */
 package io.debezium.operator.api.model.runtime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -21,12 +22,24 @@ public class RuntimeApi implements ConfigMappable {
     @JsonPropertyDescription("Whether the API should be enabled for this instance of Debezium Server")
     private boolean enabled = false;
 
+    @JsonProperty(defaultValue = "8080")
+    @JsonPropertyDescription("Port number used by the k8s service exposing the API")
+    private int port = 8080;
+
     public boolean isEnabled() {
         return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     @Override
