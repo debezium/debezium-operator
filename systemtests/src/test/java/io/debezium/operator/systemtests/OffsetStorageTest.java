@@ -8,7 +8,9 @@ package io.debezium.operator.systemtests;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.util.Base64;
 
+import io.fabric8.kubernetes.api.model.ConfigMap;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,5 +71,38 @@ public class OffsetStorageTest extends TestBase {
         catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void testConfigMapOffsetStorage() {
+
+        String namespace = NamespaceHolder.INSTANCE.getCurrentNamespace();
+        DebeziumOperatorBundleResource operatorBundleResource = new DebeziumOperatorBundleResource();
+        operatorBundleResource.configureAsDefault(namespace);
+        logger.info("Deploying Operator");
+        operatorBundleResource.deploy();
+        logger.info("Deploying Debezium Server");
+        DebeziumServer server = DebeziumServerGenerator.generateDefaultMysqlToRedis(namespace);
+
+        Offset offset = new OffsetBuilder()
+                .withNewConfigMap()
+                .withName("debezium-offsets")
+                .endConfigMap()
+                .build();
+        server.getSpec().getSource().setOffset(offset);
+
+        KubeResourceManager.getInstance().createResourceWithWait(server);
+        assertStreamingWorks();
+
+        ConfigMap configMap = KubeResourceManager.getKubeClient().getClient()
+                .configMaps()
+                .inNamespace(namespace)
+                .withName("debezium-offsets")
+                .get();
+
+        assertThat(configMap.getBinaryData()).containsOnlyKeys("redis.server-inventory");
+
+        String offsets = new String(Base64.getDecoder().decode(configMap.getBinaryData().get("redis.server-inventory")));
+        assertThat(offsets).contains("pos", "file");
     }
 }
