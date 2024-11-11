@@ -44,12 +44,7 @@ public class RoleDependent
                 .build());
 
         if (primary.getSpec().getSource().getOffset().getActiveStore() instanceof ConfigMapOffsetStore) {
-            policyRules.add(new PolicyRuleBuilder()
-                    .withApiGroups("")
-                    .withResources("configmaps")
-                    .withResourceNames(primary.getSpec().getSource().getOffset().getConfigMap().getName())
-                    .withVerbs(List.of("get", "list", "watch", "update", "patch"))
-                    .build());
+            policyRules.add(getOffsetConfgiMapPolicyRule(primary));
         }
 
         return new RoleBuilder()
@@ -58,6 +53,19 @@ public class RoleDependent
                         .withNamespace(primary.getMetadata().getNamespace())
                         .build())
                 .withRules(policyRules)
+                .build();
+    }
+
+    private static PolicyRule getOffsetConfgiMapPolicyRule(DebeziumServer primary) {
+
+        String name = primary.getSpec().getSource().getOffset().getConfigMap().getName() != null ? primary.getSpec().getSource().getOffset().getConfigMap().getName()
+                : new OffsetsConfigMapDependent().managedName(primary);
+
+        return new PolicyRuleBuilder()
+                .withApiGroups("")
+                .withResources("configmaps")
+                .withResourceNames(name)
+                .withVerbs(List.of("get", "list", "watch", "update", "patch"))
                 .build();
     }
 
