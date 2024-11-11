@@ -10,7 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.util.Base64;
 
-import io.fabric8.kubernetes.api.model.ConfigMap;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +22,9 @@ import io.debezium.operator.systemtests.resources.dmt.DmtClient;
 import io.debezium.operator.systemtests.resources.operator.DebeziumOperatorBundleResource;
 import io.debezium.operator.systemtests.resources.server.DebeziumServerGenerator;
 import io.debezium.operator.systemtests.resources.sinks.RedisResource;
+import io.fabric8.kubernetes.api.model.ConfigMap;
+import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
+import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.skodjob.testframe.resources.KubeResourceManager;
 
@@ -86,6 +88,46 @@ public class OffsetStorageTest extends TestBase {
 
         Offset offset = new OffsetBuilder()
                 .withNewConfigMap()
+                .endConfigMap()
+                .build();
+        server.getSpec().getSource().setOffset(offset);
+
+        KubeResourceManager.getInstance().createResourceWithWait(server);
+        assertStreamingWorks();
+
+        ConfigMap configMap = KubeResourceManager.getKubeClient().getClient()
+                .configMaps()
+                .inNamespace(namespace)
+                .withName("my-debezium-offsets")
+                .get();
+
+        assertThat(configMap.getBinaryData()).containsOnlyKeys("redis.server-inventory");
+
+        String offsets = new String(Base64.getDecoder().decode(configMap.getBinaryData().get("redis.server-inventory")));
+        assertThat(offsets).contains("pos", "file");
+    }
+
+    @Test
+    void configMapOffsetStorageMustNotBeCreatedIfAlreadyExists() {
+
+        String namespace = NamespaceHolder.INSTANCE.getCurrentNamespace();
+        DebeziumOperatorBundleResource operatorBundleResource = new DebeziumOperatorBundleResource();
+        operatorBundleResource.configureAsDefault(namespace);
+        logger.info("Deploying Operator");
+        operatorBundleResource.deploy();
+
+        KubeResourceManager.getInstance().createResourceWithWait(new ConfigMapBuilder()
+                .withMetadata(new ObjectMetaBuilder()
+                        .withNamespace(namespace)
+                        .withName("debezium-offsets")
+                        .build())
+                .build());
+
+        logger.info("Deploying Debezium Server");
+        DebeziumServer server = DebeziumServerGenerator.generateDefaultMysqlToRedis(namespace);
+
+        Offset offset = new OffsetBuilder()
+                .withNewConfigMap()
                 .withName("debezium-offsets")
                 .endConfigMap()
                 .build();
@@ -100,6 +142,7 @@ public class OffsetStorageTest extends TestBase {
                 .withName("debezium-offsets")
                 .get();
 
+        assertThat(configMap.getMetadata().getLabels()).doesNotContainKey("debezium.io/component");
         assertThat(configMap.getBinaryData()).containsOnlyKeys("redis.server-inventory");
 
         String offsets = new String(Base64.getDecoder().decode(configMap.getBinaryData().get("redis.server-inventory")));
