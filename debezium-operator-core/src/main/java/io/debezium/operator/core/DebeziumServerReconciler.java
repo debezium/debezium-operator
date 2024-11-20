@@ -30,12 +30,12 @@ import io.debezium.operator.core.dependent.RoleBindingDependent;
 import io.debezium.operator.core.dependent.RoleDependent;
 import io.debezium.operator.core.dependent.ServiceAccountDependent;
 import io.debezium.operator.core.dependent.conditions.ApiEnabled;
-import io.debezium.operator.core.dependent.conditions.ConfigMapStoreEnabled;
 import io.debezium.operator.core.dependent.conditions.CreatePvc;
 import io.debezium.operator.core.dependent.conditions.CreateServiceAccount;
 import io.debezium.operator.core.dependent.conditions.DeploymentReady;
 import io.debezium.operator.core.dependent.conditions.JmxEnabled;
 import io.debezium.operator.core.dependent.conditions.JmxExporterEnabled;
+import io.debezium.operator.core.dependent.conditions.OffsetConfigMapRequired;
 import io.debezium.operator.core.dependent.conditions.PvcReady;
 import io.debezium.operator.core.dependent.conditions.ServiceAccountReady;
 import io.javaoperatorsdk.operator.api.reconciler.Constants;
@@ -57,7 +57,7 @@ import io.quarkus.logging.Log;
                 "role"
         }, reconcilePrecondition = ServiceAccountReady.class),
         @Dependent(name = "config", type = ConfigMapDependent.class),
-        @Dependent(name = "offsets-config", type = OffsetsConfigMapDependent.class, reconcilePrecondition = ConfigMapStoreEnabled.class),
+        @Dependent(name = "offsets-config", type = OffsetsConfigMapDependent.class, reconcilePrecondition = OffsetConfigMapRequired.class),
         @Dependent(name = "deployment", type = DeploymentDependent.class, dependsOn = {
                 "config",
                 "role-binding",
