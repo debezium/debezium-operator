@@ -13,7 +13,7 @@ import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.api.reconciler.dependent.DependentResource;
 import io.javaoperatorsdk.operator.processing.dependent.workflow.Condition;
 
-public class ConfigMapStoreEnabled implements Condition<Service, DebeziumServer> {
+public class OffsetConfigMapRequired implements Condition<Service, DebeziumServer> {
 
     @Override
     public boolean isMet(
