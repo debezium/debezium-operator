@@ -59,7 +59,7 @@ public class RoleDependent
     private static PolicyRule getOffsetConfgiMapPolicyRule(DebeziumServer primary) {
 
         String name = primary.getSpec().getSource().getOffset().getConfigMap().getName() != null ? primary.getSpec().getSource().getOffset().getConfigMap().getName()
-                : new OffsetsConfigMapDependent().managedName(primary);
+                : OffsetsConfigMapDependent.managedName(primary);
 
         return new PolicyRuleBuilder()
                 .withApiGroups("")

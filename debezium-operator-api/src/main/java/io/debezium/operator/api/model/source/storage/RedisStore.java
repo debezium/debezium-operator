@@ -85,7 +85,7 @@ public class RedisStore extends AbstractStore {
     }
 
     @Override
-    protected ConfigMapping typeConfiguration(DebeziumServer primary) {
+    protected ConfigMapping<DebeziumServer> typeConfiguration(DebeziumServer primary) {
         return ConfigMapping.empty(primary)
                 .put("address", address)
                 .put("user", user)
