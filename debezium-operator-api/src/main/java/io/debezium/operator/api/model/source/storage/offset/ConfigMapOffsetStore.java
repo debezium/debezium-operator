@@ -16,6 +16,6 @@ public class ConfigMapOffsetStore extends ConfigMapStore {
     public static final String TYPE = "io.debezium.storage.configmap.ConfigMapOffsetStore";
 
     public ConfigMapOffsetStore() {
-        super(null, TYPE);
+        super(TYPE);
     }
 }
