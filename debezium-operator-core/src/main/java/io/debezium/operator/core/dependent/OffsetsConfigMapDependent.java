@@ -5,8 +5,6 @@
  */
 package io.debezium.operator.core.dependent;
 
-import static io.debezium.operator.api.model.source.storage.ConfigMapStore.MANAGED_CONFIG_MAP_NAME_TEMPLATE;
-
 import io.debezium.operator.api.model.CommonLabels;
 import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.core.dependent.discriminators.OffsetsConfigMapDiscriminator;
@@ -28,7 +26,6 @@ public class OffsetsConfigMapDependent extends CRUDKubernetesDependentResource<C
 
     @Override
     protected ConfigMap desired(DebeziumServer primary, Context<DebeziumServer> context) {
-
         var name = primary.getMetadata().getName();
         var labels = CommonLabels.serverComponent(name)
                 .withDbzClassifier(OFFSETS_CONFIG_MAP_CLASSIFIER)
@@ -37,13 +34,10 @@ public class OffsetsConfigMapDependent extends CRUDKubernetesDependentResource<C
         return new ConfigMapBuilder()
                 .withMetadata(new ObjectMetaBuilder()
                         .withNamespace(primary.getMetadata().getNamespace())
-                        .withName(managedName(primary))
+                        .withName(primary.getSpec().getSource().getOffset().getConfigMap().getFinalName(primary))
                         .withLabels(labels)
                         .build())
                 .build();
     }
 
-    public static String managedName(DebeziumServer primary) {
-        return MANAGED_CONFIG_MAP_NAME_TEMPLATE.formatted(primary.getMetadata().getName());
-    }
 }

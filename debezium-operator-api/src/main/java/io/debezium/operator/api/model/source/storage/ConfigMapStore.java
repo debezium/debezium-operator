@@ -5,6 +5,7 @@
  */
 package io.debezium.operator.api.model.source.storage;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
@@ -20,9 +21,8 @@ public class ConfigMapStore extends AbstractStore {
     @JsonProperty(required = false)
     private String name;
 
-    public ConfigMapStore(String name, String type) {
+    public ConfigMapStore(String type) {
         super(CONFIG_PREFIX, type);
-        this.name = name;
     }
 
     public String getName() {
@@ -35,10 +35,12 @@ public class ConfigMapStore extends AbstractStore {
 
     @Override
     protected ConfigMapping<DebeziumServer> typeConfiguration(DebeziumServer primary) {
-
-        var configMapName = this.name != null ? this.name : MANAGED_CONFIG_MAP_NAME_TEMPLATE.formatted(primary.getMetadata().getName());
-
         return ConfigMapping.empty(primary)
-                .put("name", configMapName);
+                .put("name", getFinalName(primary));
+    }
+
+    @JsonIgnore
+    public String getFinalName(DebeziumServer primary) {
+        return this.name != null ? this.name : MANAGED_CONFIG_MAP_NAME_TEMPLATE.formatted(primary.getMetadata().getName());
     }
 }
