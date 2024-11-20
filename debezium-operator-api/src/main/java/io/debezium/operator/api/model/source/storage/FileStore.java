@@ -32,7 +32,7 @@ public class FileStore extends AbstractStore {
     }
 
     @Override
-    protected ConfigMapping typeConfiguration(DebeziumServer primary) {
+    protected ConfigMapping<DebeziumServer> typeConfiguration(DebeziumServer primary) {
         return ConfigMapping.empty(primary)
                 .put("filename", fileName);
     }

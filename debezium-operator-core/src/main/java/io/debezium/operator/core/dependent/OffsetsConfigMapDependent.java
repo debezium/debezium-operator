@@ -5,6 +5,8 @@
  */
 package io.debezium.operator.core.dependent;
 
+import static io.debezium.operator.api.model.source.storage.ConfigMapStore.MANAGED_CONFIG_MAP_NAME_TEMPLATE;
+
 import io.debezium.operator.api.model.CommonLabels;
 import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.core.dependent.discriminators.OffsetsConfigMapDiscriminator;
@@ -16,11 +18,9 @@ import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernete
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependent;
 
 @KubernetesDependent(resourceDiscriminator = OffsetsConfigMapDiscriminator.class)
-public class OffsetsConfigMapDependent extends CRUDKubernetesDependentResource<ConfigMap, DebeziumServer> implements AutoNamed {
+public class OffsetsConfigMapDependent extends CRUDKubernetesDependentResource<ConfigMap, DebeziumServer> {
 
     public static final String OFFSETS_CONFIG_MAP_CLASSIFIER = "offsets";
-    private static final String MANAGED_CONFIG_MAP_NAME_TEMPLATE = "%s-offsets";
-    public static final String CONFIG_MAP_PROPERTY_NAME = "debezium.source.offset.storage.configmap.name";
 
     public OffsetsConfigMapDependent() {
         super(ConfigMap.class);
@@ -43,14 +43,7 @@ public class OffsetsConfigMapDependent extends CRUDKubernetesDependentResource<C
                 .build();
     }
 
-    @Override
-    public String configurationName() {
-        return CONFIG_MAP_PROPERTY_NAME;
-    }
-
-    @Override
-    public String managedName(DebeziumServer primary) {
-        var name = primary.getMetadata().getName();
-        return MANAGED_CONFIG_MAP_NAME_TEMPLATE.formatted(name);
+    public static String managedName(DebeziumServer primary) {
+        return MANAGED_CONFIG_MAP_NAME_TEMPLATE.formatted(primary.getMetadata().getName());
     }
 }

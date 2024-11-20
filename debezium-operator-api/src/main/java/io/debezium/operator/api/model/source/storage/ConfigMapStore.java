@@ -9,9 +9,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.api.model.DebeziumServer;
 
 public class ConfigMapStore extends AbstractStore {
 
+    public static final String MANAGED_CONFIG_MAP_NAME_TEMPLATE = "%s-offsets";
     public static final String CONFIG_PREFIX = "configmap";
 
     @JsonPropertyDescription("Name of the offset config map")
@@ -32,8 +34,11 @@ public class ConfigMapStore extends AbstractStore {
     }
 
     @Override
-    protected ConfigMapping typeConfiguration() {
-        return ConfigMapping.empty()
-                .put("name", name);
+    protected ConfigMapping<DebeziumServer> typeConfiguration(DebeziumServer primary) {
+
+        var configMapName = this.name != null ? this.name : MANAGED_CONFIG_MAP_NAME_TEMPLATE.formatted(primary.getMetadata().getName());
+
+        return ConfigMapping.empty(primary)
+                .put("name", configMapName);
     }
 }
