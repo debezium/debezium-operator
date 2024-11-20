@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.api.model.ConfigProperties;
+import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.api.model.source.storage.CustomStore;
 import io.debezium.operator.api.model.source.storage.Store;
 import io.debezium.operator.api.model.source.storage.schema.FileSchemaHistoryStore;
@@ -25,7 +26,7 @@ import io.sundr.builder.annotations.Buildable;
 
 @Documented
 @Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
-public class SchemaHistory implements ConfigMappable {
+public class SchemaHistory implements ConfigMappable<DebeziumServer> {
 
     @JsonPropertyDescription("File backed schema history store configuration")
     private FileSchemaHistoryStore file;
@@ -97,8 +98,8 @@ public class SchemaHistory implements ConfigMappable {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return ConfigMapping.empty()
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .putAll(config)
                 .putAll(getActiveStore());
     }

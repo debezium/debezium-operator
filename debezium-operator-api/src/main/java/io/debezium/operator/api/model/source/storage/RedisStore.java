@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.api.model.DebeziumServer;
 
 public class RedisStore extends AbstractStore {
     public static final String CONFIG_PREFIX = "redis";
@@ -84,8 +85,8 @@ public class RedisStore extends AbstractStore {
     }
 
     @Override
-    protected ConfigMapping typeConfiguration() {
-        return ConfigMapping.empty()
+    protected ConfigMapping typeConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .put("address", address)
                 .put("user", user)
                 .put("password", password)

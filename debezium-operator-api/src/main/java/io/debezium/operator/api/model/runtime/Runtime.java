@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.api.model.runtime.jmx.JmxConfig;
 import io.debezium.operator.api.model.runtime.metrics.Metrics;
 import io.debezium.operator.api.model.runtime.storage.RuntimeStorage;
@@ -21,7 +22,7 @@ import io.sundr.builder.annotations.Buildable;
 @JsonPropertyOrder({ "api", "storage", "environment", "jmx", "templates", "serviceAccount", "metrics" })
 @Documented
 @Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
-public class Runtime implements ConfigMappable {
+public class Runtime implements ConfigMappable<DebeziumServer> {
 
     @JsonPropertyDescription("API configuration")
     private RuntimeApi api;
@@ -111,8 +112,8 @@ public class Runtime implements ConfigMappable {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return ConfigMapping.empty()
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .putAll("api", api);
     }
 }

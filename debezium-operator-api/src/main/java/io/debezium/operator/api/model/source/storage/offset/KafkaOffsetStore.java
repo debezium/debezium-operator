@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.api.model.ConfigProperties;
+import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.api.model.source.storage.KafkaStore;
 import io.debezium.operator.docs.annotations.Documented;
 import io.sundr.builder.annotations.Buildable;
@@ -34,8 +35,8 @@ public class KafkaOffsetStore extends KafkaStore {
     }
 
     @Override
-    protected ConfigMapping kafkaProps() {
-        return ConfigMapping.prefixed("debezium.source")
+    protected ConfigMapping<DebeziumServer> kafkaProps(DebeziumServer primary) {
+        return ConfigMapping.prefixed(primary, "debezium.source")
                 .put("bootstrap.servers", getBootstrapServers())
                 .putAll(props)
                 .asAbsolute();

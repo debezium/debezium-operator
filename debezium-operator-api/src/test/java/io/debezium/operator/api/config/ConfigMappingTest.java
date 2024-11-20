@@ -17,6 +17,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import io.debezium.operator.api.model.ConfigProperties;
+import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.api.model.Predicate;
 import io.debezium.operator.api.model.Transformation;
 
@@ -24,7 +25,7 @@ public class ConfigMappingTest {
 
     @Test
     void shouldNotAddNullValue() {
-        var config = ConfigMapping.empty();
+        var config = ConfigMapping.empty(new DebeziumServer());
         config.put("invalid", null);
 
         assertThat(config.getAsMapSimple()).isEmpty();
@@ -33,7 +34,7 @@ public class ConfigMappingTest {
 
     @Test
     void shouldAddRootValue() {
-        var config = ConfigMapping.empty();
+        var config = ConfigMapping.empty(new DebeziumServer());
         config.rootValue("json");
 
         assertThat(config.getAsMapSimple()).containsEntry("", "json");
@@ -42,7 +43,7 @@ public class ConfigMappingTest {
 
     @Test
     void shouldAddKeyAndValue() {
-        var config = ConfigMapping.empty();
+        var config = ConfigMapping.empty(new DebeziumServer());
         config.put("name", "value");
 
         assertThat(config.getAsMapSimple()).containsEntry("name", "value");
@@ -51,7 +52,7 @@ public class ConfigMappingTest {
 
     @Test
     void shouldAddKeyAndValueWithPrefix() {
-        var config = ConfigMapping.prefixed("prefix");
+        var config = ConfigMapping.prefixed(new DebeziumServer(), "prefix");
         config.put("name", "value");
 
         assertThat(config.getAsMapSimple()).containsEntry("prefix.name", "value");
@@ -60,7 +61,7 @@ public class ConfigMappingTest {
 
     @Test
     void shouldAddKeyAndValueWithAbsKeyWithPrefix() {
-        var config = ConfigMapping.prefixed("prefix");
+        var config = ConfigMapping.prefixed(new DebeziumServer(), "prefix");
         config.putAbs("name", "value");
 
         assertThat(config.getAsMapSimple()).containsEntry("name", "value");
@@ -69,9 +70,9 @@ public class ConfigMappingTest {
 
     @Test
     void shouldAddChildConfigDirectly() {
-        var childConfig = ConfigMapping.empty();
+        var childConfig = ConfigMapping.empty(new DebeziumServer());
         childConfig.put("childName", "childValue");
-        var parent = ConfigMapping.empty();
+        var parent = ConfigMapping.empty(new DebeziumServer());
         parent.put("name", "value");
         parent.putAll(childConfig);
 
@@ -82,9 +83,9 @@ public class ConfigMappingTest {
 
     @Test
     void shouldAddChildConfigWithPrefixDirectly() {
-        var childConfig = ConfigMapping.prefixed("prefix");
+        var childConfig = ConfigMapping.prefixed(new DebeziumServer(), "prefix");
         childConfig.put("childName", "childValue");
-        var parent = ConfigMapping.empty();
+        var parent = ConfigMapping.empty(new DebeziumServer());
         parent.put("name", "value");
         parent.putAll(childConfig);
 
@@ -95,9 +96,9 @@ public class ConfigMappingTest {
 
     @Test
     void shouldAddChildConfigWithKey() {
-        var childConfig = ConfigMapping.empty();
+        var childConfig = ConfigMapping.empty(new DebeziumServer());
         childConfig.put("name", "value");
-        var parent = ConfigMapping.empty();
+        var parent = ConfigMapping.empty(new DebeziumServer());
         parent.put("name", "value");
         parent.putAll("child", childConfig);
 
@@ -108,9 +109,9 @@ public class ConfigMappingTest {
 
     @Test
     void shouldAddChildConfigWithPrefixWithKey() {
-        var childConfig = ConfigMapping.prefixed("prefix");
+        var childConfig = ConfigMapping.prefixed(new DebeziumServer(), "prefix");
         childConfig.put("name", "value");
-        var parent = ConfigMapping.empty();
+        var parent = ConfigMapping.empty(new DebeziumServer());
         parent.put("name", "value");
         parent.putAll("child", childConfig);
 
@@ -121,10 +122,10 @@ public class ConfigMappingTest {
 
     @Test
     void shouldAddChildConfigWithAbsoluteKeyWithKey() {
-        var childConfig = ConfigMapping.empty();
+        var childConfig = ConfigMapping.empty(new DebeziumServer());
         childConfig.put("name", "value");
         childConfig.putAbs("name2", "value2");
-        var parent = ConfigMapping.empty();
+        var parent = ConfigMapping.empty(new DebeziumServer());
         parent.put("name", "value");
         parent.putAll("child", childConfig);
 
@@ -139,7 +140,7 @@ public class ConfigMappingTest {
         properties.put("key1", "value1");
         properties.put("key2", "value2");
 
-        var config = ConfigMapping.empty();
+        var config = ConfigMapping.empty(new DebeziumServer());
         config.putAll(properties);
 
         assertThat(config.getAsMapSimple()).contains(entry("key1", "value1"), entry("key2", "value2"));
@@ -148,7 +149,7 @@ public class ConfigMappingTest {
 
     @Test
     void shouldAddList() {
-        var config = ConfigMapping.empty();
+        var config = ConfigMapping.empty(new DebeziumServer());
 
         List<Map<String, Object>> configDataList = List.of(
                 Map.of("type", "io.debezium.transforms.ByLogicalTableRouter", "negate", false),
@@ -181,7 +182,7 @@ public class ConfigMappingTest {
 
     @Test
     void shouldAddMap() {
-        var config = ConfigMapping.empty();
+        var config = ConfigMapping.empty(new DebeziumServer());
         ConfigProperties configProperties = new ConfigProperties();
         Predicate predicate = new Predicate();
         predicate.setType("IsOutboxTable");
@@ -198,7 +199,7 @@ public class ConfigMappingTest {
 
     @Test
     void shouldCalculateMD5Sum() {
-        var config = ConfigMapping.empty();
+        var config = ConfigMapping.empty(new DebeziumServer());
         config.put("key1", "value1");
         String md5Sum = config.md5Sum();
 

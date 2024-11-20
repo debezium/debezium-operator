@@ -23,7 +23,7 @@ import io.debezium.operator.docs.annotations.Documented;
 @JsonPropertyOrder({
         "image", "version", "image", "quarkus", "runtime", "format", "transforms", "predicates", "source", "sink"
 })
-public class DebeziumServerSpec implements ConfigMappable {
+public class DebeziumServerSpec implements ConfigMappable<DebeziumServer> {
 
     @JsonPropertyDescription("Image used for Debezium Server container. This property takes precedence over version.")
     private String image;
@@ -138,8 +138,8 @@ public class DebeziumServerSpec implements ConfigMappable {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        var dbzConfig = ConfigMapping.prefixed("debezium")
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        var dbzConfig = ConfigMapping.prefixed(primary, "debezium")
                 .putAll(runtime)
                 .putAll("source", source)
                 .putAll("sink", sink)
@@ -147,7 +147,7 @@ public class DebeziumServerSpec implements ConfigMappable {
                 .putList("transforms", transforms, "t")
                 .putMap("predicates", predicates);
 
-        return ConfigMapping.empty()
+        return ConfigMapping.empty(primary)
                 .putAll("quarkus", quarkus)
                 .putAll(dbzConfig);
     }

@@ -6,8 +6,9 @@
 package io.debezium.operator.api.model.source.storage;
 
 import io.debezium.operator.api.config.ConfigMappable;
+import io.debezium.operator.api.model.DebeziumServer;
 
-public interface Store extends ConfigMappable {
+public interface Store extends ConfigMappable<DebeziumServer> {
 
     String getType();
 }

@@ -14,7 +14,7 @@ import io.sundr.builder.annotations.Buildable;
 
 @Documented
 @Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
-public class Quarkus implements ConfigMappable {
+public class Quarkus implements ConfigMappable<DebeziumServer> {
 
     @JsonPropertyDescription("Quarkus configuration properties.")
     private ConfigProperties config;
@@ -32,8 +32,8 @@ public class Quarkus implements ConfigMappable {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return ConfigMapping.empty()
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .putAll(this.config);
     }
 }

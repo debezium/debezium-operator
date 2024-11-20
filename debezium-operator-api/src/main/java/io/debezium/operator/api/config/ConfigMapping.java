@@ -17,10 +17,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import io.fabric8.kubernetes.api.model.HasMetadata;
+
 /**
  * Convenience wrapper used to build properties-like configuration from arbitrary map
  */
-public final class ConfigMapping {
+public final class ConfigMapping<P extends HasMetadata> {
+
+    private final P primary;
 
     /**
      * Represents a key in the configuration
@@ -68,23 +72,24 @@ public final class ConfigMapping {
     private final Map<Key, String> config;
     private final String prefix;
 
-    public static ConfigMapping from(Map<String, ?> properties) {
-        var config = ConfigMapping.empty();
+    public static <P extends HasMetadata> ConfigMapping<P> from(P primary, Map<String, ?> properties) {
+        var config = ConfigMapping.empty(primary);
         config.putAll(properties);
         return config;
     }
 
-    public static ConfigMapping empty() {
-        return new ConfigMapping(null);
+    public static <P extends HasMetadata> ConfigMapping<P> empty(P primary) {
+        return new ConfigMapping<>(primary, null);
     }
 
-    public static ConfigMapping prefixed(String prefix) {
-        return new ConfigMapping(prefix);
+    public static <P extends HasMetadata> ConfigMapping<P> prefixed(P primary, String prefix) {
+        return new ConfigMapping<>(primary, prefix);
     }
 
-    public ConfigMapping(String prefix) {
+    public ConfigMapping(P primary, String prefix) {
         this.config = new HashMap<>();
         this.prefix = prefix;
+        this.primary = primary;
     }
 
     /**
@@ -92,8 +97,8 @@ public final class ConfigMapping {
      *
      * @return new ConfigMapping with all keys as absolute
      */
-    public ConfigMapping asAbsolute() {
-        return ConfigMapping.prefixed(prefix).putAllAbs(this);
+    public ConfigMapping<P> asAbsolute() {
+        return ConfigMapping.prefixed(primary, prefix).putAllAbs(this);
     }
 
     /**
@@ -101,8 +106,8 @@ public final class ConfigMapping {
      *
      * @return new ConfigMapping with all keys as relative
      */
-    public ConfigMapping asRelative() {
-        return ConfigMapping.prefixed(prefix).putAllRel(this);
+    public ConfigMapping<P> asRelative() {
+        return ConfigMapping.prefixed(primary, prefix).putAllRel(this);
     }
 
     public Map<String, String> getAsMapSimple() {
@@ -122,12 +127,12 @@ public final class ConfigMapping {
                 .collect(Collectors.joining(System.lineSeparator()));
     }
 
-    public ConfigMapping rootValue(Object value) {
+    public ConfigMapping<P> rootValue(Object value) {
         putInternal(value, Key.root());
         return this;
     }
 
-    public ConfigMapping put(String key, Object value) {
+    public ConfigMapping<P> put(String key, Object value) {
         putInternal(value, Key.rel(key));
         return this;
     }
@@ -139,30 +144,30 @@ public final class ConfigMapping {
      * @param value the value to put
      * @return this mapping
      */
-    public ConfigMapping putAbs(String key, Object value) {
+    public ConfigMapping<P> putAbs(String key, Object value) {
         putInternal(value, Key.abs(key));
         return this;
     }
 
-    public ConfigMapping putAll(ConfigMappable resource) {
-        return putAll(resource.asConfiguration());
+    public ConfigMapping<P> putAll(ConfigMappable<P> resource) {
+        return putAll(resource.asConfiguration(primary));
     }
 
-    public ConfigMapping putAll(String key, ConfigMappable resource) {
-        return putAll(key, resource.asConfiguration());
+    public ConfigMapping<P> putAll(String key, ConfigMappable<P> resource) {
+        return putAll(key, resource.asConfiguration(primary));
     }
 
-    public ConfigMapping putAll(ConfigMapping config) {
+    public ConfigMapping<P> putAll(ConfigMapping<?> config) {
         config.getAsMap().forEach((key, value) -> putInternal(value, key));
         return this;
     }
 
-    public ConfigMapping putAll(String key, ConfigMapping config) {
+    public ConfigMapping<P> putAll(String key, ConfigMapping<?> config) {
         config.getAsMap().forEach((subKey, value) -> putInternal(value, key, subKey));
         return this;
     }
 
-    public ConfigMapping putAll(Map<String, ?> props) {
+    public ConfigMapping<P> putAll(Map<String, ?> props) {
         props.forEach((key, value) -> putInternal(value, Key.rel(key)));
         return this;
     }
@@ -172,7 +177,7 @@ public final class ConfigMapping {
      * @param config the configuration to put
      * @return this mapping
      */
-    public ConfigMapping putAllAbs(ConfigMapping config) {
+    public ConfigMapping<P> putAllAbs(ConfigMapping<?> config) {
         config.getAsMap().forEach((key, value) -> putInternal(value, key.asAbs()));
         return this;
     }
@@ -182,17 +187,18 @@ public final class ConfigMapping {
      * @param config the configuration to put
      * @return this mapping
      */
-    public ConfigMapping putAllRel(ConfigMapping config) {
+    public ConfigMapping<P> putAllRel(ConfigMapping<?> config) {
         config.getAsMap().forEach((key, value) -> putInternal(value, key.asRel()));
         return this;
     }
 
-    public <T extends ConfigMappable> ConfigMapping putList(String key, List<T> items, String name) {
+    @SuppressWarnings("unchecked")
+    public ConfigMapping<P> putList(String key, List<? extends ConfigMappable<P>> items, String name) {
         if (items.isEmpty()) {
             return this;
         }
 
-        record NamedItem(String name, ConfigMappable item) {
+        record NamedItem(String name, ConfigMappable<?> item) {
         }
 
         var named = IntStream.
@@ -205,11 +211,11 @@ public final class ConfigMapping {
                 .reduce((x, y) -> x + "," + y)
                 .ifPresent(names -> put(key, names));
 
-        named.forEach(item -> putAll(key + "." + item.name, item.item));
+        named.forEach(item -> putAll(key + "." + item.name, (ConfigMappable<P>) item.item));
         return this;
     }
 
-    public <T extends ConfigMappable> ConfigMapping putMap(String key, Map<String, T> items) {
+    public ConfigMapping<P> putMap(String key, Map<String, ? extends ConfigMappable<P>> items) {
         items.keySet().stream()
                 .reduce((x, y) -> String.join(","))
                 .ifPresent(names -> put(key, names));

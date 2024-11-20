@@ -11,13 +11,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.docs.annotations.Documented;
 import io.sundr.builder.annotations.Buildable;
 
 @JsonPropertyOrder({ "enabled" })
 @Documented
 @Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
-public class RuntimeApi implements ConfigMappable {
+public class RuntimeApi implements ConfigMappable<DebeziumServer> {
 
     @JsonPropertyDescription("Whether the API should be enabled for this instance of Debezium Server")
     private boolean enabled = false;
@@ -43,8 +44,8 @@ public class RuntimeApi implements ConfigMappable {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return ConfigMapping.empty()
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .put("enabled", enabled);
     }
 }

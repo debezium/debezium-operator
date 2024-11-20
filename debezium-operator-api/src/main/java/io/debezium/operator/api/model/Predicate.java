@@ -15,7 +15,7 @@ import io.sundr.builder.annotations.Buildable;
 
 @Documented
 @Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
-public class Predicate implements ConfigMappable {
+public class Predicate implements ConfigMappable<DebeziumServer> {
 
     @JsonPropertyDescription("Fully qualified name of Java class implementing the predicate.")
     @JsonProperty(required = true)
@@ -45,8 +45,8 @@ public class Predicate implements ConfigMappable {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return ConfigMapping.empty()
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .put("type", type)
                 .putAll(this.config);
     }
