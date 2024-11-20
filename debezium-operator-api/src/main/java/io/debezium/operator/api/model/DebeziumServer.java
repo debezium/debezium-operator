@@ -7,7 +7,6 @@ package io.debezium.operator.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.api.model.status.Condition;
 import io.debezium.operator.api.model.status.DebeziumServerStatus;
@@ -35,15 +34,15 @@ import io.sundr.builder.annotations.BuildableReference;
 }, parent = false)
 public class DebeziumServer
         extends CustomResource<DebeziumServerSpec, DebeziumServerStatus>
-        implements Namespaced, ConfigMappable {
+        implements Namespaced {
 
     @Override
     protected DebeziumServerSpec initSpec() {
         return new DebeziumServerSpec();
     }
 
-    public ConfigMapping asConfiguration() {
-        return spec.asConfiguration();
+    public ConfigMapping<DebeziumServer> asConfiguration() {
+        return spec.asConfiguration(this);
     }
 
     @JsonIgnore

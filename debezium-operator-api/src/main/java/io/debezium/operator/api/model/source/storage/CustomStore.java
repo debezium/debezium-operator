@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.api.model.ConfigProperties;
+import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.docs.annotations.Documented;
 import io.sundr.builder.annotations.Buildable;
 
@@ -39,8 +40,8 @@ public class CustomStore implements Store {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return ConfigMapping.empty()
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .rootValue(type)
                 .putAll(config);
     }

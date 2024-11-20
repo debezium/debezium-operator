@@ -10,12 +10,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.docs.annotations.Documented;
 import io.sundr.builder.annotations.Buildable;
 
 @Documented
 @Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
-public class RedisStoreWaitConfig implements ConfigMappable {
+public class RedisStoreWaitConfig implements ConfigMappable<DebeziumServer> {
 
     @JsonPropertyDescription("In case of Redis with replica, this allows to verify that the data has been written to replica")
     @JsonProperty(defaultValue = "false")
@@ -66,8 +67,8 @@ public class RedisStoreWaitConfig implements ConfigMappable {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return ConfigMapping.empty()
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .put("enabled", enabled)
                 .put("timeout.ms", timeoutMs)
                 .put("retry.enabled", retry)

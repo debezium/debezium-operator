@@ -15,7 +15,7 @@ import io.sundr.builder.annotations.Buildable;
 
 @Documented
 @Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
-public class Sink implements ConfigMappable {
+public class Sink implements ConfigMappable<DebeziumServer> {
 
     @JsonPropertyDescription("Sink type recognised by Debezium Server.")
     @JsonProperty(required = true)
@@ -45,8 +45,8 @@ public class Sink implements ConfigMappable {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return ConfigMapping.empty()
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .put("type", type)
                 .putAll(type, this.config);
     }

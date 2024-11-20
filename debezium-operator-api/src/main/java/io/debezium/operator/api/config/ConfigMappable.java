@@ -5,7 +5,9 @@
  */
 package io.debezium.operator.api.config;
 
-public interface ConfigMappable {
+import io.fabric8.kubernetes.api.model.HasMetadata;
 
-    ConfigMapping asConfiguration();
+public interface ConfigMappable<P extends HasMetadata> {
+
+    ConfigMapping<P> asConfiguration(P primary);
 }

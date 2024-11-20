@@ -10,27 +10,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import io.debezium.operator.api.model.DebeziumServerSpec;
+import io.debezium.operator.api.model.DebeziumServer;
+import io.debezium.operator.api.model.DebeziumServerBuilder;
 import io.debezium.operator.api.model.DebeziumServerSpecBuilder;
 
 public class RuntimeConfigTest {
 
-    static DebeziumServerSpec spec;
+    static DebeziumServer server;
 
     @BeforeAll
     static void setup() {
-        spec = new DebeziumServerSpecBuilder()
-                .withRuntime(new RuntimeBuilder()
-                        .withApi(new RuntimeApiBuilder()
-                                .withEnabled(true)
+        server = new DebeziumServerBuilder()
+                .withSpec(new DebeziumServerSpecBuilder()
+                        .withRuntime(new RuntimeBuilder()
+                                .withApi(new RuntimeApiBuilder()
+                                        .withEnabled(true)
+                                        .build())
                                 .build())
                         .build())
                 .build();
+
     }
 
     @Test
     void shouldHaveEnableApiProperty() {
-        assertThat(spec.asConfiguration().getAsMapSimple())
+        assertThat(server.asConfiguration().getAsMapSimple())
                 .containsEntry("debezium.api.enabled", "true");
     }
 }

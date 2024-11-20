@@ -8,6 +8,7 @@ package io.debezium.operator.api.model.source.storage;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.api.model.DebeziumServer;
 
 public class KafkaStore extends AbstractStore {
 
@@ -61,15 +62,15 @@ public class KafkaStore extends AbstractStore {
     }
 
     @Override
-    public ConfigMapping typeConfiguration() {
-        return ConfigMapping.empty()
+    public ConfigMapping<DebeziumServer> typeConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .put("topic", topic)
                 .put("partitions", partitions)
                 .put("replication.factor", replicationFactor)
-                .putAll(kafkaProps());
+                .putAll(kafkaProps(primary));
     }
 
-    protected ConfigMapping kafkaProps() {
-        return ConfigMapping.empty().put("bootstrap.servers", bootstrapServers);
+    protected ConfigMapping<DebeziumServer> kafkaProps(DebeziumServer primary) {
+        return ConfigMapping.empty(primary).put("bootstrap.servers", bootstrapServers);
     }
 }

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMapping;
+import io.debezium.operator.api.model.DebeziumServer;
 
 public class FileStore extends AbstractStore {
     public static final String CONFIG_PREFIX = "file";
@@ -31,8 +32,8 @@ public class FileStore extends AbstractStore {
     }
 
     @Override
-    protected ConfigMapping typeConfiguration() {
-        return ConfigMapping.empty()
+    protected ConfigMapping typeConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .put("filename", fileName);
     }
 }

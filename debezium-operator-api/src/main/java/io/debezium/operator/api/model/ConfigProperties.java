@@ -17,7 +17,7 @@ import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.docs.annotations.Documented;
 
 @Documented(hidden = true, name = "Map")
-public class ConfigProperties implements ConfigMappable {
+public class ConfigProperties implements ConfigMappable<DebeziumServer> {
 
     private Map<String, Object> props = new HashMap<>(0);
 
@@ -37,7 +37,7 @@ public class ConfigProperties implements ConfigMappable {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return ConfigMapping.from(props);
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        return ConfigMapping.from(primary, props);
     }
 }

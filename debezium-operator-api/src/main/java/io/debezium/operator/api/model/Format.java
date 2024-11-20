@@ -14,7 +14,7 @@ import io.sundr.builder.annotations.Buildable;
 
 @Documented
 @Buildable(editableEnabled = false, builderPackage = "io.fabric8.kubernetes.api.builder", lazyCollectionInitEnabled = false)
-public class Format implements ConfigMappable {
+public class Format implements ConfigMappable<DebeziumServer> {
 
     @JsonPropertyDescription("Message key format configuration.")
     private FormatType key;
@@ -56,8 +56,8 @@ public class Format implements ConfigMappable {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return ConfigMapping.empty()
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .putAll("key", key)
                 .putAll("value", value)
                 .putAll("header", header);

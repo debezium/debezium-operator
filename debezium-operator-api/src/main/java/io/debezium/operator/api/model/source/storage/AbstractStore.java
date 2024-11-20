@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.api.model.ConfigProperties;
+import io.debezium.operator.api.model.DebeziumServer;
 
 public abstract class AbstractStore implements Store {
     @JsonIgnore
@@ -42,14 +43,14 @@ public abstract class AbstractStore implements Store {
     }
 
     @Override
-    public ConfigMapping asConfiguration() {
-        return ConfigMapping.empty()
+    public ConfigMapping<DebeziumServer> asConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary)
                 .rootValue(type)
                 .putAll(configPrefix, config)
-                .putAll(configPrefix, typeConfiguration());
+                .putAll(configPrefix, typeConfiguration(primary));
     }
 
-    protected ConfigMapping typeConfiguration() {
-        return ConfigMapping.empty();
+    protected ConfigMapping<DebeziumServer> typeConfiguration(DebeziumServer primary) {
+        return ConfigMapping.empty(primary);
     }
 }
