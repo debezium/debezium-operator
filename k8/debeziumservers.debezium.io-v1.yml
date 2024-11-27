@@ -998,6 +998,13 @@ spec:
                             properties:
                               allowPrivilegeEscalation:
                                 type: boolean
+                              appArmorProfile:
+                                properties:
+                                  localhostProfile:
+                                    type: string
+                                  type:
+                                    type: string
+                                type: object
                               capabilities:
                                 properties:
                                   add:
@@ -1411,6 +1418,13 @@ spec:
                             description: Pod-level security attributes and container
                               settings
                             properties:
+                              appArmorProfile:
+                                properties:
+                                  localhostProfile:
+                                    type: string
+                                  type:
+                                    type: string
+                                type: object
                               fsGroup:
                                 type: integer
                               fsGroupChangePolicy:
