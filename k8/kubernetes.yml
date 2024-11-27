@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   annotations:
-    app.quarkus.io/quarkus-version: 3.11.0
+    app.quarkus.io/quarkus-version: 3.17.0
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -33,121 +33,85 @@ rules:
     resources:
       - configmaps
     verbs:
+      - create
+      - delete
       - get
       - list
-      - watch
       - patch
       - update
-      - delete
-      - create
+      - watch
   - apiGroups:
       - rbac.authorization.k8s.io
     resources:
       - rolebindings
     verbs:
+      - create
+      - delete
       - get
       - list
-      - watch
       - patch
       - update
-      - delete
-      - create
+      - watch
   - apiGroups:
       - ""
     resources:
       - services
     verbs:
+      - create
+      - delete
       - get
       - list
-      - watch
       - patch
       - update
-      - delete
-      - create
+      - watch
   - apiGroups:
       - apps
     resources:
       - deployments
     verbs:
+      - create
+      - delete
       - get
       - list
-      - watch
       - patch
       - update
-      - delete
-      - create
-  - apiGroups:
-      - ""
-    resources:
-      - services
-    verbs:
-      - get
-      - list
       - watch
-      - patch
-      - update
-      - delete
-      - create
   - apiGroups:
       - ""
     resources:
       - persistentvolumeclaims
     verbs:
+      - create
+      - delete
       - get
       - list
-      - watch
       - patch
       - update
-      - delete
-      - create
-  - apiGroups:
-      - ""
-    resources:
-      - services
-    verbs:
-      - get
-      - list
       - watch
-      - patch
-      - update
-      - delete
-      - create
   - apiGroups:
       - ""
     resources:
       - serviceaccounts
     verbs:
+      - create
+      - delete
       - get
       - list
-      - watch
       - patch
       - update
-      - delete
-      - create
+      - watch
   - apiGroups:
       - rbac.authorization.k8s.io
     resources:
       - roles
     verbs:
+      - create
+      - delete
       - get
       - list
-      - watch
       - patch
       - update
-      - delete
-      - create
-  - apiGroups:
-      - ""
-    resources:
-      - configmaps
-    verbs:
-      - get
-      - list
       - watch
-      - patch
-      - update
-      - delete
-      - create
   - apiGroups:
       - ""
     resources:
@@ -188,7 +152,7 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    app.quarkus.io/quarkus-version: 3.11.0
+    app.quarkus.io/quarkus-version: 3.17.0
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -207,7 +171,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    app.quarkus.io/quarkus-version: 3.11.0
+    app.quarkus.io/quarkus-version: 3.17.0
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -220,7 +184,7 @@ spec:
   template:
     metadata:
       annotations:
-        app.quarkus.io/quarkus-version: 3.11.0
+        app.quarkus.io/quarkus-version: 3.17.0
       labels:
         app.kubernetes.io/managed-by: quarkus
         app.kubernetes.io/name: debezium-operator

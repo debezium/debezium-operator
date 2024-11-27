@@ -78,8 +78,8 @@
         <!-- Quarkus configuration and versions-->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.11.0</quarkus.platform.version>
-        <quarkus.operator.sdk.version>6.7.1</quarkus.operator.sdk.version>
+        <quarkus.platform.version>3.17.0</quarkus.platform.version>
+        <quarkus.operator.sdk.version>6.9.1</quarkus.operator.sdk.version>
         <quarkus.application.version>${version.debezium.parsed}</quarkus.application.version>
 
         <!-- Operator and Image configuration -->
