@@ -203,6 +203,74 @@ Used in: <<debezium-operator-schema-reference-schemahistory, `+SchemaHistory+`>>
 | [[debezium-operator-schema-reference-inmemoryschemahistorystore-config]]<<debezium-operator-schema-reference-inmemoryschemahistorystore-config, `+config+`>> | Map |  | Additional store configuration properties.
 |===
 
+[#debezium-operator-schema-reference-jdbcoffsetstore]
+==== JdbcOffsetStore Schema Reference
+Used in: <<debezium-operator-schema-reference-offset, `+Offset+`>>
+
+
+.JdbcOffsetStore properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-jdbcoffsetstore-table]]<<debezium-operator-schema-reference-jdbcoffsetstore-table, `+table+`>> | <<debezium-operator-schema-reference-jdbcoffsettableconfig, `+JdbcOffsetTableConfig+`>> |  | The configuration of the offset table
+| [[debezium-operator-schema-reference-jdbcoffsetstore-url]]<<debezium-operator-schema-reference-jdbcoffsetstore-url, `+url+`>> | String |  | JDBC connection URL
+| [[debezium-operator-schema-reference-jdbcoffsetstore-user]]<<debezium-operator-schema-reference-jdbcoffsetstore-user, `+user+`>> | String |  | Username used to connect to the storage database
+| [[debezium-operator-schema-reference-jdbcoffsetstore-password]]<<debezium-operator-schema-reference-jdbcoffsetstore-password, `+password+`>> | String |  | Password used to connect to the storage database
+| [[debezium-operator-schema-reference-jdbcoffsetstore-retrydelay]]<<debezium-operator-schema-reference-jdbcoffsetstore-retrydelay, `+retryDelay+`>> | long |  | Retry delay on connection failure (in milliseconds)
+| [[debezium-operator-schema-reference-jdbcoffsetstore-maxretries]]<<debezium-operator-schema-reference-jdbcoffsetstore-maxretries, `+maxRetries+`>> | int |  | Maximum number of retries on connection failure
+| [[debezium-operator-schema-reference-jdbcoffsetstore-config]]<<debezium-operator-schema-reference-jdbcoffsetstore-config, `+config+`>> | Map |  | Additional store configuration properties.
+|===
+
+[#debezium-operator-schema-reference-jdbcoffsettableconfig]
+==== JdbcOffsetTableConfig Schema Reference
+Used in: <<debezium-operator-schema-reference-jdbcoffsetstore, `+JdbcOffsetStore+`>>
+
+
+.JdbcOffsetTableConfig properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-jdbcoffsettableconfig-name]]<<debezium-operator-schema-reference-jdbcoffsettableconfig-name, `+name+`>> | String |  | The name of the offset table
+| [[debezium-operator-schema-reference-jdbcoffsettableconfig-ddl]]<<debezium-operator-schema-reference-jdbcoffsettableconfig-ddl, `+ddl+`>> | String |  | DDL statement to create the offset table
+| [[debezium-operator-schema-reference-jdbcoffsettableconfig-select]]<<debezium-operator-schema-reference-jdbcoffsettableconfig-select, `+select+`>> | String |  | Statement used to select from the offset table
+| [[debezium-operator-schema-reference-jdbcoffsettableconfig-insert]]<<debezium-operator-schema-reference-jdbcoffsettableconfig-insert, `+insert+`>> | String |  | Statement used to insert into the offset table
+| [[debezium-operator-schema-reference-jdbcoffsettableconfig-delete]]<<debezium-operator-schema-reference-jdbcoffsettableconfig-delete, `+delete+`>> | String |  | Statement used to update the offset table
+|===
+
+[#debezium-operator-schema-reference-jdbcschemahistorystore]
+==== JdbcSchemaHistoryStore Schema Reference
+Used in: <<debezium-operator-schema-reference-schemahistory, `+SchemaHistory+`>>
+
+
+.JdbcSchemaHistoryStore properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-jdbcschemahistorystore-table]]<<debezium-operator-schema-reference-jdbcschemahistorystore-table, `+table+`>> | <<debezium-operator-schema-reference-jdbcschemahistorytableconfig, `+JdbcSchemaHistoryTableConfig+`>> |  | The configuration of the offset table
+| [[debezium-operator-schema-reference-jdbcschemahistorystore-url]]<<debezium-operator-schema-reference-jdbcschemahistorystore-url, `+url+`>> | String |  | JDBC connection URL
+| [[debezium-operator-schema-reference-jdbcschemahistorystore-user]]<<debezium-operator-schema-reference-jdbcschemahistorystore-user, `+user+`>> | String |  | Username used to connect to the storage database
+| [[debezium-operator-schema-reference-jdbcschemahistorystore-password]]<<debezium-operator-schema-reference-jdbcschemahistorystore-password, `+password+`>> | String |  | Password used to connect to the storage database
+| [[debezium-operator-schema-reference-jdbcschemahistorystore-retrydelay]]<<debezium-operator-schema-reference-jdbcschemahistorystore-retrydelay, `+retryDelay+`>> | long |  | Retry delay on connection failure (in milliseconds)
+| [[debezium-operator-schema-reference-jdbcschemahistorystore-maxretries]]<<debezium-operator-schema-reference-jdbcschemahistorystore-maxretries, `+maxRetries+`>> | int |  | Maximum number of retries on connection failure
+| [[debezium-operator-schema-reference-jdbcschemahistorystore-config]]<<debezium-operator-schema-reference-jdbcschemahistorystore-config, `+config+`>> | Map |  | Additional store configuration properties.
+|===
+
+[#debezium-operator-schema-reference-jdbcschemahistorytableconfig]
+==== JdbcSchemaHistoryTableConfig Schema Reference
+Used in: <<debezium-operator-schema-reference-jdbcschemahistorystore, `+JdbcSchemaHistoryStore+`>>
+
+
+.JdbcSchemaHistoryTableConfig properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-jdbcschemahistorytableconfig-name]]<<debezium-operator-schema-reference-jdbcschemahistorytableconfig-name, `+name+`>> | String |  | The name of the offset table
+| [[debezium-operator-schema-reference-jdbcschemahistorytableconfig-ddl]]<<debezium-operator-schema-reference-jdbcschemahistorytableconfig-ddl, `+ddl+`>> | String |  | DDL statement to create the schema history table
+| [[debezium-operator-schema-reference-jdbcschemahistorytableconfig-select]]<<debezium-operator-schema-reference-jdbcschemahistorytableconfig-select, `+select+`>> | String |  | Statement used to select from the schema history table
+| [[debezium-operator-schema-reference-jdbcschemahistorytableconfig-insert]]<<debezium-operator-schema-reference-jdbcschemahistorytableconfig-insert, `+insert+`>> | String |  | Statement used to insert into the schema history table
+| [[debezium-operator-schema-reference-jdbcschemahistorytableconfig-dataexistsselect]]<<debezium-operator-schema-reference-jdbcschemahistorytableconfig-dataexistsselect, `+dataExistsSelect+`>> | String |  | Statement used to check existence of the schema history table
+|===
+
 [#debezium-operator-schema-reference-jmxauthentication]
 ==== JmxAuthentication Schema Reference
 Used in: <<debezium-operator-schema-reference-jmxconfig, `+JmxConfig+`>>
@@ -316,6 +384,7 @@ Used in: <<debezium-operator-schema-reference-source, `+Source+`>>
 | [[debezium-operator-schema-reference-offset-memory]]<<debezium-operator-schema-reference-offset-memory, `+memory+`>> | <<debezium-operator-schema-reference-inmemoryoffsetstore, `+InMemoryOffsetStore+`>> |  | Memory backed offset store configuration
 | [[debezium-operator-schema-reference-offset-redis]]<<debezium-operator-schema-reference-offset-redis, `+redis+`>> | <<debezium-operator-schema-reference-redisoffsetstore, `+RedisOffsetStore+`>> |  | Redis backed offset store configuration
 | [[debezium-operator-schema-reference-offset-kafka]]<<debezium-operator-schema-reference-offset-kafka, `+kafka+`>> | <<debezium-operator-schema-reference-kafkaoffsetstore, `+KafkaOffsetStore+`>> |  | Kafka backing store configuration
+| [[debezium-operator-schema-reference-offset-jdbc]]<<debezium-operator-schema-reference-offset-jdbc, `+jdbc+`>> | <<debezium-operator-schema-reference-jdbcoffsetstore, `+JdbcOffsetStore+`>> |  | JDBC backing store configuration
 | [[debezium-operator-schema-reference-offset-configmap]]<<debezium-operator-schema-reference-offset-configmap, `+configMap+`>> | <<debezium-operator-schema-reference-configmapoffsetstore, `+ConfigMapOffsetStore+`>> |  | Config map backed offset store configuration
 | [[debezium-operator-schema-reference-offset-store]]<<debezium-operator-schema-reference-offset-store, `+store+`>> | <<debezium-operator-schema-reference-customstore, `+CustomStore+`>> |  | Arbitrary offset store configuration
 | [[debezium-operator-schema-reference-offset-flushms]]<<debezium-operator-schema-reference-offset-flushms, `+flushMs+`>> | long | 60000 | Interval at which to try commiting offsets
@@ -510,6 +579,7 @@ Used in: <<debezium-operator-schema-reference-source, `+Source+`>>
 | [[debezium-operator-schema-reference-schemahistory-memory]]<<debezium-operator-schema-reference-schemahistory-memory, `+memory+`>> | <<debezium-operator-schema-reference-inmemoryschemahistorystore, `+InMemorySchemaHistoryStore+`>> |  | Memory backed schema history store configuration
 | [[debezium-operator-schema-reference-schemahistory-redis]]<<debezium-operator-schema-reference-schemahistory-redis, `+redis+`>> | <<debezium-operator-schema-reference-redisschemahistorystore, `+RedisSchemaHistoryStore+`>> |  | Redis backed schema history store configuration
 | [[debezium-operator-schema-reference-schemahistory-kafka]]<<debezium-operator-schema-reference-schemahistory-kafka, `+kafka+`>> | <<debezium-operator-schema-reference-kafkaschemahistorystore, `+KafkaSchemaHistoryStore+`>> |  | Kafka backed schema history store configuration
+| [[debezium-operator-schema-reference-schemahistory-jdbc]]<<debezium-operator-schema-reference-schemahistory-jdbc, `+jdbc+`>> | <<debezium-operator-schema-reference-jdbcschemahistorystore, `+JdbcSchemaHistoryStore+`>> |  | JDBC backed schema history store configuration
 | [[debezium-operator-schema-reference-schemahistory-store]]<<debezium-operator-schema-reference-schemahistory-store, `+store+`>> | <<debezium-operator-schema-reference-customstore, `+CustomStore+`>> |  | Arbitrary schema history store configuration
 | [[debezium-operator-schema-reference-schemahistory-config]]<<debezium-operator-schema-reference-schemahistory-config, `+config+`>> | Map |  | Additional common schema history store configuration properties.
 |===
