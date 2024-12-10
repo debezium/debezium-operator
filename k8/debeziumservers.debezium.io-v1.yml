@@ -1629,6 +1629,56 @@ spec:
                       flushMs:
                         description: Interval at which to try commiting offsets
                         type: integer
+                      jdbc:
+                        description: JDBC backing store configuration
+                        properties:
+                          config:
+                            description: Additional store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          maxRetries:
+                            description: Maximum number of retries on connection failure
+                            type: integer
+                          password:
+                            description: Password used to connect to the storage database
+                            type: string
+                          retryDelay:
+                            description: Retry delay on connection failure (in milliseconds)
+                            type: integer
+                          table:
+                            description: The configuration of the offset table
+                            properties:
+                              ddl:
+                                description: DDL statement to create the offset table
+                                type: string
+                              delete:
+                                description: Statement used to update the offset table
+                                type: string
+                              insert:
+                                description: Statement used to insert into the offset
+                                  table
+                                type: string
+                              name:
+                                description: The name of the offset table
+                                type: string
+                              select:
+                                description: Statement used to select from the offset
+                                  table
+                                type: string
+                            type: object
+                          url:
+                            description: JDBC connection URL
+                            type: string
+                          user:
+                            description: Username used to connect to the storage database
+                            type: string
+                        type: object
                       kafka:
                         description: Kafka backing store configuration
                         properties:
@@ -1780,6 +1830,58 @@ spec:
                           fileName:
                             description: Name of the offset file (relative to data
                               root)
+                            type: string
+                        type: object
+                      jdbc:
+                        description: JDBC backed schema history store configuration
+                        properties:
+                          config:
+                            description: Additional store configuration properties.
+                            properties:
+                              props:
+                                additionalProperties:
+                                  type: object
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            type: object
+                            x-kubernetes-preserve-unknown-fields: true
+                          maxRetries:
+                            description: Maximum number of retries on connection failure
+                            type: integer
+                          password:
+                            description: Password used to connect to the storage database
+                            type: string
+                          retryDelay:
+                            description: Retry delay on connection failure (in milliseconds)
+                            type: integer
+                          table:
+                            description: The configuration of the offset table
+                            properties:
+                              dataExistsSelect:
+                                description: Statement used to check existence of
+                                  the schema history table
+                                type: string
+                              ddl:
+                                description: DDL statement to create the schema history
+                                  table
+                                type: string
+                              insert:
+                                description: Statement used to insert into the schema
+                                  history table
+                                type: string
+                              name:
+                                description: The name of the offset table
+                                type: string
+                              select:
+                                description: Statement used to select from the schema
+                                  history table
+                                type: string
+                            type: object
+                          url:
+                            description: JDBC connection URL
+                            type: string
+                          user:
+                            description: Username used to connect to the storage database
                             type: string
                         type: object
                       kafka:
