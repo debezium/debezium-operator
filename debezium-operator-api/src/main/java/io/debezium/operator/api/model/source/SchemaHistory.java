@@ -19,6 +19,7 @@ import io.debezium.operator.api.model.source.storage.CustomStore;
 import io.debezium.operator.api.model.source.storage.Store;
 import io.debezium.operator.api.model.source.storage.schema.FileSchemaHistoryStore;
 import io.debezium.operator.api.model.source.storage.schema.InMemorySchemaHistoryStore;
+import io.debezium.operator.api.model.source.storage.schema.JdbcSchemaHistoryStore;
 import io.debezium.operator.api.model.source.storage.schema.KafkaSchemaHistoryStore;
 import io.debezium.operator.api.model.source.storage.schema.RedisSchemaHistoryStore;
 import io.debezium.operator.docs.annotations.Documented;
@@ -36,6 +37,8 @@ public class SchemaHistory implements ConfigMappable<DebeziumServer> {
     private RedisSchemaHistoryStore redis;
     @JsonPropertyDescription("Kafka backed schema history store configuration")
     private KafkaSchemaHistoryStore kafka;
+    @JsonPropertyDescription("JDBC backed schema history store configuration")
+    private JdbcSchemaHistoryStore jdbc;
     @JsonPropertyDescription("Arbitrary schema history store configuration")
     private CustomStore store;
     @JsonPropertyDescription("Additional common schema history store configuration properties.")
@@ -73,6 +76,14 @@ public class SchemaHistory implements ConfigMappable<DebeziumServer> {
         this.kafka = kafka;
     }
 
+    public JdbcSchemaHistoryStore getJdbc() {
+        return jdbc;
+    }
+
+    public void setJdbc(JdbcSchemaHistoryStore jdbc) {
+        this.jdbc = jdbc;
+    }
+
     public CustomStore getStore() {
         return store;
     }
@@ -91,7 +102,7 @@ public class SchemaHistory implements ConfigMappable<DebeziumServer> {
 
     @JsonIgnore
     public Store getActiveStore() {
-        return Stream.of(file, memory, redis, kafka, store)
+        return Stream.of(file, memory, redis, kafka, jdbc, store)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElseGet(InMemorySchemaHistoryStore::new);
