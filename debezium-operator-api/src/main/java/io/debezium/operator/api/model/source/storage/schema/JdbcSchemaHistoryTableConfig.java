@@ -34,7 +34,7 @@ public class JdbcSchemaHistoryTableConfig implements ConfigMappable<DebeziumServ
     @JsonProperty(required = false)
     private String insert;
 
-    @JsonPropertyDescription("Statement used to check existence of the schema history table")
+    @JsonPropertyDescription("Statement used to check existence of some data in the schema history table")
     @JsonProperty(required = false)
     private String dataExistsSelect;
 
