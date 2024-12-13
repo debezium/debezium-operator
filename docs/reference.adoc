@@ -268,7 +268,7 @@ Used in: <<debezium-operator-schema-reference-jdbcschemahistorystore, `+JdbcSche
 | [[debezium-operator-schema-reference-jdbcschemahistorytableconfig-ddl]]<<debezium-operator-schema-reference-jdbcschemahistorytableconfig-ddl, `+ddl+`>> | String |  | DDL statement to create the schema history table
 | [[debezium-operator-schema-reference-jdbcschemahistorytableconfig-select]]<<debezium-operator-schema-reference-jdbcschemahistorytableconfig-select, `+select+`>> | String |  | Statement used to select from the schema history table
 | [[debezium-operator-schema-reference-jdbcschemahistorytableconfig-insert]]<<debezium-operator-schema-reference-jdbcschemahistorytableconfig-insert, `+insert+`>> | String |  | Statement used to insert into the schema history table
-| [[debezium-operator-schema-reference-jdbcschemahistorytableconfig-dataexistsselect]]<<debezium-operator-schema-reference-jdbcschemahistorytableconfig-dataexistsselect, `+dataExistsSelect+`>> | String |  | Statement used to check existence of the schema history table
+| [[debezium-operator-schema-reference-jdbcschemahistorytableconfig-dataexistsselect]]<<debezium-operator-schema-reference-jdbcschemahistorytableconfig-dataexistsselect, `+dataExistsSelect+`>> | String |  | Statement used to check existence of some data in the schema history table
 |===
 
 [#debezium-operator-schema-reference-jmxauthentication]
