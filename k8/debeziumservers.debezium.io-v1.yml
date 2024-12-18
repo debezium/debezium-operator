@@ -1859,7 +1859,7 @@ spec:
                             properties:
                               dataExistsSelect:
                                 description: Statement used to check existence of
-                                  the schema history table
+                                  some data in the schema history table
                                 type: string
                               ddl:
                                 description: DDL statement to create the schema history
