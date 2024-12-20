@@ -37,6 +37,6 @@ public class JdbcOffsetStore extends JdbcStore {
     @Override
     protected ConfigMapping<DebeziumServer> typeConfiguration(DebeziumServer primary) {
         return super.typeConfiguration(primary)
-                .putAll("table", table);
+                .putAll("offset.table", table);
     }
 }
