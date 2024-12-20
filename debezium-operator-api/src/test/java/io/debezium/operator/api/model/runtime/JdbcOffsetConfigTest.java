@@ -93,11 +93,11 @@ public class JdbcOffsetConfigTest {
                 .containsEntry("debezium.source.offset.storage.jdbc.password", PASSWORD)
                 .containsEntry("debezium.source.offset.storage.jdbc.retry.max.attempts", String.valueOf(MAX_RETRIES))
                 .containsEntry("debezium.source.offset.storage.jdbc.wait.retry.delay.ms", String.valueOf(RETRY_DELAY_MS))
-                .containsEntry("debezium.source.offset.storage.jdbc.table.name", OFFSET_TABLE_NAME)
-                .containsEntry("debezium.source.offset.storage.jdbc.table.ddl", INVALID_FAKE_SQL)
-                .containsEntry("debezium.source.offset.storage.jdbc.table.insert", INVALID_FAKE_SQL)
-                .containsEntry("debezium.source.offset.storage.jdbc.table.select", INVALID_FAKE_SQL)
-                .containsEntry("debezium.source.offset.storage.jdbc.table.delete", INVALID_FAKE_SQL);
+                .containsEntry("debezium.source.offset.storage.jdbc.offset.table.name", OFFSET_TABLE_NAME)
+                .containsEntry("debezium.source.offset.storage.jdbc.offset.table.ddl", INVALID_FAKE_SQL)
+                .containsEntry("debezium.source.offset.storage.jdbc.offset.table.insert", INVALID_FAKE_SQL)
+                .containsEntry("debezium.source.offset.storage.jdbc.offset.table.select", INVALID_FAKE_SQL)
+                .containsEntry("debezium.source.offset.storage.jdbc.offset.table.delete", INVALID_FAKE_SQL);
     }
 
     @Test
@@ -107,11 +107,11 @@ public class JdbcOffsetConfigTest {
         var config = copy.asConfiguration().getAsMapSimple();
 
         assertThat(config)
-                .doesNotContainKey("debezium.source.offset.storage.jdbc.table.name")
-                .doesNotContainKey("debezium.source.offset.storage.jdbc.table.ddl")
-                .doesNotContainKey("debezium.source.offset.storage.jdbc.table.insert")
-                .doesNotContainKey("debezium.source.offset.storage.jdbc.table.select")
-                .doesNotContainKey("debezium.source.offset.storage.jdbc.table.delete");
+                .doesNotContainKey("debezium.source.offset.storage.jdbc.offset.table.name")
+                .doesNotContainKey("debezium.source.offset.storage.jdbc.offset.table.ddl")
+                .doesNotContainKey("debezium.source.offset.storage.jdbc.offset.table.insert")
+                .doesNotContainKey("debezium.source.offset.storage.jdbc.offset.table.select")
+                .doesNotContainKey("debezium.source.offset.storage.jdbc.offset.table.delete");
     }
 
     @Test
@@ -125,11 +125,11 @@ public class JdbcOffsetConfigTest {
                 .containsEntry("debezium.source.schema.history.internal.jdbc.password", PASSWORD)
                 .containsEntry("debezium.source.schema.history.internal.jdbc.retry.max.attempts", String.valueOf(MAX_RETRIES))
                 .containsEntry("debezium.source.schema.history.internal.jdbc.wait.retry.delay.ms", String.valueOf(RETRY_DELAY_MS))
-                .containsEntry("debezium.source.schema.history.internal.jdbc.table.name", SCHEMA_TABLE_NAME)
-                .containsEntry("debezium.source.schema.history.internal.jdbc.table.ddl", INVALID_FAKE_SQL)
-                .containsEntry("debezium.source.schema.history.internal.jdbc.table.insert", INVALID_FAKE_SQL)
-                .containsEntry("debezium.source.schema.history.internal.jdbc.table.select", INVALID_FAKE_SQL)
-                .containsEntry("debezium.source.schema.history.internal.jdbc.table.exists", INVALID_FAKE_SQL);
+                .containsEntry("debezium.source.schema.history.internal.jdbc.schema.history.table.name", SCHEMA_TABLE_NAME)
+                .containsEntry("debezium.source.schema.history.internal.jdbc.schema.history.table.ddl", INVALID_FAKE_SQL)
+                .containsEntry("debezium.source.schema.history.internal.jdbc.schema.history.table.insert", INVALID_FAKE_SQL)
+                .containsEntry("debezium.source.schema.history.internal.jdbc.schema.history.table.select", INVALID_FAKE_SQL)
+                .containsEntry("debezium.source.schema.history.internal.jdbc.schema.history.table.exists", INVALID_FAKE_SQL);
     }
 
     @Test
@@ -139,10 +139,10 @@ public class JdbcOffsetConfigTest {
         var config = copy.asConfiguration().getAsMapSimple();
 
         assertThat(config)
-                .doesNotContainKey("debezium.source.schema.history.internal.jdbc.table.name")
-                .doesNotContainKey("debezium.source.schema.history.internal.jdbc.table.ddl")
-                .doesNotContainKey("debezium.source.schema.history.internal.jdbc.table.insert")
-                .doesNotContainKey("debezium.source.schema.history.internal.jdbc.table.select")
-                .doesNotContainKey("debezium.source.schema.history.internal.jdbc.table.exists");
+                .doesNotContainKey("debezium.source.schema.history.internal.jdbc.schema.history.table.name")
+                .doesNotContainKey("debezium.source.schema.history.internal.jdbc.schema.history.table.ddl")
+                .doesNotContainKey("debezium.source.schema.history.internal.jdbc.schema.history.table.insert")
+                .doesNotContainKey("debezium.source.schema.history.internal.jdbc.schema.history.table.select")
+                .doesNotContainKey("debezium.source.schema.history.internal.jdbc.schema.history.table.exists");
     }
 }

@@ -37,6 +37,6 @@ public class JdbcSchemaHistoryStore extends JdbcStore {
     @Override
     protected ConfigMapping<DebeziumServer> typeConfiguration(DebeziumServer primary) {
         return super.typeConfiguration(primary)
-                .putAll("table", table);
+                .putAll("schema.history.table", table);
     }
 }
