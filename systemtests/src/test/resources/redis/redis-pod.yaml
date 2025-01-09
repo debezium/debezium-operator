@@ -8,7 +8,7 @@ metadata:
 spec:
   containers:
     - name: redis
-      image: redis:7.2.4
+      image: quay.io/debezium/redis:7.2.4
       command:
         - redis-server
         - "/redis-master/redis.conf"
