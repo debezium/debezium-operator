@@ -6,6 +6,8 @@ on:
   pull_request_target:
     branches:
       - main
+      - 3.*
+      - 4.*
 
 
 jobs:
