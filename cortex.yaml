@@ -1,0 +1,17 @@
+---
+info:
+  title: debezium-operator
+  description: Debezium operator provides an easy way to run the Debezium Server on Kubernetes or Openshift.
+  x-cortex-git:
+    github:
+      alias: r7org
+      repository: rapid7/debezium-operator
+  x-cortex-tag: debezium-operator
+  x-cortex-type: service
+  x-cortex-domain-parents:
+    - tag: data-platform-transport
+  x-cortex-groups:
+    - exposure:opensource
+openapi: 3.0.0
+servers:
+  - url: "/"
