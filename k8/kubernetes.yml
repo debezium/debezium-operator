@@ -138,7 +138,7 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: debezium-operator
-    app.kubernetes.io/version: 3.0.8-nightly
+    app.kubernetes.io/version: 3.0.9-nightly
   name: debezium-operator-view
 roleRef:
   kind: ClusterRole
@@ -195,7 +195,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          image: quay.io/debezium/operator:3.0.8-SNAPSHOT
+          image: quay.io/debezium/operator:nightly
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
