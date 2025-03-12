@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>debezium-operator</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.1.0.Beta1</version>
     <packaging>pom</packaging>
     <name>Debezium Operator</name>
 
@@ -27,7 +27,7 @@
         <connection>scm:git:git@github.com:debezium/debezium-operator.git</connection>
         <developerConnection>scm:git:git@github.com:debezium/debezium-operator.git</developerConnection>
         <url>https://github.com/debezium/debezium-operator</url>
-        <tag>HEAD</tag>
+        <tag>v3.1.0.Beta1</tag>
     </scm>
 
     <properties>
