@@ -201,8 +201,7 @@ public final class ConfigMapping<P extends HasMetadata> {
         record NamedItem(String name, ConfigMappable<?> item) {
         }
 
-        var named = IntStream.
-                range(0, items.size())
+        var named = IntStream.range(0, items.size())
                 .mapToObj(i -> new NamedItem(name + i, items.get(i)))
                 .toList();
 
