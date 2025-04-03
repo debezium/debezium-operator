@@ -14,20 +14,53 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
 import io.skodjob.testframe.resources.KubeResourceManager;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class RedisResource implements DeployableResourceGroup {
     private Pod pod;
     private PersistentVolumeClaim persistentVolumeClaim;
     private Service service;
     private ConfigMap configMap;
+
+    public RedisResource() {
+    }
+
+    public RedisResource(Pod pod, PersistentVolumeClaim persistentVolumeClaim, Service service, ConfigMap configMap) {
+        this.pod = pod;
+        this.persistentVolumeClaim = persistentVolumeClaim;
+        this.service = service;
+        this.configMap = configMap;
+    }
+
+    public Pod getPod() {
+        return pod;
+    }
+
+    public void setPod(Pod pod) {
+        this.pod = pod;
+    }
+
+    public PersistentVolumeClaim getPersistentVolumeClaim() {
+        return persistentVolumeClaim;
+    }
+
+    public void setPersistentVolumeClaim(PersistentVolumeClaim persistentVolumeClaim) {
+        this.persistentVolumeClaim = persistentVolumeClaim;
+    }
+
+    public Service getService() {
+        return service;
+    }
+
+    public void setService(Service service) {
+        this.service = service;
+    }
+
+    public ConfigMap getConfigMap() {
+        return configMap;
+    }
+
+    public void setConfigMap(ConfigMap configMap) {
+        this.configMap = configMap;
+    }
 
     @Override
     public void configureAsDefault(String namespace) {

@@ -21,15 +21,6 @@ import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.skodjob.testframe.resources.KubeResourceManager;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class MysqlResource implements DeployableResourceGroup {
     private Deployment deployment;
     private PersistentVolumeClaim persistentVolumeClaim;
@@ -37,6 +28,52 @@ public class MysqlResource implements DeployableResourceGroup {
     private Secret credentials;
 
     private final String image = "quay.io/debezium/example-mysql-master:";
+
+    public MysqlResource() {
+    }
+
+    public MysqlResource(Deployment deployment, PersistentVolumeClaim persistentVolumeClaim, Service service, Secret credentials) {
+        this.deployment = deployment;
+        this.persistentVolumeClaim = persistentVolumeClaim;
+        this.service = service;
+        this.credentials = credentials;
+    }
+
+    public Deployment getDeployment() {
+        return deployment;
+    }
+
+    public void setDeployment(Deployment deployment) {
+        this.deployment = deployment;
+    }
+
+    public PersistentVolumeClaim getPersistentVolumeClaim() {
+        return persistentVolumeClaim;
+    }
+
+    public void setPersistentVolumeClaim(PersistentVolumeClaim persistentVolumeClaim) {
+        this.persistentVolumeClaim = persistentVolumeClaim;
+    }
+
+    public Service getService() {
+        return service;
+    }
+
+    public void setService(Service service) {
+        this.service = service;
+    }
+
+    public Secret getCredentials() {
+        return credentials;
+    }
+
+    public void setCredentials(Secret credentials) {
+        this.credentials = credentials;
+    }
+
+    public String getImage() {
+        return image;
+    }
 
     private Deployment setName(Deployment deployment, String name, String namespace) {
         return new DeploymentBuilder(deployment)
