@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 
@@ -188,13 +189,17 @@ public class ConfigMappingTest {
         predicate.setType("IsOutboxTable");
         predicate.setConfig(configProperties);
 
-        Map<String, Predicate> predicateMap = Map.of("predicates", predicate);
-        config.putMap("map", predicateMap);
+        Map<String, Predicate> predicateMap = new TreeMap<>();
+        predicateMap.put("predicate0", predicate);
+        predicateMap.put("predicate1", predicate);
+        config.putMap("predicates", predicateMap);
 
-        assertThat(config.getAsMapSimple()).containsEntry("map", "predicates");
-        assertThat(config.getAsMapSimple()).containsEntry("map.predicates.type", "IsOutboxTable");
-        assertThat(config.getAsString()).isEqualTo("map.predicates.type=IsOutboxTable\n" +
-                "map=predicates");
+        assertThat(config.getAsMapSimple()).containsEntry("predicates", "predicate0,predicate1");
+        assertThat(config.getAsMapSimple()).containsEntry("predicates.predicate0.type", "IsOutboxTable");
+        assertThat(config.getAsMapSimple()).containsEntry("predicates.predicate1.type", "IsOutboxTable");
+        assertThat(config.getAsString()).isEqualTo("predicates.predicate0.type=IsOutboxTable\n" +
+                "predicates.predicate1.type=IsOutboxTable\n" +
+                "predicates=predicate0,predicate1");
     }
 
     @Test
