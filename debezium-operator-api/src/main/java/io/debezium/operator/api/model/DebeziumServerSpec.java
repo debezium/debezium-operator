@@ -7,6 +7,7 @@ package io.debezium.operator.api.model;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -62,7 +63,7 @@ public class DebeziumServerSpec implements ConfigMappable<DebeziumServer> {
         this.quarkus = new Quarkus();
         this.runtime = new Runtime();
         this.transforms = List.of();
-        this.predicates = Map.of();
+        this.predicates = new TreeMap<>();
     }
 
     public String getImage() {
