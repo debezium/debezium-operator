@@ -216,7 +216,7 @@ public final class ConfigMapping<P extends HasMetadata> {
 
     public ConfigMapping<P> putMap(String key, Map<String, ? extends ConfigMappable<P>> items) {
         items.keySet().stream()
-                .reduce((x, y) -> String.join(","))
+                .reduce((x, y) -> x + "," + y)
                 .ifPresent(names -> put(key, names));
 
         items.forEach((name, item) -> putAll(key + "." + name, item));
