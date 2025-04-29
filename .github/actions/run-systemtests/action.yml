@@ -35,4 +35,12 @@ runs:
         ./mvnw verify 
         -Psystemtests 
         -pl systemtests
-        -Dstyle.color=always 
+        -Dstyle.color=always
+
+    - name: Upload test logs
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-logs-${{ github.job }}
+        path: |
+          operator/systemtests/target/logs/**/*
