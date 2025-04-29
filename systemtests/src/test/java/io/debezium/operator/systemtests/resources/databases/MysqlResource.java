@@ -202,7 +202,7 @@ public class MysqlResource implements DeployableResourceGroup {
     }
 
     public void deploy() {
-        KubeResourceManager.getInstance().createResourceWithoutWait(this.persistentVolumeClaim, this.credentials, this.service);
-        KubeResourceManager.getInstance().createResourceWithWait(this.deployment);
+        KubeResourceManager.get().createResourceWithoutWait(this.persistentVolumeClaim, this.credentials, this.service);
+        KubeResourceManager.get().createResourceWithWait(this.deployment);
     }
 }

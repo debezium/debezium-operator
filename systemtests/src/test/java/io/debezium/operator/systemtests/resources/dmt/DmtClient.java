@@ -199,16 +199,16 @@ public class DmtClient {
 
     public static Response sendPostRequest(String host, int port, String command, String body) {
         OkHttpClient client = defaultClient();
-        Request request = new Request.Builder()
-                .url("http://" + host + ":" + port + command)
-                .post(RequestBody.create(body, MEDIATYPE_JSON))
-                .build();
-        Call call = client.newCall(request);
 
         AtomicReference<Response> responseAtomicReference = new AtomicReference<>();
         await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT))
                 .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
                 .until(() -> {
+                    Request request = new Request.Builder()
+                            .url("http://" + host + ":" + port + command)
+                            .post(RequestBody.create(body, MEDIATYPE_JSON))
+                            .build();
+                    Call call = client.newCall(request);
                     try (Response response = call.execute()) {
                         if (response.isSuccessful()) {
                             responseAtomicReference.set(response);
@@ -219,6 +219,7 @@ public class DmtClient {
                         }
                     }
                     catch (Exception e) {
+                        LOGGER.error("Cannot send POST request to DMT: {}", e.getMessage());
                         return false;
                     }
                 });
@@ -243,15 +244,15 @@ public class DmtClient {
         }
         HttpUrl url = builder.build();
         RequestBody requestBody = RequestBody.create(body, MEDIATYPE_JSON);
-        Request request = new Request.Builder()
-                .url(url)
-                .method("POST", requestBody)
-                .build();
-        Call call = client.newCall(request);
         AtomicReference<String> responseAtomicReference = new AtomicReference<>();
         await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT))
                 .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
                 .until(() -> {
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .method("POST", requestBody)
+                            .build();
+                    Call call = client.newCall(request);
                     try (Response response = call.execute()) {
                         if (response.isSuccessful()) {
                             responseAtomicReference.set(response.body().string());
@@ -262,6 +263,7 @@ public class DmtClient {
                         }
                     }
                     catch (Exception e) {
+                        LOGGER.error("Cannot send POST request to DMT: {}", e.getMessage());
                         return false;
                     }
                 });

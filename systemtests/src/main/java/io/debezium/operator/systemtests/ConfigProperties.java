@@ -11,4 +11,5 @@ public final class ConfigProperties {
     public static final Integer HTTP_POLL_INTERVAL = Integer.valueOf(System.getProperty("test.http.poll.interval", "200"));
     public static final Integer FABRIC8_POLL_INTERVAL = Integer.valueOf(System.getProperty("test.fabric8.poll.interval", "2"));
     public static final Integer FABRIC8_POLL_TIMEOUT = Integer.valueOf(System.getProperty("test.fabric8.poll.timeout", "60"));
+    public static final String LOG_COLLECT_LABEL = System.getProperty("test.log.collector.label", "collect-logs");
 }
