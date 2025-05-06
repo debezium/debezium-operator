@@ -61,7 +61,7 @@
         <version.jandex.plugin>3.1.3</version.jandex.plugin>
 
         <!-- Dependency versions -->
-        <version.assertj>3.24.2</version.assertj>
+        <version.assertj>3.27.3</version.assertj>
 
         <!-- OLM configuration -->
         <olm.bundle.name>debezium-operator.v${olm.bundle.version}</olm.bundle.name>
