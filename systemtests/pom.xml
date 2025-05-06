@@ -15,7 +15,7 @@
         <junit.platform.launcher.version>1.10.2</junit.platform.launcher.version>
         <log4j2.version>2.24.2</log4j2.version>
         <assertj.version>3.25.3</assertj.version>
-        <testframe.version>0.2.1</testframe.version>
+        <testframe.version>0.13.0</testframe.version>
         <dmt.version>0.0.1-alpha1</dmt.version>
         <okhttp.version>5.0.0-alpha.12</okhttp.version>
         <awaitility.version>4.2.1</awaitility.version>
