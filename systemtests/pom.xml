@@ -19,7 +19,7 @@
         <dmt.version>0.0.1-alpha1</dmt.version>
         <okhttp.version>5.0.0-alpha.12</okhttp.version>
         <awaitility.version>4.2.1</awaitility.version>
-        <jackson.version>2.18.1</jackson.version>
+        <jackson.version>2.19.0</jackson.version>
         <apache.commons.lang.version>3.17.0</apache.commons.lang.version>
         <google.json.simple.version>1.1.1</google.json.simple.version>
     </properties>
