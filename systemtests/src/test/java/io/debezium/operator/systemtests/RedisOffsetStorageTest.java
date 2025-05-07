@@ -45,7 +45,7 @@ public class RedisOffsetStorageTest extends TestBase {
                 .build();
         server.getSpec().getSource().setOffset(offset);
 
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
 
         try (LocalPortForward lcp = dmtResource.portForward(portForwardPort, namespace)) {
@@ -58,7 +58,7 @@ public class RedisOffsetStorageTest extends TestBase {
         }
 
         server.getSpec().getSource().getOffset().getRedis().setKey("metadata:debezium_n:offsets");
-        KubeResourceManager.getInstance().createOrUpdateResourceWithWait(server);
+        KubeResourceManager.get().createOrUpdateResourceWithWait(server);
         assertStreamingWorks(10, 20);
 
         try (LocalPortForward lcp = dmtResource.portForward(portForwardPort, namespace)) {
