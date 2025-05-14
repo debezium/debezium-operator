@@ -10,7 +10,11 @@ import static io.debezium.operator.systemtests.ConfigProperties.HTTP_POLL_TIMEOU
 import static org.awaitility.Awaitility.await;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -24,12 +28,15 @@ import io.debezium.operator.systemtests.resources.annotations.DebeziumResourceTy
 import io.debezium.operator.systemtests.resources.databases.MysqlResource;
 import io.debezium.operator.systemtests.resources.dmt.DmtClient;
 import io.debezium.operator.systemtests.resources.dmt.DmtResource;
+import io.debezium.operator.systemtests.resources.logs.MustGatherImpl;
 import io.debezium.operator.systemtests.resources.sinks.RedisResource;
 import io.fabric8.kubernetes.client.LocalPortForward;
+import io.skodjob.testframe.annotations.MustGather;
 import io.skodjob.testframe.annotations.ResourceManager;
 import io.skodjob.testframe.annotations.TestVisualSeparator;
 
-@ResourceManager
+@ResourceManager(asyncDeletion = false)
+@MustGather(config = MustGatherImpl.class)
 @TestVisualSeparator
 @DebeziumResourceTypes
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -38,6 +45,10 @@ public class TestBase {
     protected final DmtResource dmtResource = new DmtResource();
     protected final String portForwardHost = "127.0.0.1";
     protected int portForwardPort = 8080;
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm");
+    private static final String USER_PATH = System.getProperty("user.dir");
+    public static final Path LOG_DIR = Paths.get(USER_PATH, "target", "logs")
+            .resolve("test-run-" + DATE_FORMAT.format(LocalDateTime.now()));
 
     @BeforeAll
     void initDefault() {
