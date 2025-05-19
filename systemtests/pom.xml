@@ -17,7 +17,7 @@
         <assertj.version>3.27.3</assertj.version>
         <testframe.version>0.2.1</testframe.version>
         <dmt.version>0.0.1-alpha1</dmt.version>
-        <okhttp.version>5.0.0-alpha.12</okhttp.version>
+        <okhttp.version>5.0.0-alpha.14</okhttp.version>
         <awaitility.version>4.3.0</awaitility.version>
         <jackson.version>2.19.0</jackson.version>
         <apache.commons.lang.version>3.17.0</apache.commons.lang.version>
