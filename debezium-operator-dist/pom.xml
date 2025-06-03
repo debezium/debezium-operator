@@ -9,7 +9,7 @@
 
     <artifactId>debezium-operator-dist</artifactId>
     <packaging>pom</packaging>
-
+    <name>Debezium Operator Distribution</name>
 
     <properties>
         <dist.root.dir>${project.parent.basedir}</dist.root.dir>

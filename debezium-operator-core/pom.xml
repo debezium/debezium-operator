@@ -8,6 +8,7 @@
     </parent>
 
     <artifactId>debezium-operator-core</artifactId>
+    <name>Debezium Operator Core Library</name>
 
     <dependencies>
         <dependency>
