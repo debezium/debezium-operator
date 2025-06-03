@@ -8,6 +8,7 @@
     </parent>
 
     <artifactId>debezium-operator-api</artifactId>
+    <name>Debezium Operator API</name>
 
     <dependencies>
         <dependency>

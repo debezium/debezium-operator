@@ -8,6 +8,7 @@
     </parent>
 
     <artifactId>systemtests</artifactId>
+    <name>Debezium Operator System Tests</name>
 
     <properties>
         <fabric8.version>6.13.4</fabric8.version>

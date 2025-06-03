@@ -8,6 +8,7 @@
     </parent>
 
     <artifactId>debezium-operator-commons</artifactId>
+    <name>Debezium Operator Shared Classes</name>
 
     <dependencies>
         <dependency>

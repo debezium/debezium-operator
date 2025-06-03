@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>debezium-operator-docs-gen</artifactId>
-
+    <name>Debezium Operator Documentation Generator</name>
 
     <properties>
         <version.auto.service>1.1.1</version.auto.service>
