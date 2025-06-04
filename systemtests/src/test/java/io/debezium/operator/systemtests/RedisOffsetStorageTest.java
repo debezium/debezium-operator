@@ -28,7 +28,7 @@ public class RedisOffsetStorageTest extends TestBase {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Test
-    void testRedisOffsetStorage() {
+    void testRedisOffsetStorage() throws InterruptedException {
         String namespace = NamespaceHolder.INSTANCE.getCurrentNamespace();
         DebeziumOperatorBundleResource operatorBundleResource = new DebeziumOperatorBundleResource();
         operatorBundleResource.configureAsDefault(namespace);
@@ -45,7 +45,7 @@ public class RedisOffsetStorageTest extends TestBase {
                 .build();
         server.getSpec().getSource().setOffset(offset);
 
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
 
         try (LocalPortForward lcp = dmtResource.portForward(portForwardPort, namespace)) {
@@ -58,7 +58,7 @@ public class RedisOffsetStorageTest extends TestBase {
         }
 
         server.getSpec().getSource().getOffset().getRedis().setKey("metadata:debezium_n:offsets");
-        KubeResourceManager.getInstance().createOrUpdateResourceWithWait(server);
+        KubeResourceManager.get().createOrUpdateResourceWithWait(server);
         assertStreamingWorks(10, 20);
 
         try (LocalPortForward lcp = dmtResource.portForward(portForwardPort, namespace)) {
