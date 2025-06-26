@@ -65,16 +65,16 @@ public class RedisResource implements DeployableResourceGroup {
     @Override
     public void configureAsDefault(String namespace) {
         try {
-            this.pod = (Pod) KubeResourceManager.getKubeClient().readResourcesFromFile(this.getClass().getClassLoader().getResourceAsStream("redis/redis-pod.yaml"))
+            this.pod = (Pod) KubeResourceManager.get().kubeClient().readResourcesFromFile(this.getClass().getClassLoader().getResourceAsStream("redis/redis-pod.yaml"))
                     .get(0);
             pod.getMetadata().setNamespace(namespace);
-            this.persistentVolumeClaim = (PersistentVolumeClaim) KubeResourceManager.getKubeClient()
+            this.persistentVolumeClaim = (PersistentVolumeClaim) KubeResourceManager.get().kubeClient()
                     .readResourcesFromFile(this.getClass().getClassLoader().getResourceAsStream("redis/redis-pvc.yaml")).get(0);
             persistentVolumeClaim.getMetadata().setNamespace(namespace);
-            this.configMap = (ConfigMap) KubeResourceManager.getKubeClient()
+            this.configMap = (ConfigMap) KubeResourceManager.get().kubeClient()
                     .readResourcesFromFile(this.getClass().getClassLoader().getResourceAsStream("redis/redis-cfg.yaml")).get(0);
             configMap.getMetadata().setNamespace(namespace);
-            this.service = (Service) KubeResourceManager.getKubeClient()
+            this.service = (Service) KubeResourceManager.get().kubeClient()
                     .readResourcesFromFile(this.getClass().getClassLoader().getResourceAsStream("redis/redis-service.yaml")).get(0);
             service.getMetadata().setNamespace(namespace);
         }
@@ -89,8 +89,8 @@ public class RedisResource implements DeployableResourceGroup {
 
     @Override
     public void deploy() {
-        KubeResourceManager.getInstance().createResourceWithoutWait(configMap, service, persistentVolumeClaim);
-        KubeResourceManager.getInstance().createResourceWithWait(pod);
+        KubeResourceManager.get().createResourceWithoutWait(configMap, service, persistentVolumeClaim);
+        KubeResourceManager.get().createResourceWithWait(pod);
     }
 
 }
