@@ -58,7 +58,7 @@
         <version.compiler.plugin>3.14.0</version.compiler.plugin>
         <version.resources.plugin>3.3.1</version.resources.plugin>
         <version.docker.maven.plugin>0.43.4</version.docker.maven.plugin>
-        <version.jandex.plugin>3.1.3</version.jandex.plugin>
+        <version.jandex.plugin>3.4.0</version.jandex.plugin>
 
         <!-- Dependency versions -->
         <version.assertj>3.27.3</version.assertj>
