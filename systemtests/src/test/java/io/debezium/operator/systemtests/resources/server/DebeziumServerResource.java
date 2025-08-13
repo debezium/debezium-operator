@@ -5,12 +5,6 @@
  */
 package io.debezium.operator.systemtests.resources.server;
 
-import static io.debezium.operator.systemtests.ConfigProperties.FABRIC8_POLL_INTERVAL;
-import static io.debezium.operator.systemtests.ConfigProperties.FABRIC8_POLL_TIMEOUT;
-import static org.awaitility.Awaitility.await;
-
-import java.io.InputStream;
-import java.time.Duration;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
@@ -20,7 +14,6 @@ import io.debezium.operator.api.model.DebeziumServer;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
-import io.fabric8.kubernetes.client.dsl.internal.HasMetadataOperationsImpl;
 import io.skodjob.testframe.interfaces.ResourceType;
 import io.skodjob.testframe.resources.KubeResourceManager;
 
@@ -30,7 +23,7 @@ public class DebeziumServerResource implements ResourceType<DebeziumServer> {
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     public DebeziumServerResource() {
-        this.client = KubeResourceManager.getKubeClient().getClient().resources(DebeziumServer.class, DebeziumServerList.class);
+        this.client = KubeResourceManager.get().kubeClient().getClient().resources(DebeziumServer.class, DebeziumServerList.class);
     }
 
     public DebeziumServer get(String namespace, String name) {
@@ -58,44 +51,27 @@ public class DebeziumServerResource implements ResourceType<DebeziumServer> {
     }
 
     @Override
-    public void delete(String name) {
-        client.list().getItems().stream()
-                .filter(n -> n.getMetadata().getName().equals(name)).findFirst().ifPresent(client::delete);
+    public void delete(DebeziumServer debeziumServer) {
+        client.inNamespace(debeziumServer.getMetadata().getNamespace())
+                .withName(debeziumServer.getMetadata().getName()).delete();
     }
 
     @Override
-    public void replace(String s, Consumer<DebeziumServer> editor) {
-        DebeziumServer toBeReplaced = client.withName(s).get();
-        editor.accept(toBeReplaced);
-        update(toBeReplaced);
+    public void replace(DebeziumServer debeziumServer, Consumer<DebeziumServer> consumer) {
+        DebeziumServer toBeUpdated = client.inNamespace(debeziumServer.getMetadata().getNamespace())
+                .withName(debeziumServer.getMetadata().getName()).get();
+        consumer.accept(toBeUpdated);
+        update(toBeUpdated);
     }
 
     @Override
-    public boolean waitForReadiness(DebeziumServer debeziumServer) {
-        await().atMost(Duration.ofSeconds(FABRIC8_POLL_TIMEOUT)).pollInterval(Duration.ofSeconds(FABRIC8_POLL_INTERVAL))
-                .until(() -> {
-                    DebeziumServer dbzServer = client.inNamespace(debeziumServer.getMetadata().getNamespace())
-                            .withName(debeziumServer.getMetadata().getName()).get();
-
-                    boolean ready = dbzServer.getStatus().getConditions().stream()
-                            .anyMatch(condition -> condition.getType().equals("Ready") && condition.getStatus().equals("True"));
-                    if (ready) {
-                        return true;
-                    }
-                    else {
-                        logger.info("Waiting for readiness of Debezium Server...");
-                        return false;
-                    }
-                });
-        return true;
+    public boolean isReady(DebeziumServer debeziumServer) {
+        return debeziumServer.getStatus().getConditions().stream()
+                .anyMatch(condition -> condition.getType().equals("Ready") && condition.getStatus().equals("True"));
     }
 
     @Override
-    public boolean waitForDeletion(DebeziumServer debeziumServer) {
+    public boolean isDeleted(DebeziumServer debeziumServer) {
         return debeziumServer == null;
-    }
-
-    public DebeziumServer loadResource(InputStream is) {
-        return (DebeziumServer) ((HasMetadataOperationsImpl<?, ?>) this.client.load(is)).getItem();
     }
 }
