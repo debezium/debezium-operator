@@ -13,7 +13,7 @@
     <properties>
         <fabric8.version>6.13.4</fabric8.version>
         <junit.jupiter.version>5.10.5</junit.jupiter.version>
-        <junit.platform.launcher.version>1.10.2</junit.platform.launcher.version>
+        <junit.platform.launcher.version>1.13.4</junit.platform.launcher.version>
         <log4j2.version>2.24.3</log4j2.version>
         <assertj.version>3.27.3</assertj.version>
         <testframe.version>0.2.1</testframe.version>
