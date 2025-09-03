@@ -11,6 +11,7 @@ runs:
   using: composite
   steps:
     - name: Check if pull request branch exists in debezium main repository
+      if: ${{ github.event_name == 'pull_request' }}
       id: branch
       env:
         branch_name: ${{ github.head_ref }}
@@ -38,9 +39,8 @@ runs:
       uses: actions/checkout@v4
       with:
         repository: debezium/debezium
-        ref: ${{ github.base_ref }}
+        ref: ${{ github.event_name == 'pull_request' && github.base_ref || github.ref }}
         path: core
-
     - name: Checkout Debezium Operator
       uses: actions/checkout@v4
       with:
