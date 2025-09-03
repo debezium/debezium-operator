@@ -10,38 +10,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Check if pull request branch exists in debezium main repository
-      if: ${{ github.event_name == 'pull_request' }}
-      id: branch
-      env:
-        branch_name: ${{ github.head_ref }}
-      shell: ${{ inputs.shell }}
-      run: |
-        curl --silent -X "GET" https://api.github.com/repos/debezium/debezium/pulls | jq '.[] | {branch: .head.ref}' | jq -r '.branch' >> SORTED_PULLS.txt
-
-        while IFS=" " read -r BRANCH;
-        do
-          if grep -q "$branch_name" <<< "$BRANCH"; then
-            echo "BRANCH_FOUND=true" >> $GITHUB_OUTPUT
-          fi
-        done < SORTED_PULLS.txt
-
-    - name: Checkout core repository with pull request branch
-      if: ${{ steps.branch.outputs.BRANCH_FOUND == 'true' }}
-      uses: actions/checkout@v4
-      with:
-        repository: ${{ github.event.pull_request.user.login }}/debezium
-        ref: ${{ github.head_ref }}
-        path: core
-
-    - name: Checkout core repository with default base branch
-      if: ${{ steps.branch.outputs.BRANCH_FOUND != 'true' }}
-      uses: actions/checkout@v4
-      with:
-        repository: debezium/debezium
-        ref: ${{ github.event_name == 'pull_request' && github.base_ref || github.ref }}
-        path: core
-
     - name: Checkout Debezium Operator
       uses: actions/checkout@v4
       with:
