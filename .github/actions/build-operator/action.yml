@@ -11,6 +11,7 @@ runs:
   using: composite
   steps:
     - name: Check if pull request branch exists in debezium main repository
+      if: ${{ github.event_name == 'pull_request' }}
       id: branch
       env:
         branch_name: ${{ github.head_ref }}
