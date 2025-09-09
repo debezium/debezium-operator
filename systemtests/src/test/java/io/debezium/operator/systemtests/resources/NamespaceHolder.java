@@ -30,7 +30,7 @@ public enum NamespaceHolder {
                 .endMetadata()
                 .build();
         this.currentNamespace = name;
-        KubeResourceManager.getInstance().createResourceWithWait(namespace);
+        KubeResourceManager.get().createResourceWithWait(namespace);
     }
 
     public String getCurrentNamespace() {

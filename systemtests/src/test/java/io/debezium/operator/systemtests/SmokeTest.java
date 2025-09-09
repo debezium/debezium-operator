@@ -27,7 +27,7 @@ public class SmokeTest extends TestBase {
         operatorBundleResource.deploy();
         logger.info("Deploying Debezium Server");
         DebeziumServer server = DebeziumServerGenerator.generateDefaultMysqlToRedis(namespace);
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
     }
 
@@ -40,7 +40,7 @@ public class SmokeTest extends TestBase {
         operatorBundleResource.deploy();
         logger.info("Deploying Debezium Server");
         DebeziumServer server = DebeziumServerGenerator.generateDefaultMysqlToRedis(namespace);
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
     }
 }

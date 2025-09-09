@@ -16,7 +16,7 @@
         <junit.platform.launcher.version>1.10.2</junit.platform.launcher.version>
         <log4j2.version>2.25.1</log4j2.version>
         <assertj.version>3.27.3</assertj.version>
-        <testframe.version>0.2.1</testframe.version>
+        <testframe.version>0.13.0</testframe.version>
         <dmt.version>0.0.1-alpha1</dmt.version>
         <okhttp.version>5.0.0-alpha.14</okhttp.version>
         <awaitility.version>4.3.0</awaitility.version>
@@ -96,6 +96,11 @@
         <dependency>
             <groupId>io.skodjob</groupId>
             <artifactId>test-frame-kubernetes</artifactId>
+            <version>${testframe.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.skodjob</groupId>
+            <artifactId>test-frame-log-collector</artifactId>
             <version>${testframe.version}</version>
         </dependency>
         <dependency>

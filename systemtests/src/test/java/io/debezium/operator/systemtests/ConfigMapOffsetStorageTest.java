@@ -44,10 +44,10 @@ public class ConfigMapOffsetStorageTest extends TestBase {
                 .build();
         server.getSpec().getSource().setOffset(offset);
 
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
 
-        ConfigMap configMap = KubeResourceManager.getKubeClient().getClient()
+        ConfigMap configMap = KubeResourceManager.get().kubeClient().getClient()
                 .configMaps()
                 .inNamespace(namespace)
                 .withName("my-debezium-offsets")
@@ -68,7 +68,7 @@ public class ConfigMapOffsetStorageTest extends TestBase {
         logger.info("Deploying Operator");
         operatorBundleResource.deploy();
 
-        KubeResourceManager.getInstance().createResourceWithWait(new ConfigMapBuilder()
+        KubeResourceManager.get().createResourceWithWait(new ConfigMapBuilder()
                 .withMetadata(new ObjectMetaBuilder()
                         .withNamespace(namespace)
                         .withName("debezium-offsets")
@@ -85,10 +85,10 @@ public class ConfigMapOffsetStorageTest extends TestBase {
                 .build();
         server.getSpec().getSource().setOffset(offset);
 
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
 
-        ConfigMap configMap = KubeResourceManager.getKubeClient().getClient()
+        ConfigMap configMap = KubeResourceManager.get().kubeClient().getClient()
                 .configMaps()
                 .inNamespace(namespace)
                 .withName("debezium-offsets")

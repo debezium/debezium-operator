@@ -33,7 +33,7 @@ public class DebeziumOperatorBundleResource implements DeployableResourceGroup {
     @Override
     public void configureAsDefault(String namespace) {
         try {
-            List<HasMetadata> res = KubeResourceManager.getKubeClient().readResourcesFromFile(Paths.get(BUNDLE_PATH + "kubernetes.yml"));
+            List<HasMetadata> res = KubeResourceManager.get().kubeClient().readResourcesFromFile(Paths.get(BUNDLE_PATH + "kubernetes.yml"));
             for (HasMetadata object : res) {
                 object.getMetadata().setNamespace(namespace);
                 switch (object.getKind()) {
@@ -61,7 +61,7 @@ public class DebeziumOperatorBundleResource implements DeployableResourceGroup {
                         break;
                 }
             }
-            res = KubeResourceManager.getKubeClient().readResourcesFromFile(Paths.get(BUNDLE_PATH + "/debeziumservers.debezium.io-v1.yml"));
+            res = KubeResourceManager.get().kubeClient().readResourcesFromFile(Paths.get(BUNDLE_PATH + "/debeziumservers.debezium.io-v1.yml"));
             if (res.size() != 1) {
                 throw new IOException("Specified file cannot be found or is in wrong format!");
             }
@@ -74,8 +74,8 @@ public class DebeziumOperatorBundleResource implements DeployableResourceGroup {
 
     @Override
     public void deploy() {
-        KubeResourceManager.getInstance().createOrUpdateResourceWithoutWait(crd, serviceAccount,
+        KubeResourceManager.get().createOrUpdateResourceWithoutWait(crd, serviceAccount,
                 clusterRole, debeziumClusterRoleBinding, viewRoleBinding, service);
-        KubeResourceManager.getInstance().createOrUpdateResourceWithWait(deployment);
+        KubeResourceManager.get().createOrUpdateResourceWithWait(deployment);
     }
 }
