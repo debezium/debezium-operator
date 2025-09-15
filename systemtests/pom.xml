@@ -15,7 +15,7 @@
         <junit.jupiter.version>5.10.5</junit.jupiter.version>
         <junit.platform.launcher.version>1.10.2</junit.platform.launcher.version>
         <log4j2.version>2.25.1</log4j2.version>
-        <assertj.version>3.27.3</assertj.version>
+        <assertj.version>3.27.4</assertj.version>
         <testframe.version>0.2.1</testframe.version>
         <dmt.version>0.0.1-alpha1</dmt.version>
         <okhttp.version>5.0.0-alpha.14</okhttp.version>
