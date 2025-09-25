@@ -60,7 +60,7 @@
         <version.docker.maven.plugin>0.43.4</version.docker.maven.plugin>
 
         <!-- Dependency versions -->
-        <version.assertj>3.27.3</version.assertj>
+        <version.assertj>3.27.6</version.assertj>
 
         <!-- OLM configuration -->
         <olm.bundle.name>debezium-operator.v${olm.bundle.version}</olm.bundle.name>
