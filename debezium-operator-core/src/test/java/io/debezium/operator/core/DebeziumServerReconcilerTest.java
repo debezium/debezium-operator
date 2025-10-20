@@ -19,7 +19,7 @@ import io.debezium.operator.core.dependent.DeploymentDependent;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.javaoperatorsdk.operator.ReconcilerUtils;
-import io.quarkus.kubernetes.client.runtime.KubernetesClientUtils;
+import io.quarkus.kubernetes.client.runtime.internal.KubernetesClientUtils;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
