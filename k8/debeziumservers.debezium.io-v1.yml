@@ -620,6 +620,13 @@ spec:
                                 type:
                                   type: string
                               type: object
+                            image:
+                              properties:
+                                pullPolicy:
+                                  type: string
+                                reference:
+                                  type: string
+                              type: object
                             iscsi:
                               properties:
                                 chapAuthDiscovery:
@@ -975,6 +982,8 @@ spec:
                                 items:
                                   properties:
                                     name:
+                                      type: string
+                                    request:
                                       type: string
                                   type: object
                                 type: array
@@ -1435,6 +1444,8 @@ spec:
                                 type: boolean
                               runAsUser:
                                 type: integer
+                              seLinuxChangePolicy:
+                                type: string
                               seLinuxOptions:
                                 properties:
                                   level:
@@ -1457,6 +1468,8 @@ spec:
                                 items:
                                   type: integer
                                 type: array
+                              supplementalGroupsPolicy:
+                                type: string
                               sysctls:
                                 items:
                                   properties:
