@@ -28,7 +28,7 @@ runs:
 
     - name: Checkout core repository with pull request branch
       if: ${{ steps.branch.outputs.BRANCH_FOUND == 'true' }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: ${{ github.event.pull_request.user.login }}/debezium
         ref: ${{ github.head_ref }}
@@ -36,13 +36,13 @@ runs:
 
     - name: Checkout core repository with default base branch
       if: ${{ steps.branch.outputs.BRANCH_FOUND != 'true' }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: debezium/debezium
         ref: ${{ github.event_name == 'pull_request' && github.base_ref || github.ref }}
         path: core
     - name: Checkout Debezium Operator
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         path: operator
 
