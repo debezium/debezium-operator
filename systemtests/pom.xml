@@ -12,7 +12,7 @@
 
     <properties>
         <fabric8.version>7.1.0</fabric8.version>
-        <junit.jupiter.version>5.12.2</junit.jupiter.version>
+        <junit.jupiter.version>6.0.0</junit.jupiter.version>
         <junit.platform.launcher.version>1.12.2</junit.platform.launcher.version>
         <log4j2.version>2.25.1</log4j2.version>
         <assertj.version>3.27.6</assertj.version>
