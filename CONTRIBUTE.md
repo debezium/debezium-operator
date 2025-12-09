@@ -13,7 +13,7 @@ You can reach us here:
 * [User chat](https://debezium.zulipchat.com/#narrow/stream/302529-users)
 * [Developers chat](https://debezium.zulipchat.com/#narrow/stream/302533-dev) - Only for internal development subjects
 * [Google Group](https://groups.google.com/forum/#!forum/debezium)
-* [Jira](https://issues.redhat.com/projects/DBZ/)
+* [GitHub Issues](https://github.com/debezium/dbz/issues)
 
 ## Install the tools
 
@@ -35,7 +35,4 @@ See the links above for installation instructions on your platform. You can veri
 
 Debezium uses [GitHub](GitHub.com) for its primary code repository and for pull-requests, so if you don't already have a GitHub account you'll need to [join](https://github.com/join).
 
-### Jira account
-
-Debezium uses the [Red Hat Jira](https://issues.redhat.com/) instance for issue tracking.
-If you don't have an account yet, you can create one for free by clicking "Log In" and then signing up with Red Hat's SSO service.
+Debezium uses the [GitHub Issues](https://github.com/debezium/dbz/issues) instance for issue tracking.
