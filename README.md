@@ -69,6 +69,8 @@ spec:
           labels: Map<String, String>
         imagePullSecrets: List # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#localobjectreference-v1-core
         affinity: # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#affinity-v1-core
+        nodeSelector: Map<String, String>
+        tolerations: # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#toleration-v1-core
         securityContext: # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#podsecuritycontext-v1-core
   quarkus:
     config:

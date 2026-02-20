@@ -1423,6 +1423,12 @@ spec:
                                 description: Labels added to the Kubernetes resource
                                 type: object
                             type: object
+                          nodeSelector:
+                            additionalProperties:
+                              type: string
+                            description: NodeSelector is a selector which must be
+                              true for the pod to fit on a node.
+                            type: object
                           securityContext:
                             description: Pod-level security attributes and container
                               settings
@@ -1491,6 +1497,23 @@ spec:
                                     type: string
                                 type: object
                             type: object
+                          tolerations:
+                            description: Tolerations applied to the pod to allow
+                              scheduling on tainted nodes.
+                            items:
+                              properties:
+                                effect:
+                                  type: string
+                                key:
+                                  type: string
+                                operator:
+                                  type: string
+                                tolerationSeconds:
+                                  type: integer
+                                value:
+                                  type: string
+                              type: object
+                            type: array
                         type: object
                       volumeClaim:
                         description: PVC template for data volume if no explicit claim

@@ -7,6 +7,7 @@ package io.debezium.operator.api.model.runtime.templates;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
@@ -16,8 +17,9 @@ import io.debezium.operator.docs.annotations.Documented;
 import io.fabric8.kubernetes.api.model.Affinity;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.PodSecurityContext;
+import io.fabric8.kubernetes.api.model.Toleration;
 
-@JsonPropertyOrder({ "metadata", "imagePullSecrets", "affinity" })
+@JsonPropertyOrder({ "metadata", "imagePullSecrets", "affinity", "nodeSelector", "tolerations" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Documented
 public class PodTemplate implements HasMetadataTemplate, Serializable {
@@ -41,6 +43,15 @@ public class PodTemplate implements HasMetadataTemplate, Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Documented.Field(k8Ref = "podsecuritycontext-v1-core")
     private PodSecurityContext securityContext;
+
+    @JsonPropertyDescription("NodeSelector is a selector which must be true for the pod to fit on a node.")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private Map<String, String> nodeSelector = Map.of();
+
+    @JsonPropertyDescription("Tolerations applied to the pod to allow scheduling on tainted nodes.")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @Documented.Field(k8Ref = "toleration-v1-core")
+    private List<Toleration> tolerations = List.of();
 
     @Override
     public MetadataTemplate getMetadata() {
@@ -74,5 +85,21 @@ public class PodTemplate implements HasMetadataTemplate, Serializable {
 
     public void setSecurityContext(PodSecurityContext securityContext) {
         this.securityContext = securityContext;
+    }
+
+    public Map<String, String> getNodeSelector() {
+        return nodeSelector;
+    }
+
+    public void setNodeSelector(Map<String, String> nodeSelector) {
+        this.nodeSelector = nodeSelector;
+    }
+
+    public List<Toleration> getTolerations() {
+        return tolerations;
+    }
+
+    public void setTolerations(List<Toleration> tolerations) {
+        this.tolerations = tolerations;
     }
 }
