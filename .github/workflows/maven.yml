@@ -26,10 +26,12 @@ jobs:
   check-signed-commits:
     name: Check signed commits
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     steps:
       - uses: debezium/dbz/.github/actions/check-dco@main
   build:
     needs: [ check-signed-commits ]
+    if: ${{ !cancelled() && (needs.check-signed-commits.result == 'success' || needs.check-signed-commits.result == 'skipped') }}
     runs-on: ubuntu-latest
 
     steps:
