@@ -1498,8 +1498,8 @@ spec:
                                 type: object
                             type: object
                           tolerations:
-                            description: Tolerations applied to the pod to allow
-                              scheduling on tainted nodes.
+                            description: Tolerations applied to the pod to allow scheduling
+                              on tainted nodes.
                             items:
                               properties:
                                 effect:

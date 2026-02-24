@@ -403,6 +403,8 @@ Used in: <<debezium-operator-schema-reference-templates, `+Templates+`>>
 | [[debezium-operator-schema-reference-podtemplate-imagepullsecrets]]<<debezium-operator-schema-reference-podtemplate-imagepullsecrets, `+imagePullSecrets+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#localobjectreference-v1-core[`+List<LocalObjectReference>+`] |  | List of local references to secrets used for pulling any of the images used by this Pod.
 | [[debezium-operator-schema-reference-podtemplate-affinity]]<<debezium-operator-schema-reference-podtemplate-affinity, `+affinity+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#affinity-v1-core[`+Affinity+`] |  | Pod affinity rules
 | [[debezium-operator-schema-reference-podtemplate-securitycontext]]<<debezium-operator-schema-reference-podtemplate-securitycontext, `+securityContext+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#podsecuritycontext-v1-core[`+PodSecurityContext+`] |  | Pod-level security attributes and container settings
+| [[debezium-operator-schema-reference-podtemplate-nodeselector]]<<debezium-operator-schema-reference-podtemplate-nodeselector, `+nodeSelector+`>> | Map<String, String> |  | NodeSelector is a selector which must be true for the pod to fit on a node.
+| [[debezium-operator-schema-reference-podtemplate-tolerations]]<<debezium-operator-schema-reference-podtemplate-tolerations, `+tolerations+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#toleration-v1-core[`+List<Toleration>+`] |  | Tolerations applied to the pod to allow scheduling on tainted nodes.
 |===
 
 [#debezium-operator-schema-reference-predicate]
