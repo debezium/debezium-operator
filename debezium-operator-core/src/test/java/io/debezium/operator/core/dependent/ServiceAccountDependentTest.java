@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import io.debezium.operator.api.model.DebeziumServer;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
-import io.javaoperatorsdk.operator.ReconcilerUtils;
+import io.javaoperatorsdk.operator.ReconcilerUtilsInternal;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 
 public class ServiceAccountDependentTest {
@@ -26,7 +26,7 @@ public class ServiceAccountDependentTest {
 
     @BeforeEach
     void before() {
-        debeziumServer = ReconcilerUtils.loadYaml(
+        debeziumServer = ReconcilerUtilsInternal.loadYaml(
                 DebeziumServer.class, ServiceAccountDependentTest.class, "/test-samples/ds-postgres-minimal.yml");
         final var metadata = new ObjectMetaBuilder()
                 .withName("test-ds")

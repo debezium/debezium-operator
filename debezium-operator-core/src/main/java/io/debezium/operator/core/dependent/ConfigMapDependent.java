@@ -9,7 +9,6 @@ import java.util.Map;
 
 import io.debezium.operator.api.model.CommonLabels;
 import io.debezium.operator.api.model.DebeziumServer;
-import io.debezium.operator.core.dependent.discriminators.ServerConfigMapDiscriminator;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
@@ -17,7 +16,7 @@ import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernetesDependentResource;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependent;
 
-@KubernetesDependent(resourceDiscriminator = ServerConfigMapDiscriminator.class)
+@KubernetesDependent
 public class ConfigMapDependent extends CRUDKubernetesDependentResource<ConfigMap, DebeziumServer> {
 
     public static final String SERVER_CONFIG_CONFIG_MAP_CLASSIFIER = "config";
