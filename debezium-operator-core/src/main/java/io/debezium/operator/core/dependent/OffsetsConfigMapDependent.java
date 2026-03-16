@@ -7,7 +7,6 @@ package io.debezium.operator.core.dependent;
 
 import io.debezium.operator.api.model.CommonLabels;
 import io.debezium.operator.api.model.DebeziumServer;
-import io.debezium.operator.core.dependent.discriminators.OffsetsConfigMapDiscriminator;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
@@ -15,7 +14,7 @@ import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernetesDependentResource;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependent;
 
-@KubernetesDependent(resourceDiscriminator = OffsetsConfigMapDiscriminator.class)
+@KubernetesDependent
 public class OffsetsConfigMapDependent extends CRUDKubernetesDependentResource<ConfigMap, DebeziumServer> {
 
     public static final String OFFSETS_CONFIG_MAP_CLASSIFIER = "offsets";

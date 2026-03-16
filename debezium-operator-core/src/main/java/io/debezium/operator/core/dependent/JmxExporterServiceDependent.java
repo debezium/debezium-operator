@@ -7,7 +7,6 @@ package io.debezium.operator.core.dependent;
 
 import io.debezium.operator.api.model.CommonLabels;
 import io.debezium.operator.api.model.DebeziumServer;
-import io.debezium.operator.core.dependent.discriminators.JmxExporterServiceDiscriminator;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.api.model.Service;
@@ -18,7 +17,7 @@ import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.CRUDKubernetesDependentResource;
 import io.javaoperatorsdk.operator.processing.dependent.kubernetes.KubernetesDependent;
 
-@KubernetesDependent(resourceDiscriminator = JmxExporterServiceDiscriminator.class)
+@KubernetesDependent
 public class JmxExporterServiceDependent extends CRUDKubernetesDependentResource<Service, DebeziumServer> {
 
     public static final String JMX_EXPORTER_CLASSIFIER = "jmx-exporter";
