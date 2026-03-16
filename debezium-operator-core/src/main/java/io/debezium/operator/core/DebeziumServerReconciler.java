@@ -38,18 +38,21 @@ import io.debezium.operator.core.dependent.conditions.JmxExporterEnabled;
 import io.debezium.operator.core.dependent.conditions.OffsetConfigMapRequired;
 import io.debezium.operator.core.dependent.conditions.PvcReady;
 import io.debezium.operator.core.dependent.conditions.ServiceAccountReady;
+import io.javaoperatorsdk.operator.api.config.informer.Informer;
 import io.javaoperatorsdk.operator.api.reconciler.Constants;
 import io.javaoperatorsdk.operator.api.reconciler.Context;
 import io.javaoperatorsdk.operator.api.reconciler.ControllerConfiguration;
 import io.javaoperatorsdk.operator.api.reconciler.Reconciler;
 import io.javaoperatorsdk.operator.api.reconciler.UpdateControl;
+import io.javaoperatorsdk.operator.api.reconciler.Workflow;
 import io.javaoperatorsdk.operator.api.reconciler.dependent.Dependent;
 import io.quarkiverse.operatorsdk.annotations.CSVMetadata;
 import io.quarkiverse.operatorsdk.annotations.RBACRule;
 import io.quarkiverse.operatorsdk.annotations.RBACVerbs;
 import io.quarkus.logging.Log;
 
-@ControllerConfiguration(namespaces = Constants.WATCH_CURRENT_NAMESPACE, name = "debeziumserver", dependents = {
+@ControllerConfiguration(name = "debeziumserver", informer = @Informer(namespaces = Constants.WATCH_CURRENT_NAMESPACE))
+@Workflow(dependents = {
         @Dependent(name = "service-account", type = ServiceAccountDependent.class, reconcilePrecondition = CreateServiceAccount.class),
         @Dependent(name = "pvc", type = PvcDependent.class, reconcilePrecondition = CreatePvc.class),
         @Dependent(name = "role", type = RoleDependent.class),
@@ -73,18 +76,18 @@ public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
     @Override
     public UpdateControl<DebeziumServer> reconcile(DebeziumServer debeziumServer, Context<DebeziumServer> context) {
         var name = debeziumServer.getMetadata().getName();
-        return context.managedDependentResourceContext().getWorkflowReconcileResult()
+        return context.managedWorkflowAndDependentResourceContext().getWorkflowReconcileResult()
                 .map(result -> {
                     if (result.allDependentResourcesReady()) {
                         Log.infof("Server %s is ready", name);
                         initializeReadyStatus(name, debeziumServer);
-                        return UpdateControl.updateStatus(debeziumServer);
+                        return UpdateControl.patchStatus(debeziumServer);
                     }
                     else {
                         var delay = Duration.ofSeconds(10);
                         Log.infof("Server %s not ready yet, rescheduling after %d seconds", name, delay.toSeconds());
                         initializeNotReadyStatus(name, debeziumServer);
-                        return UpdateControl.updateStatus(debeziumServer).rescheduleAfter(delay);
+                        return UpdateControl.patchStatus(debeziumServer).rescheduleAfter(delay);
                     }
                 }).orElseThrow();
     }

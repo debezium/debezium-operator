@@ -18,7 +18,7 @@ import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.core.dependent.DeploymentDependent;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
-import io.javaoperatorsdk.operator.ReconcilerUtils;
+import io.javaoperatorsdk.operator.ReconcilerUtilsInternal;
 import io.quarkus.kubernetes.client.runtime.internal.KubernetesClientUtils;
 import io.quarkus.test.junit.QuarkusTest;
 
@@ -31,7 +31,7 @@ public class DebeziumServerReconcilerTest {
 
     @BeforeEach
     void before() {
-        debeziumServer = ReconcilerUtils.loadYaml(
+        debeziumServer = ReconcilerUtilsInternal.loadYaml(
                 DebeziumServer.class, DebeziumServerReconcilerTest.class, "/test-samples/ds-postgres-minimal.yml");
         final var metadata = new ObjectMetaBuilder()
                 .withName(dsName)
