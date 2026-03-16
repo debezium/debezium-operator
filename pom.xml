@@ -75,10 +75,11 @@
         <!-- Helm chart configuration -->
         <helm.chart.dir.name>debezium-operator-${version.debezium.parsed}</helm.chart.dir.name>
         <!-- Quarkus configuration and versions-->
+        <quarkus.version.runtime>3.32.3</quarkus.version.runtime>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>${quarkus.version.runtime}</quarkus.platform.version>
-        <quarkus.operator.sdk.version>6.9.3</quarkus.operator.sdk.version>
+        <quarkus.operator.sdk.version>7.7.0</quarkus.operator.sdk.version>
         <quarkus.application.version>${version.debezium.parsed}</quarkus.application.version>
 
         <!-- Operator and Image configuration -->
