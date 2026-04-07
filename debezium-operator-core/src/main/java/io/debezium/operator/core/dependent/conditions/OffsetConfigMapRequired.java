@@ -27,6 +27,7 @@ public class OffsetConfigMapRequired implements Condition<Service, DebeziumServe
     }
 
     private boolean isNameConfigured(Offset offsetConfig) {
-        return offsetConfig.getConfigMap().getName() != null && !offsetConfig.getConfigMap().getName().isEmpty();
+        var configMap = offsetConfig.getConfigMap();
+        return configMap != null && configMap.getName() != null && !configMap.getName().isEmpty();
     }
 }
