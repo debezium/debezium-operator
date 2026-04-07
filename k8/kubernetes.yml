@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   annotations:
-    app.quarkus.io/quarkus-version: 3.27.1
+    app.quarkus.io/quarkus-version: 3.32.3
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -12,6 +12,9 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    app.kubernetes.io/name: debezium-operator
+    app.kubernetes.io/version: 3.5.0-nightly
   name: debeziumserver-cluster-role
 rules:
   - apiGroups:
@@ -124,6 +127,9 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  labels:
+    app.kubernetes.io/name: debezium-operator
+    app.kubernetes.io/version: 3.5.0-nightly
   name: debeziumserver-role-binding
 roleRef:
   kind: ClusterRole
@@ -152,7 +158,7 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    app.quarkus.io/quarkus-version: 3.27.1
+    app.quarkus.io/quarkus-version: 3.32.3
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -171,7 +177,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    app.quarkus.io/quarkus-version: 3.27.1
+    app.quarkus.io/quarkus-version: 3.32.3
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -184,7 +190,7 @@ spec:
   template:
     metadata:
       annotations:
-        app.quarkus.io/quarkus-version: 3.27.1
+        app.quarkus.io/quarkus-version: 3.32.3
       labels:
         app.kubernetes.io/managed-by: quarkus
         app.kubernetes.io/name: debezium-operator
@@ -195,6 +201,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: QUARKUS_OPERATOR_SDK_CONTROLLERS_DEBEZIUMSERVER_NAMESPACES
+              value: JOSDK_WATCH_CURRENT
           image: quay.io/debezium/operator:nightly
           imagePullPolicy: Always
           livenessProbe:
