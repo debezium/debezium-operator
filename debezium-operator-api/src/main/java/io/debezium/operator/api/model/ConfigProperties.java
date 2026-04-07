@@ -15,8 +15,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.debezium.operator.api.config.ConfigMappable;
 import io.debezium.operator.api.config.ConfigMapping;
 import io.debezium.operator.docs.annotations.Documented;
+import io.fabric8.crd.generator.annotation.PreserveUnknownFields;
 
+/**
+ * Configuration properties map that accepts arbitrary key-value pairs.
+ * The @PreserveUnknownFields annotation is required for Fabric8 CRD generator 7.4.0+
+ * to properly generate x-kubernetes-preserve-unknown-fields: true in the CRD schema.
+ */
 @Documented(hidden = true, name = "Map")
+@PreserveUnknownFields
 public class ConfigProperties implements ConfigMappable<DebeziumServer> {
 
     private Map<String, Object> props = new HashMap<>(0);
