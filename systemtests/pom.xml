@@ -116,6 +116,11 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.debezium</groupId>
+            <artifactId>debezium-util</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.skodjob</groupId>
             <artifactId>database-manipulation-tool-schema</artifactId>
             <version>${dmt.version}</version>
