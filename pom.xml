@@ -81,7 +81,7 @@
         <quarkus.platform.version>3.34.5</quarkus.platform.version>
         <quarkus.operator.sdk.version>7.7.3</quarkus.operator.sdk.version>
         <quarkus.application.version>${version.debezium.parsed}</quarkus.application.version>
-        <version.io.quarkiverse.helm>1.3.0</version.io.quarkiverse.helm>
+        <version.io.quarkiverse.helm>1.4.0</version.io.quarkiverse.helm>
 
         <!-- Operator and Image configuration -->
         <quarkus.operator-sdk.crd.validate>false</quarkus.operator-sdk.crd.validate>
