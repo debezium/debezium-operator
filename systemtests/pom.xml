@@ -118,7 +118,7 @@
         <dependency>
             <groupId>io.debezium</groupId>
             <artifactId>debezium-util</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${version.debezium}</version>
         </dependency>
         <dependency>
             <groupId>io.skodjob</groupId>
