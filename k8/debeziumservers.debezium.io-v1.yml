@@ -772,6 +772,10 @@ spec:
                                             type: "integer"
                                           signerName:
                                             type: "string"
+                                          userAnnotations:
+                                            additionalProperties:
+                                              type: "string"
+                                            type: "object"
                                         type: "object"
                                       secret:
                                         properties:
