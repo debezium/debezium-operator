@@ -79,7 +79,7 @@
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.34.6</quarkus.platform.version>
-        <quarkus.operator.sdk.version>7.7.3</quarkus.operator.sdk.version>
+        <quarkus.operator.sdk.version>7.7.4</quarkus.operator.sdk.version>
         <quarkus.application.version>${version.debezium.parsed}</quarkus.application.version>
         <version.io.quarkiverse.helm>1.4.0</version.io.quarkiverse.helm>
 
