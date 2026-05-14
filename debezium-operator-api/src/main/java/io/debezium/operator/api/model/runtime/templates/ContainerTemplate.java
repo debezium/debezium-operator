@@ -15,7 +15,7 @@ import io.debezium.operator.docs.annotations.Documented;
 import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.api.model.SecurityContext;
 
-@JsonPropertyOrder({ "resources", "securityContext", "probes" })
+@JsonPropertyOrder({ "resources", "securityContext", "probes", "imagePullPolicy" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Documented
 public class ContainerTemplate implements Serializable {
@@ -34,6 +34,10 @@ public class ContainerTemplate implements Serializable {
     @JsonPropertyDescription("Container probes configuration.")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Probes probes = new Probes();
+
+    @JsonPropertyDescription("Image pull policy for the container.")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String imagePullPolicy;
 
     public SecurityContext getSecurityContext() {
         return securityContext;
@@ -57,5 +61,13 @@ public class ContainerTemplate implements Serializable {
 
     public void setProbes(Probes probes) {
         this.probes = probes;
+    }
+
+    public String getImagePullPolicy() {
+        return imagePullPolicy;
+    }
+
+    public void setImagePullPolicy(String imagePullPolicy) {
+        this.imagePullPolicy = imagePullPolicy;
     }
 }

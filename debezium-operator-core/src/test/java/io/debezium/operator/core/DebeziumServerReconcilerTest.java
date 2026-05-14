@@ -47,6 +47,8 @@ public class DebeziumServerReconcilerTest {
 
     @Test
     void shouldReconcileDebeziumServer() {
+        final String imagePullPolicy = "IfNotPresent";
+        debeziumServer.getSpec().getRuntime().getTemplates().getContainer().setImagePullPolicy(imagePullPolicy);
         client.resource(debeziumServer).create();
         await().ignoreException(NullPointerException.class).atMost(2, TimeUnit.MINUTES).untilAsserted(() -> {
             // check config map
@@ -78,6 +80,7 @@ public class DebeziumServerReconcilerTest {
             assertThat(container.getImage()).isEqualTo(debeziumServer.getSpec().getImage());
             assertThat(container.getLivenessProbe()).isNotNull();
             assertThat(container.getReadinessProbe()).isNotNull();
+            assertThat(container.getImagePullPolicy()).isEqualTo(imagePullPolicy);
             assertThat(container.getVolumeMounts()).hasSize(2);
             assertThat(container.getVolumeMounts()).anyMatch(mount -> mount.getName().equals(DeploymentDependent.CONFIG_VOLUME_NAME) &&
                     mount.getMountPath().equals(DeploymentDependent.CONFIG_FILE_PATH) &&

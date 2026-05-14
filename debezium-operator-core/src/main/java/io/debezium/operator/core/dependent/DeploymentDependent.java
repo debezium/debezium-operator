@@ -282,6 +282,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     private void addTemplateConfigurationToContainer(ContainerTemplate template, Container container) {
         container.setSecurityContext(template.getSecurityContext());
         container.setResources(template.getResources());
+        container.setImagePullPolicy(template.getImagePullPolicy());
     }
 
     /**
