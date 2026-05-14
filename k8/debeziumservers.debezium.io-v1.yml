@@ -928,6 +928,9 @@ spec:
                       container:
                         description: "Container template"
                         properties:
+                          imagePullPolicy:
+                            description: "Image pull policy for the container."
+                            type: "string"
                           probes:
                             description: "Container probes configuration."
                             properties:
