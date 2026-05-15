@@ -203,7 +203,7 @@ spec:
                   fieldPath: metadata.namespace
             - name: QUARKUS_OPERATOR_SDK_CONTROLLERS_DEBEZIUMSERVER_NAMESPACES
               value: JOSDK_WATCH_CURRENT
-          image: quay.io/debezium/operator:3.6.0-SNAPSHOT
+          image: quay.io/debezium/operator:nightly
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
