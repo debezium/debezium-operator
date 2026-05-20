@@ -930,6 +930,10 @@ spec:
                         properties:
                           imagePullPolicy:
                             description: "Image pull policy for the container."
+                            enum:
+                            - "Always"
+                            - "IfNotPresent"
+                            - "Never"
                             type: "string"
                           probes:
                             description: "Container probes configuration."

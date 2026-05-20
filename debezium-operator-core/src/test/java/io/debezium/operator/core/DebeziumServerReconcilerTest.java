@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.debezium.operator.api.model.DebeziumServer;
+import io.debezium.operator.api.model.runtime.templates.ImagePullPolicy;
 import io.debezium.operator.core.dependent.DeploymentDependent;
 import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -47,8 +48,6 @@ public class DebeziumServerReconcilerTest {
 
     @Test
     void shouldReconcileDebeziumServer() {
-        final String imagePullPolicy = "IfNotPresent";
-        debeziumServer.getSpec().getRuntime().getTemplates().getContainer().setImagePullPolicy(imagePullPolicy);
         client.resource(debeziumServer).create();
         await().ignoreException(NullPointerException.class).atMost(2, TimeUnit.MINUTES).untilAsserted(() -> {
             // check config map
@@ -80,13 +79,32 @@ public class DebeziumServerReconcilerTest {
             assertThat(container.getImage()).isEqualTo(debeziumServer.getSpec().getImage());
             assertThat(container.getLivenessProbe()).isNotNull();
             assertThat(container.getReadinessProbe()).isNotNull();
-            assertThat(container.getImagePullPolicy()).isEqualTo(imagePullPolicy);
             assertThat(container.getVolumeMounts()).hasSize(2);
             assertThat(container.getVolumeMounts()).anyMatch(mount -> mount.getName().equals(DeploymentDependent.CONFIG_VOLUME_NAME) &&
                     mount.getMountPath().equals(DeploymentDependent.CONFIG_FILE_PATH) &&
                     mount.getSubPath().equals(DeploymentDependent.CONFIG_FILE_NAME));
             assertThat(container.getVolumeMounts()).anyMatch(mount -> mount.getName().equals(DeploymentDependent.DATA_VOLUME_NAME) &&
                     mount.getMountPath().equals(DeploymentDependent.DATA_VOLUME_PATH));
+        });
+    }
+
+    @Test
+    void shouldReconcileDebeziumServerWithImagePullPolicy() {
+        final ImagePullPolicy imagePullPolicy = ImagePullPolicy.IF_NOT_PRESENT;
+        debeziumServer.getSpec().getRuntime().getTemplates().getContainer().setImagePullPolicy(imagePullPolicy);
+        client.resource(debeziumServer).create();
+        await().ignoreException(NullPointerException.class).atMost(2, TimeUnit.MINUTES).untilAsserted(() -> {
+            final var deployment = client.apps().deployments()
+                    .inNamespace(debeziumServer.getMetadata().getNamespace())
+                    .withName(debeziumServer.getMetadata().getName())
+                    .get();
+            assertThat(deployment).isNotNull();
+
+            final var maybeContainer = deployment.getSpec().getTemplate().getSpec().getContainers()
+                    .stream()
+                    .findFirst();
+            assertThat(maybeContainer).isPresent();
+            assertThat(maybeContainer.get().getImagePullPolicy()).isEqualTo(imagePullPolicy.getValue());
         });
     }
 }
