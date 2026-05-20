@@ -53,7 +53,7 @@ Used in: <<debezium-operator-schema-reference-templates, `+Templates+`>>
 | [[debezium-operator-schema-reference-containertemplate-resources]]<<debezium-operator-schema-reference-containertemplate-resources, `+resources+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#resourcerequirements-v1-core[`+ResourceRequirements+`] |  | CPU and memory resource requirements.
 | [[debezium-operator-schema-reference-containertemplate-securitycontext]]<<debezium-operator-schema-reference-containertemplate-securitycontext, `+securityContext+`>> | https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#securitycontext-v1-core[`+SecurityContext+`] |  | Container security context.
 | [[debezium-operator-schema-reference-containertemplate-probes]]<<debezium-operator-schema-reference-containertemplate-probes, `+probes+`>> | <<debezium-operator-schema-reference-probes, `+Probes+`>> |  | Container probes configuration.
-| [[debezium-operator-schema-reference-containertemplate-imagepullpolicy]]<<debezium-operator-schema-reference-containertemplate-imagepullpolicy, `+imagePullPolicy+`>> | String |  | Image pull policy for the container.
+| [[debezium-operator-schema-reference-containertemplate-imagepullpolicy]]<<debezium-operator-schema-reference-containertemplate-imagepullpolicy, `+imagePullPolicy+`>> | always,if_not_present,never |  | Image pull policy for the container.
 |===
 
 [#debezium-operator-schema-reference-customstore]

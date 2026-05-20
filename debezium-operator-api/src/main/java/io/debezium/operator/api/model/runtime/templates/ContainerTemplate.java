@@ -37,7 +37,7 @@ public class ContainerTemplate implements Serializable {
 
     @JsonPropertyDescription("Image pull policy for the container.")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String imagePullPolicy;
+    private ImagePullPolicy imagePullPolicy;
 
     public SecurityContext getSecurityContext() {
         return securityContext;
@@ -63,11 +63,11 @@ public class ContainerTemplate implements Serializable {
         this.probes = probes;
     }
 
-    public String getImagePullPolicy() {
+    public ImagePullPolicy getImagePullPolicy() {
         return imagePullPolicy;
     }
 
-    public void setImagePullPolicy(String imagePullPolicy) {
+    public void setImagePullPolicy(ImagePullPolicy imagePullPolicy) {
         this.imagePullPolicy = imagePullPolicy;
     }
 }
