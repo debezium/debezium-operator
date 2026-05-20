@@ -370,6 +370,7 @@ Used in: <<debezium-operator-schema-reference-runtime, `+Runtime+`>>
 |===
 | Property | Type | Default | Description
 | [[debezium-operator-schema-reference-metrics-jmxexporter]]<<debezium-operator-schema-reference-metrics-jmxexporter, `+jmxExporter+`>> | <<debezium-operator-schema-reference-jmxexporter, `+JmxExporter+`>> |  | Prometheus JMX exporter configuration
+| [[debezium-operator-schema-reference-metrics-opentelemetry]]<<debezium-operator-schema-reference-metrics-opentelemetry, `+openTelemetry+`>> | <<debezium-operator-schema-reference-opentelemetry, `+OpenTelemetry+`>> |  | OpenTelemetry configuration
 |===
 
 [#debezium-operator-schema-reference-offset]
@@ -389,6 +390,31 @@ Used in: <<debezium-operator-schema-reference-source, `+Source+`>>
 | [[debezium-operator-schema-reference-offset-configmap]]<<debezium-operator-schema-reference-offset-configmap, `+configMap+`>> | <<debezium-operator-schema-reference-configmapoffsetstore, `+ConfigMapOffsetStore+`>> |  | Config map backed offset store configuration
 | [[debezium-operator-schema-reference-offset-store]]<<debezium-operator-schema-reference-offset-store, `+store+`>> | <<debezium-operator-schema-reference-customstore, `+CustomStore+`>> |  | Arbitrary offset store configuration
 | [[debezium-operator-schema-reference-offset-flushms]]<<debezium-operator-schema-reference-offset-flushms, `+flushMs+`>> | long | 60000 | Interval at which to try commiting offsets
+|===
+
+[#debezium-operator-schema-reference-opentelemetry]
+==== OpenTelemetry Schema Reference
+Used in: <<debezium-operator-schema-reference-metrics, `+Metrics+`>>
+
+
+.OpenTelemetry properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-opentelemetry-enabled]]<<debezium-operator-schema-reference-opentelemetry-enabled, `+enabled+`>> | boolean |  | Enables OpenTelemetry
+| [[debezium-operator-schema-reference-opentelemetry-collector]]<<debezium-operator-schema-reference-opentelemetry-collector, `+collector+`>> | <<debezium-operator-schema-reference-otelcollector, `+OtelCollector+`>> |  | OpenTelemetry collector configuration
+|===
+
+[#debezium-operator-schema-reference-otelcollector]
+==== OtelCollector Schema Reference
+Used in: <<debezium-operator-schema-reference-opentelemetry, `+OpenTelemetry+`>>
+
+
+.OtelCollector properties
+[cols="20%a,25%s,15%a,40%a",options="header"]
+|===
+| Property | Type | Default | Description
+| [[debezium-operator-schema-reference-otelcollector-endpoint]]<<debezium-operator-schema-reference-otelcollector-endpoint, `+endpoint+`>> | String |  | OTLP collector endpoint
 |===
 
 [#debezium-operator-schema-reference-podtemplate]

@@ -1,0 +1,52 @@
+apiVersion: debezium.io/v1alpha1
+kind: DebeziumServer
+metadata:
+  name: my-debezium
+spec:
+  image: quay.io/debezium/server:nightly
+  quarkus:
+    config:
+      log.console.json: false
+      kubernetes-config.enabled: true
+      kubernetes-config.secrets: postgresql-credentials
+  runtime:
+    api:
+      enabled: true
+    metrics:
+      openTelemetry:
+        enabled: true
+    environment:
+      vars:
+        - name: OTEL_METRICS_EXPORTER
+          value: logging
+        - name: OTEL_TRACES_EXPORTER
+          value: none
+        - name: OTEL_LOGS_EXPORTER
+          value: none
+        - name: OTEL_METRIC_EXPORT_INTERVAL
+          value: "10000"
+  sink:
+    type: jdbc
+    config:
+      connection.url: jdbc:postgresql://postgresql:5432/debezium
+      connection.username: debezium
+      connection.password: debezium
+      insert.mode: upsert
+      primary.key.mode: record_key
+      schema.evolution: basic
+      table.name.format: $${topic}
+  source:
+    class: io.debezium.connector.postgresql.PostgresConnector
+    offset:
+      memory: { }
+    schemaHistory:
+      memory: { }
+    config:
+      database.hostname: postgresql
+      database.port: 5432
+      database.user: ${POSTGRES_USER}
+      database.password: ${POSTGRES_PASSWORD}
+      database.dbname: ${POSTGRES_DB}
+      topic.prefix: inventory
+      schema.include.list: inventory
+      table.exclude.list: inventory.geom

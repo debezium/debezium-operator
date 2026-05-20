@@ -73,6 +73,16 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     public static final int DEFAULT_HTTP_PORT = 8080;
     public static final int DEFAULT_JMX_EXPORTER_METRICS_PORT = 9090;
     public static final String JMX_EXPORTER_METRICS_PORT_NAME = "metrics-jmx";
+    public static final String DEFAULT_OTEL_ENDPOINT = "http://localhost:4318";
+    public static final String DEFAULT_OTEL_JMX_CONFIG = "config/debezium-jmx-config.yaml";
+    public static final String OTEL_ENABLED_ENV = "OTEL_ENABLED";
+    public static final String OTEL_SDK_DISABLED_ENV = "OTEL_SDK_DISABLED";
+    public static final String OTEL_EXPORTER_OTLP_ENDPOINT_ENV = "OTEL_EXPORTER_OTLP_ENDPOINT";
+    public static final String OTEL_METRICS_EXPORTER_ENV = "OTEL_METRICS_EXPORTER";
+    public static final String OTEL_SERVICE_NAME_ENV = "OTEL_SERVICE_NAME";
+    public static final String OTEL_RESOURCE_ATTRIBUTES_ENV = "OTEL_RESOURCE_ATTRIBUTES";
+    public static final String OTEL_JMX_CONFIG_ENV = "OTEL_JMX_CONFIG";
+    public static final String OTEL_RESOURCE_ATTRIBUTES_FORMAT = "service.name=%s,debezium.connector.type=%s";
     private static final String CONFIG_MD5_ANNOTATION = "debezium.io/server-config-md5";
 
     @ConfigProperty(name = "debezium.server.image.name", defaultValue = DEFAULT_IMAGE)
@@ -347,6 +357,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         addStorageVolumeMountsToContainer(storage, container);
         addJmxConfigurationToContainer(jmx, container);
         addMetricConfigurationToContainer(metrics, container);
+        addOpenTelemetryConfigurationToContainer(primary, container);
         return container;
     }
 
@@ -503,6 +514,48 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
 
         // If JAVA_OPTS is already set (e.g. from container template) we don't want to override it
         mergeJavaOptsEnvVar(opts, container);
+    }
+
+    private void addOpenTelemetryConfigurationToContainer(DebeziumServer primary, Container container) {
+        var otel = primary.getSpec().getRuntime().getMetrics().getOpenTelemetry();
+
+        if (!otel.isEnabled()) {
+            return;
+        }
+
+        var name = primary.getMetadata().getName();
+        var connectorType = extractConnectorType(primary.getSpec().getSource().getSourceClass());
+        var endpoint = Optional.ofNullable(otel.getCollector().getEndpoint())
+                .filter(e -> !e.isBlank())
+                .orElse(DEFAULT_OTEL_ENDPOINT);
+        var resourceAttributes = OTEL_RESOURCE_ATTRIBUTES_FORMAT.formatted(name, connectorType);
+
+        addEnvVarIfAbsent(container, OTEL_ENABLED_ENV, "true");
+        addEnvVarIfAbsent(container, OTEL_SDK_DISABLED_ENV, "false");
+        addEnvVarIfAbsent(container, OTEL_EXPORTER_OTLP_ENDPOINT_ENV, endpoint);
+        addEnvVarIfAbsent(container, OTEL_METRICS_EXPORTER_ENV, "otlp");
+        addEnvVarIfAbsent(container, OTEL_SERVICE_NAME_ENV, name);
+        addEnvVarIfAbsent(container, OTEL_RESOURCE_ATTRIBUTES_ENV, resourceAttributes);
+        addEnvVarIfAbsent(container, OTEL_JMX_CONFIG_ENV, DEFAULT_OTEL_JMX_CONFIG);
+    }
+
+    private void addEnvVarIfAbsent(Container container, String name, String value) {
+        var exists = container.getEnv().stream()
+                .anyMatch(envVar -> name.equals(envVar.getName()));
+        if (!exists) {
+            container.getEnv().add(new EnvVar(name, value, null));
+        }
+    }
+
+    static String extractConnectorType(String sourceClass) {
+        if (sourceClass == null || sourceClass.isBlank()) {
+            return "unknown";
+        }
+        var parts = sourceClass.split("\\.");
+        if (parts.length < 2) {
+            return "unknown";
+        }
+        return parts[parts.length - 2];
     }
 
     /**
