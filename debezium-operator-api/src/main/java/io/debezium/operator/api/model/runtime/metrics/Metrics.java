@@ -17,11 +17,22 @@ public class Metrics {
     @JsonPropertyDescription("Prometheus JMX exporter configuration")
     private JmxExporter jmxExporter = new JmxExporter();
 
+    @JsonPropertyDescription("OpenTelemetry configuration")
+    private OpenTelemetry openTelemetry = new OpenTelemetry();
+
     public JmxExporter getJmxExporter() {
         return jmxExporter;
     }
 
     public void setJmxExporter(JmxExporter jmxExporter) {
         this.jmxExporter = jmxExporter;
+    }
+
+    public OpenTelemetry getOpenTelemetry() {
+        return openTelemetry;
+    }
+
+    public void setOpenTelemetry(OpenTelemetry openTelemetry) {
+        this.openTelemetry = openTelemetry;
     }
 }

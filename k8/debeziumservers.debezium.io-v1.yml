@@ -195,6 +195,20 @@ spec:
                             description: "Enables JMX Prometheus exporter"
                             type: "boolean"
                         type: "object"
+                      openTelemetry:
+                        description: "OpenTelemetry configuration"
+                        properties:
+                          collector:
+                            description: "OpenTelemetry collector configuration"
+                            properties:
+                              endpoint:
+                                description: "OTLP collector endpoint"
+                                type: "string"
+                            type: "object"
+                          enabled:
+                            description: "Enables OpenTelemetry"
+                            type: "boolean"
+                        type: "object"
                     type: "object"
                   serviceAccount:
                     description: "An existing service account used to run the Debezium\
