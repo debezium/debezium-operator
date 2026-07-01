@@ -14,7 +14,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: debezium-operator
-    app.kubernetes.io/version: 3.6.0-nightly
+    app.kubernetes.io/version: 3.7.0-nightly
   name: debeziumserver-cluster-role
 rules:
   - apiGroups:
@@ -129,7 +129,7 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: debezium-operator
-    app.kubernetes.io/version: 3.6.0-nightly
+    app.kubernetes.io/version: 3.7.0-nightly
   name: debeziumserver-role-binding
 roleRef:
   kind: ClusterRole
@@ -144,7 +144,7 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: debezium-operator
-    app.kubernetes.io/version: 3.6.0-nightly
+    app.kubernetes.io/version: 3.7.0-nightly
   name: debezium-operator-view
 roleRef:
   kind: ClusterRole
@@ -203,7 +203,7 @@ spec:
                   fieldPath: metadata.namespace
             - name: QUARKUS_OPERATOR_SDK_CONTROLLERS_DEBEZIUMSERVER_NAMESPACES
               value: JOSDK_WATCH_CURRENT
-          image: quay.io/debezium/operator:3.6.0-SNAPSHOT
+          image: quay.io/debezium/operator:nightly
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
