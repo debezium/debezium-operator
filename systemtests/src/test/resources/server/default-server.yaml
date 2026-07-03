@@ -22,8 +22,8 @@ spec:
       database.history: io.debezium.relational.history.FileDatabaseHistory
       database.hostname: mysql-dbz-svc
       database.port: 3306
-      database.user: ${DBZ_USER}
-      database.password: ${DBZ_PASSWORD}
+      database.user: $${DBZ_USER}
+      database.password: $${DBZ_PASSWORD}
       database.server.id: 32268
       topic.prefix: inventory
       schema.history.internal: io.debezium.storage.redis.history.RedisSchemaHistory
