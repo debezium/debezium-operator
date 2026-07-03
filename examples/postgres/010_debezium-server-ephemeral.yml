@@ -27,8 +27,8 @@ spec:
     config:
       database.hostname: postgresql
       database.port: 5432
-      database.user: ${POSTGRES_USER}
-      database.password: ${POSTGRES_PASSWORD}
-      database.dbname: ${POSTGRES_DB}
+      database.user: $${POSTGRES_USER}
+      database.password: $${POSTGRES_PASSWORD}
+      database.dbname: $${POSTGRES_DB}
       topic.prefix: inventory
       schema.include.list: inventory
