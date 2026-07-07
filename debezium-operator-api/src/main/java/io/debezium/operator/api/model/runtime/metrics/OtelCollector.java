@@ -17,9 +17,11 @@ public class OtelCollector {
     @JsonPropertyDescription("OTLP collector endpoint")
     private String endpoint;
 
+    @Documented.Field(defaultValue = "10000")
     @JsonPropertyDescription("JMX metrics scrape interval in milliseconds")
     private int jmxIntervalMs = 10000;
 
+    @Documented.Field(defaultValue = "60000")
     @JsonPropertyDescription("Metrics export interval in milliseconds")
     private int metricExportIntervalMs = 60000;
 
