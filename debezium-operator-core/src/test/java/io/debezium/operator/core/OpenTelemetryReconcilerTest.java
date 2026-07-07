@@ -60,7 +60,8 @@ public class OpenTelemetryReconcilerTest {
             final var container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
             assertThat(container.getEnv())
                     .extracting(EnvVar::getName)
-                    .doesNotContain("OTEL_ENABLED", "OTEL_SDK_DISABLED", "OTEL_SERVICE_NAME");
+                    .doesNotContain("OTEL_ENABLED", "OTEL_SDK_DISABLED", "OTEL_SERVICE_NAME",
+                            "OTEL_JMX_INTERVAL_MILLISECONDS", "OTEL_METRIC_EXPORT_INTERVAL");
         });
     }
 
@@ -90,6 +91,10 @@ public class OpenTelemetryReconcilerTest {
             assertThat(envVars).anyMatch(e -> "OTEL_RESOURCE_ATTRIBUTES".equals(e.getName())
                     && e.getValue().contains("service.name=" + DS_NAME)
                     && e.getValue().contains("debezium.connector.type=postgresql"));
+            assertThat(envVars).anyMatch(e -> "OTEL_JMX_INTERVAL_MILLISECONDS".equals(e.getName())
+                    && "10000".equals(e.getValue()));
+            assertThat(envVars).anyMatch(e -> "OTEL_METRIC_EXPORT_INTERVAL".equals(e.getName())
+                    && "60000".equals(e.getValue()));
         });
     }
 
@@ -113,6 +118,33 @@ public class OpenTelemetryReconcilerTest {
             assertThat(container.getEnv())
                     .anyMatch(e -> "OTEL_EXPORTER_OTLP_ENDPOINT".equals(e.getName())
                             && "http://my-collector:4317".equals(e.getValue()));
+        });
+    }
+
+    @Test
+    void shouldUseCustomIntervalsWhenProvided() {
+        var otel = debeziumServer.getSpec().getRuntime().getMetrics().getOpenTelemetry();
+        otel.setEnabled(true);
+        otel.setCollector(new OtelCollectorBuilder()
+                .withJmxIntervalMs(1000)
+                .withMetricExportIntervalMs(5000)
+                .build());
+
+        client.resource(debeziumServer).create();
+        await().ignoreException(NullPointerException.class).atMost(2, TimeUnit.MINUTES).untilAsserted(() -> {
+            final var deployment = client.apps().deployments()
+                    .inNamespace(debeziumServer.getMetadata().getNamespace())
+                    .withName(DS_NAME)
+                    .get();
+            assertThat(deployment).isNotNull();
+
+            final var container = deployment.getSpec().getTemplate().getSpec().getContainers().get(0);
+            assertThat(container.getEnv())
+                    .anyMatch(e -> "OTEL_JMX_INTERVAL_MILLISECONDS".equals(e.getName())
+                            && "1000".equals(e.getValue()));
+            assertThat(container.getEnv())
+                    .anyMatch(e -> "OTEL_METRIC_EXPORT_INTERVAL".equals(e.getName())
+                            && "5000".equals(e.getValue()));
         });
     }
 }

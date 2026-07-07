@@ -82,6 +82,8 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
     public static final String OTEL_SERVICE_NAME_ENV = "OTEL_SERVICE_NAME";
     public static final String OTEL_RESOURCE_ATTRIBUTES_ENV = "OTEL_RESOURCE_ATTRIBUTES";
     public static final String OTEL_JMX_CONFIG_ENV = "OTEL_JMX_CONFIG";
+    public static final String OTEL_JMX_INTERVAL_ENV = "OTEL_JMX_INTERVAL_MILLISECONDS";
+    public static final String OTEL_METRIC_EXPORT_INTERVAL_ENV = "OTEL_METRIC_EXPORT_INTERVAL";
     public static final String OTEL_RESOURCE_ATTRIBUTES_FORMAT = "service.name=%s,debezium.connector.type=%s";
     private static final String CONFIG_MD5_ANNOTATION = "debezium.io/server-config-md5";
 
@@ -537,6 +539,8 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         addEnvVarIfAbsent(container, OTEL_SERVICE_NAME_ENV, name);
         addEnvVarIfAbsent(container, OTEL_RESOURCE_ATTRIBUTES_ENV, resourceAttributes);
         addEnvVarIfAbsent(container, OTEL_JMX_CONFIG_ENV, DEFAULT_OTEL_JMX_CONFIG);
+        addEnvVarIfAbsent(container, OTEL_JMX_INTERVAL_ENV, String.valueOf(otel.getCollector().getJmxIntervalMs()));
+        addEnvVarIfAbsent(container, OTEL_METRIC_EXPORT_INTERVAL_ENV, String.valueOf(otel.getCollector().getMetricExportIntervalMs()));
     }
 
     private void addEnvVarIfAbsent(Container container, String name, String value) {

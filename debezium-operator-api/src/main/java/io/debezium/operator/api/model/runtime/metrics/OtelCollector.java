@@ -17,11 +17,33 @@ public class OtelCollector {
     @JsonPropertyDescription("OTLP collector endpoint")
     private String endpoint;
 
+    @JsonPropertyDescription("JMX metrics scrape interval in milliseconds")
+    private int jmxIntervalMs = 10000;
+
+    @JsonPropertyDescription("Metrics export interval in milliseconds")
+    private int metricExportIntervalMs = 60000;
+
     public String getEndpoint() {
         return endpoint;
     }
 
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
+    }
+
+    public int getJmxIntervalMs() {
+        return jmxIntervalMs;
+    }
+
+    public void setJmxIntervalMs(int jmxIntervalMs) {
+        this.jmxIntervalMs = jmxIntervalMs;
+    }
+
+    public int getMetricExportIntervalMs() {
+        return metricExportIntervalMs;
+    }
+
+    public void setMetricExportIntervalMs(int metricExportIntervalMs) {
+        this.metricExportIntervalMs = metricExportIntervalMs;
     }
 }
