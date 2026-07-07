@@ -415,6 +415,8 @@ Used in: <<debezium-operator-schema-reference-opentelemetry, `+OpenTelemetry+`>>
 |===
 | Property | Type | Default | Description
 | [[debezium-operator-schema-reference-otelcollector-endpoint]]<<debezium-operator-schema-reference-otelcollector-endpoint, `+endpoint+`>> | String |  | OTLP collector endpoint
+| [[debezium-operator-schema-reference-otelcollector-jmxintervalms]]<<debezium-operator-schema-reference-otelcollector-jmxintervalms, `+jmxIntervalMs+`>> | int |  | JMX metrics scrape interval in milliseconds
+| [[debezium-operator-schema-reference-otelcollector-metricexportintervalms]]<<debezium-operator-schema-reference-otelcollector-metricexportintervalms, `+metricExportIntervalMs+`>> | int |  | Metrics export interval in milliseconds
 |===
 
 [#debezium-operator-schema-reference-podtemplate]

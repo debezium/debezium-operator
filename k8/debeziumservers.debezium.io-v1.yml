@@ -204,6 +204,12 @@ spec:
                               endpoint:
                                 description: "OTLP collector endpoint"
                                 type: "string"
+                              jmxIntervalMs:
+                                description: "JMX metrics scrape interval in milliseconds"
+                                type: "integer"
+                              metricExportIntervalMs:
+                                description: "Metrics export interval in milliseconds"
+                                type: "integer"
                             type: "object"
                           enabled:
                             description: "Enables OpenTelemetry"
