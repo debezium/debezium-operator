@@ -19,7 +19,7 @@ import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.PodSecurityContext;
 import io.fabric8.kubernetes.api.model.Toleration;
 
-@JsonPropertyOrder({ "metadata", "imagePullSecrets", "affinity", "nodeSelector", "tolerations" })
+@JsonPropertyOrder({ "metadata", "imagePullSecrets", "affinity", "nodeSelector", "tolerations", "priorityClassName" })
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Documented
 public class PodTemplate implements HasMetadataTemplate, Serializable {
@@ -52,6 +52,10 @@ public class PodTemplate implements HasMetadataTemplate, Serializable {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @Documented.Field(k8Ref = "toleration-v1-core")
     private List<Toleration> tolerations = List.of();
+
+    @JsonPropertyDescription("Name of the priority class used to assign a priority to the pod.")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String priorityClassName;
 
     @Override
     public MetadataTemplate getMetadata() {
@@ -101,5 +105,13 @@ public class PodTemplate implements HasMetadataTemplate, Serializable {
 
     public void setTolerations(List<Toleration> tolerations) {
         this.tolerations = tolerations;
+    }
+
+    public String getPriorityClassName() {
+        return priorityClassName;
+    }
+
+    public void setPriorityClassName(String priorityClassName) {
+        this.priorityClassName = priorityClassName;
     }
 }

@@ -204,6 +204,7 @@ public class DeploymentDependent extends CRUDKubernetesDependentResource<Deploym
         podSpec.setImagePullSecrets(template.getImagePullSecrets());
         podSpec.setNodeSelector(template.getNodeSelector());
         podSpec.setTolerations(template.getTolerations());
+        podSpec.setPriorityClassName(template.getPriorityClassName());
         podMeta.getLabels().putAll(templateMeta.getLabels());
         podMeta.getAnnotations().putAll(templateMeta.getAnnotations());
     }
