@@ -1464,6 +1464,10 @@ spec:
                             description: "NodeSelector is a selector which must be\
                               \ true for the pod to fit on a node."
                             type: "object"
+                          priorityClassName:
+                            description: "Name of the priority class used to assign\
+                              \ a priority to the pod."
+                            type: "string"
                           securityContext:
                             description: "Pod-level security attributes and container\
                               \ settings"
