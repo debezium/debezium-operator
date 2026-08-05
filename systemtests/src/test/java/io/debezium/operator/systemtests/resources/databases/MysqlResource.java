@@ -19,7 +19,7 @@ import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
-import io.skodjob.testframe.resources.KubeResourceManager;
+import io.skodjob.kubetest4j.resources.KubeResourceManager;
 
 public class MysqlResource implements DeployableResourceGroup {
     private Deployment deployment;
@@ -162,8 +162,8 @@ public class MysqlResource implements DeployableResourceGroup {
     }
 
     public MysqlResource configureAsDefault(String version, String namespace) {
-        String mysqlName = "mysql-" + RandomStringUtils.random(5, 0, 70, true, false).toLowerCase();
-        String pvcName = "mysql-pvc-" + RandomStringUtils.random(5, 0, 70, true, false).toLowerCase();
+        String mysqlName = "mysql-" + RandomStringUtils.insecure().next(5, 0, 70, true, false).toLowerCase();
+        String pvcName = "mysql-pvc-" + RandomStringUtils.insecure().next(5, 0, 70, true, false).toLowerCase();
         String svcName = "mysql-svc";
 
         Deployment base = ResourceUtils.readYaml(this.getClass().getClassLoader().getResource("mysql/mysql-base.yaml"), Deployment.class);
@@ -202,7 +202,7 @@ public class MysqlResource implements DeployableResourceGroup {
     }
 
     public void deploy() {
-        KubeResourceManager.getInstance().createResourceWithoutWait(this.persistentVolumeClaim, this.credentials, this.service);
-        KubeResourceManager.getInstance().createResourceWithWait(this.deployment);
+        KubeResourceManager.get().createResourceWithoutWait(this.persistentVolumeClaim, this.credentials, this.service);
+        KubeResourceManager.get().createResourceWithWait(this.deployment);
     }
 }

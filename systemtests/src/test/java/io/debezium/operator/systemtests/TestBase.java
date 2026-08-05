@@ -26,10 +26,10 @@ import io.debezium.operator.systemtests.resources.dmt.DmtClient;
 import io.debezium.operator.systemtests.resources.dmt.DmtResource;
 import io.debezium.operator.systemtests.resources.sinks.RedisResource;
 import io.fabric8.kubernetes.client.LocalPortForward;
-import io.skodjob.testframe.annotations.ResourceManager;
-import io.skodjob.testframe.annotations.TestVisualSeparator;
+import io.skodjob.kubetest4j.annotations.ResourceManager;
+import io.skodjob.kubetest4j.annotations.TestVisualSeparator;
 
-@ResourceManager
+@ResourceManager(asyncDeletion = false)
 @TestVisualSeparator
 @DebeziumResourceTypes
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -37,7 +37,6 @@ public class TestBase {
     private static final Logger logger = LoggerFactory.getLogger(TestBase.class);
     protected final DmtResource dmtResource = new DmtResource();
     protected final String portForwardHost = "127.0.0.1";
-    protected int portForwardPort = 8080;
 
     @BeforeAll
     void initDefault() {
@@ -60,13 +59,14 @@ public class TestBase {
     @AfterEach
     void cleanUp() {
         String namespace = NamespaceHolder.INSTANCE.getCurrentNamespace();
-        try (LocalPortForward lcp = dmtResource.portForward(portForwardPort, namespace)) {
+        try (LocalPortForward lcp = dmtResource.portForward(namespace)) {
+            int port = lcp.getLocalPort();
             logger.info("Waiting for DMT available");
-            DmtClient.waitForDmt(portForwardHost, portForwardPort, Duration.ofSeconds(HTTP_POLL_TIMEOUT));
+            DmtClient.waitForDmt(portForwardHost, port, Duration.ofSeconds(HTTP_POLL_TIMEOUT));
             logger.info("Reseting Redis");
-            DmtClient.resetRedis(portForwardHost, portForwardPort);
+            DmtClient.resetRedis(portForwardHost, port);
             logger.info("Resetting MySQL");
-            DmtClient.resetMysql(portForwardHost, portForwardPort);
+            DmtClient.resetMysql(portForwardHost, port);
         }
         catch (IOException e) {
             logger.error("Error cleaning up Redis and MySQL", e);
@@ -80,13 +80,22 @@ public class TestBase {
 
     public void assertStreamingWorks(int messagesToDatabase, int expectedMessages) {
         String namespace = NamespaceHolder.INSTANCE.getCurrentNamespace();
-        try (LocalPortForward lcp = dmtResource.portForward(8080, namespace)) {
-            DmtClient.waitForDmt(portForwardHost, portForwardPort, Duration.ofSeconds(HTTP_POLL_TIMEOUT));
-            DmtClient.insertTestDataToDatabase(portForwardHost, portForwardPort, messagesToDatabase);
-            DmtClient.waitForFilledRedis(portForwardHost, portForwardPort, Duration.ofSeconds(60), "inventory.inventory.operator_test");
+        try (LocalPortForward lcp = dmtResource.portForward(namespace)) {
+            int port = lcp.getLocalPort();
+            DmtClient.waitForDmt(portForwardHost, port, Duration.ofSeconds(HTTP_POLL_TIMEOUT));
+            DmtClient.insertTestDataToDatabase(portForwardHost, port, messagesToDatabase);
+            DmtClient.waitForFilledRedis(portForwardHost, port, Duration.ofMinutes(3), "inventory.inventory.operator_test");
             await().atMost(Duration.ofMinutes(HTTP_POLL_TIMEOUT))
                     .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
-                    .until(() -> DmtClient.digStreamedData(portForwardHost, portForwardPort, expectedMessages) == expectedMessages);
+                    .until(() -> {
+                        try {
+                            return DmtClient.digStreamedData(portForwardHost, port, expectedMessages) == expectedMessages;
+                        }
+                        catch (Exception e) {
+                            logger.debug("digStreamedData not ready yet: {}", e.getMessage());
+                            return false;
+                        }
+                    });
         }
         catch (IOException e) {
             throw new RuntimeException(e);
