@@ -17,7 +17,7 @@ import io.debezium.operator.systemtests.resources.NamespaceHolder;
 import io.debezium.operator.systemtests.resources.operator.DebeziumOperatorBundleResource;
 import io.debezium.operator.systemtests.resources.server.DebeziumServerGenerator;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
-import io.skodjob.testframe.resources.KubeResourceManager;
+import io.skodjob.kubetest4j.resources.KubeResourceManager;
 
 public class OpenTelemetryTest extends TestBase {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -34,10 +34,10 @@ public class OpenTelemetryTest extends TestBase {
         server.getSpec().getRuntime().getMetrics().getOpenTelemetry().setEnabled(true);
 
         logger.info("Deploying Debezium Server with OpenTelemetry enabled");
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
 
-        Deployment deployment = KubeResourceManager.getKubeClient().getClient()
+        Deployment deployment = KubeResourceManager.get().kubeClient().getClient()
                 .apps().deployments()
                 .inNamespace(namespace)
                 .withName(server.getMetadata().getName())
@@ -77,10 +77,10 @@ public class OpenTelemetryTest extends TestBase {
                 .build());
 
         logger.info("Deploying Debezium Server with custom OpenTelemetry endpoint");
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
 
-        Deployment deployment = KubeResourceManager.getKubeClient().getClient()
+        Deployment deployment = KubeResourceManager.get().kubeClient().getClient()
                 .apps().deployments()
                 .inNamespace(namespace)
                 .withName(server.getMetadata().getName())

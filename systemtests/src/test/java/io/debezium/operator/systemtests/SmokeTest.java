@@ -13,7 +13,7 @@ import io.debezium.operator.api.model.DebeziumServer;
 import io.debezium.operator.systemtests.resources.NamespaceHolder;
 import io.debezium.operator.systemtests.resources.operator.DebeziumOperatorBundleResource;
 import io.debezium.operator.systemtests.resources.server.DebeziumServerGenerator;
-import io.skodjob.testframe.resources.KubeResourceManager;
+import io.skodjob.kubetest4j.resources.KubeResourceManager;
 
 public class SmokeTest extends TestBase {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -27,7 +27,7 @@ public class SmokeTest extends TestBase {
         operatorBundleResource.deploy();
         logger.info("Deploying Debezium Server");
         DebeziumServer server = DebeziumServerGenerator.generateDefaultMysqlToRedis(namespace);
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
     }
 
@@ -40,7 +40,7 @@ public class SmokeTest extends TestBase {
         operatorBundleResource.deploy();
         logger.info("Deploying Debezium Server");
         DebeziumServer server = DebeziumServerGenerator.generateDefaultMysqlToRedis(namespace);
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
     }
 }

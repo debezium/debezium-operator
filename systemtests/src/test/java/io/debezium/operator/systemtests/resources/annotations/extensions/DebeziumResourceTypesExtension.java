@@ -9,13 +9,13 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import io.debezium.operator.systemtests.resources.server.DebeziumServerResource;
-import io.skodjob.testframe.resources.CustomResourceDefinitionType;
-import io.skodjob.testframe.resources.KubeResourceManager;
-import io.skodjob.testframe.resources.NamespaceType;
+import io.skodjob.kubetest4j.resources.CustomResourceDefinitionType;
+import io.skodjob.kubetest4j.resources.KubeResourceManager;
+import io.skodjob.kubetest4j.resources.NamespaceType;
 
 public class DebeziumResourceTypesExtension implements BeforeAllCallback {
     @Override
     public void beforeAll(ExtensionContext extensionContext) {
-        KubeResourceManager.getInstance().setResourceTypes(new NamespaceType(), new CustomResourceDefinitionType(), new DebeziumServerResource());
+        KubeResourceManager.get().setResourceTypes(new NamespaceType(), new CustomResourceDefinitionType(), new DebeziumServerResource());
     }
 }

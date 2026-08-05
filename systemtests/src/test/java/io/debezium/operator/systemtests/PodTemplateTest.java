@@ -22,7 +22,7 @@ import io.debezium.operator.systemtests.resources.server.DebeziumServerGenerator
 import io.fabric8.kubernetes.api.model.Toleration;
 import io.fabric8.kubernetes.api.model.TolerationBuilder;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
-import io.skodjob.testframe.resources.KubeResourceManager;
+import io.skodjob.kubetest4j.resources.KubeResourceManager;
 
 public class PodTemplateTest extends TestBase {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -42,10 +42,10 @@ public class PodTemplateTest extends TestBase {
         server.getSpec().getRuntime().getTemplates().setPod(podTemplate);
 
         logger.info("Deploying Debezium Server with nodeSelector");
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
 
-        Deployment deployment = KubeResourceManager.getKubeClient().getClient()
+        Deployment deployment = KubeResourceManager.get().kubeClient().getClient()
                 .apps().deployments()
                 .inNamespace(namespace)
                 .withName(server.getMetadata().getName())
@@ -76,10 +76,10 @@ public class PodTemplateTest extends TestBase {
         server.getSpec().getRuntime().getTemplates().setPod(podTemplate);
 
         logger.info("Deploying Debezium Server with tolerations");
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
 
-        Deployment deployment = KubeResourceManager.getKubeClient().getClient()
+        Deployment deployment = KubeResourceManager.get().kubeClient().getClient()
                 .apps().deployments()
                 .inNamespace(namespace)
                 .withName(server.getMetadata().getName())

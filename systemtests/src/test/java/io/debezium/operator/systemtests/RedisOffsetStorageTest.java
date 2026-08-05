@@ -22,7 +22,7 @@ import io.debezium.operator.systemtests.resources.operator.DebeziumOperatorBundl
 import io.debezium.operator.systemtests.resources.server.DebeziumServerGenerator;
 import io.debezium.operator.systemtests.resources.sinks.RedisResource;
 import io.fabric8.kubernetes.client.LocalPortForward;
-import io.skodjob.testframe.resources.KubeResourceManager;
+import io.skodjob.kubetest4j.resources.KubeResourceManager;
 
 public class RedisOffsetStorageTest extends TestBase {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -45,11 +45,12 @@ public class RedisOffsetStorageTest extends TestBase {
                 .build();
         server.getSpec().getSource().setOffset(offset);
 
-        KubeResourceManager.getInstance().createResourceWithWait(server);
+        KubeResourceManager.get().createResourceWithWait(server);
         assertStreamingWorks();
 
-        try (LocalPortForward lcp = dmtResource.portForward(portForwardPort, namespace)) {
-            String redis_offset = DmtClient.readRedisOffsets(portForwardHost, portForwardPort);
+        try (LocalPortForward lcp = dmtResource.portForward(namespace)) {
+            int port = lcp.getLocalPort();
+            String redis_offset = DmtClient.readRedisOffsets(portForwardHost, port);
             assertThat(redis_offset).contains("file");
             assertThat(redis_offset).contains("pos");
         }
@@ -58,11 +59,12 @@ public class RedisOffsetStorageTest extends TestBase {
         }
 
         server.getSpec().getSource().getOffset().getRedis().setKey("metadata:debezium_n:offsets");
-        KubeResourceManager.getInstance().createOrUpdateResourceWithWait(server);
+        KubeResourceManager.get().createOrUpdateResourceWithWait(server);
         assertStreamingWorks(10, 20);
 
-        try (LocalPortForward lcp = dmtResource.portForward(portForwardPort, namespace)) {
-            String redis_offset = DmtClient.readRedisOffsets(portForwardHost, portForwardPort, "metadata:debezium_n:offsets");
+        try (LocalPortForward lcp = dmtResource.portForward(namespace)) {
+            int port = lcp.getLocalPort();
+            String redis_offset = DmtClient.readRedisOffsets(portForwardHost, port, "metadata:debezium_n:offsets");
             assertThat(redis_offset).contains("file");
             assertThat(redis_offset).contains("pos");
         }
