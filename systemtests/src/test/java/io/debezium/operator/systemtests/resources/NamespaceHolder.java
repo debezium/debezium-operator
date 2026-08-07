@@ -13,7 +13,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import io.debezium.operator.systemtests.resources.dmt.DmtResource;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.NamespaceBuilder;
-import io.skodjob.testframe.resources.KubeResourceManager;
+import io.skodjob.kubetest4j.resources.KubeResourceManager;
 
 public enum NamespaceHolder {
     INSTANCE;
@@ -22,7 +22,7 @@ public enum NamespaceHolder {
     private DmtResource namespacedDmt;
 
     public void createNewNamespace() {
-        String name = "dbz-" + RandomStringUtils.random(7, 0, 70, true, false).toLowerCase();
+        String name = "dbz-" + RandomStringUtils.insecure().next(7, 0, 70, true, false).toLowerCase();
         Namespace namespace = new NamespaceBuilder()
                 .withNewMetadata()
                 .withName(name)
@@ -30,7 +30,7 @@ public enum NamespaceHolder {
                 .endMetadata()
                 .build();
         this.currentNamespace = name;
-        KubeResourceManager.getInstance().createResourceWithWait(namespace);
+        KubeResourceManager.get().createResourceWithWait(namespace);
     }
 
     public String getCurrentNamespace() {

@@ -147,8 +147,9 @@ public class DmtClient {
             String body = mapper.writeValueAsString(channels);
             return sendPostRequest(host, port, "Redis/pollMessages", params, body);
         }
-        catch (IOException e) {
-            throw new RuntimeException(e);
+        catch (Exception e) {
+            LOGGER.debug("Failed to read Redis channel {}: {}", channel, e.getMessage());
+            return "";
         }
     }
 
@@ -203,13 +204,12 @@ public class DmtClient {
                 .url("http://" + host + ":" + port + command)
                 .post(RequestBody.create(body, MEDIATYPE_JSON))
                 .build();
-        Call call = client.newCall(request);
 
         AtomicReference<Response> responseAtomicReference = new AtomicReference<>();
         await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT))
                 .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
                 .until(() -> {
-                    try (Response response = call.execute()) {
+                    try (Response response = client.newCall(request).execute()) {
                         if (response.isSuccessful()) {
                             responseAtomicReference.set(response);
                             return true;
@@ -247,12 +247,11 @@ public class DmtClient {
                 .url(url)
                 .method("POST", requestBody)
                 .build();
-        Call call = client.newCall(request);
         AtomicReference<String> responseAtomicReference = new AtomicReference<>();
         await().atMost(Duration.ofSeconds(HTTP_POLL_TIMEOUT))
                 .pollInterval(Duration.ofMillis(HTTP_POLL_INTERVAL))
                 .until(() -> {
-                    try (Response response = call.execute()) {
+                    try (Response response = client.newCall(request).execute()) {
                         if (response.isSuccessful()) {
                             responseAtomicReference.set(response.body().string());
                             return true;

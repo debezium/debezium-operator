@@ -5,11 +5,6 @@
  */
 package io.debezium.operator.systemtests.resources.server;
 
-import static io.debezium.operator.systemtests.ConfigProperties.FABRIC8_POLL_INTERVAL;
-import static io.debezium.operator.systemtests.ConfigProperties.FABRIC8_POLL_TIMEOUT;
-import static org.awaitility.Awaitility.await;
-
-import java.io.InputStream;
 import java.time.Duration;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -24,9 +19,8 @@ import io.debezium.util.Stopwatch;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
-import io.fabric8.kubernetes.client.dsl.internal.HasMetadataOperationsImpl;
-import io.skodjob.testframe.interfaces.ResourceType;
-import io.skodjob.testframe.resources.KubeResourceManager;
+import io.skodjob.kubetest4j.interfaces.ResourceType;
+import io.skodjob.kubetest4j.resources.KubeResourceManager;
 
 public class DebeziumServerResource implements ResourceType<DebeziumServer> {
 
@@ -38,7 +32,7 @@ public class DebeziumServerResource implements ResourceType<DebeziumServer> {
     private final Map<String, ElapsedTimeStrategy> diagnosticsTimers = new java.util.HashMap<>();
 
     public DebeziumServerResource() {
-        this.client = KubeResourceManager.getKubeClient().getClient().resources(DebeziumServer.class, DebeziumServerList.class);
+        this.client = KubeResourceManager.get().kubeClient().getClient().resources(DebeziumServer.class, DebeziumServerList.class);
     }
 
     public DebeziumServer get(String namespace, String name) {
@@ -66,62 +60,58 @@ public class DebeziumServerResource implements ResourceType<DebeziumServer> {
     }
 
     @Override
-    public void delete(String name) {
-        client.list().getItems().stream()
-                .filter(n -> n.getMetadata().getName().equals(name)).findFirst().ifPresent(client::delete);
+    public void delete(DebeziumServer debeziumServer) {
+        client.inNamespace(debeziumServer.getMetadata().getNamespace())
+                .withName(debeziumServer.getMetadata().getName()).delete();
     }
 
     @Override
-    public void replace(String s, Consumer<DebeziumServer> editor) {
-        DebeziumServer toBeReplaced = client.withName(s).get();
-        editor.accept(toBeReplaced);
-        update(toBeReplaced);
+    public void replace(DebeziumServer debeziumServer, Consumer<DebeziumServer> editor) {
+        editor.accept(debeziumServer);
+        update(debeziumServer);
     }
 
     @Override
-    public boolean waitForReadiness(DebeziumServer debeziumServer) {
+    public boolean isReady(DebeziumServer debeziumServer) {
         String resourceKey = debeziumServer.getMetadata().getNamespace() + "/" + debeziumServer.getMetadata().getName();
 
-        // Initialize tracking for this resource (persists across multiple waitForReadiness calls)
         Stopwatch stopwatch = waitStopwatches.computeIfAbsent(resourceKey, k -> Stopwatch.reusable().start());
         ElapsedTimeStrategy diagnosticsTimer = diagnosticsTimers.computeIfAbsent(resourceKey,
                 k -> ElapsedTimeStrategy.constant(Clock.SYSTEM, Duration.ofMillis(DIAGNOSTICS_INTERVAL)));
 
-        try {
-            await().atMost(Duration.ofSeconds(FABRIC8_POLL_TIMEOUT)).pollInterval(Duration.ofSeconds(FABRIC8_POLL_INTERVAL))
-                    .until(() -> {
-                        DebeziumServer dbzServer = client.inNamespace(debeziumServer.getMetadata().getNamespace())
-                                .withName(debeziumServer.getMetadata().getName()).get();
+        DebeziumServer dbzServer = client.inNamespace(debeziumServer.getMetadata().getNamespace())
+                .withName(debeziumServer.getMetadata().getName()).get();
 
-                        boolean ready = dbzServer != null && dbzServer.getStatus() != null && dbzServer.getStatus().getConditions() != null
-                                && dbzServer.getStatus().getConditions().stream()
-                                        .anyMatch(condition -> condition.getType().equals("Ready") && condition.getStatus().equals("True"));
+        boolean ready = dbzServer != null && dbzServer.getStatus() != null && dbzServer.getStatus().getConditions() != null
+                && dbzServer.getStatus().getObservedGeneration() != null
+                && dbzServer.getStatus().getObservedGeneration() >= dbzServer.getMetadata().getGeneration()
+                && dbzServer.getStatus().getConditions().stream()
+                        .anyMatch(condition -> condition.getType().equals("Ready") && condition.getStatus().equals("True"));
 
-                        if (ready) {
-                            stopwatch.stop();
-                            // Clean up tracking on success
-                            waitStopwatches.remove(resourceKey);
-                            diagnosticsTimers.remove(resourceKey);
-                            return true;
-                        }
-                        else {
-                            // Check if diagnostics should be triggered
-                            if (diagnosticsTimer.hasElapsed()) {
-                                Duration elapsed = stopwatch.durations().statistics().getTotal();
-                                logger.warn("Triggering diagnostics after {} seconds", elapsed.toSeconds());
-                                logDiagnostics(debeziumServer);
-                            }
-
-                            logger.info("Waiting for readiness of Debezium Server...");
-                            return false;
-                        }
-                    });
+        if (ready) {
+            stopwatch.stop();
+            waitStopwatches.remove(resourceKey);
+            diagnosticsTimers.remove(resourceKey);
             return true;
         }
-        catch (Exception e) {
-            // Don't clean up on timeout/exception - we want to preserve state across retries
-            throw e;
+
+        if (diagnosticsTimer.hasElapsed()) {
+            Duration elapsed = stopwatch.durations().statistics().getTotal();
+            logger.warn("Triggering diagnostics after {} seconds", elapsed.toSeconds());
+            logDiagnostics(debeziumServer);
         }
+
+        logger.info("Waiting for readiness of Debezium Server...");
+        return false;
+    }
+
+    @Override
+    public boolean isDeleted(DebeziumServer debeziumServer) {
+        if (debeziumServer == null) {
+            return true;
+        }
+        return client.inNamespace(debeziumServer.getMetadata().getNamespace())
+                .withName(debeziumServer.getMetadata().getName()).get() == null;
     }
 
     private void logDiagnostics(DebeziumServer debeziumServer) {
@@ -139,7 +129,7 @@ public class DebeziumServerResource implements ResourceType<DebeziumServer> {
             }
 
             // Log pod status
-            var pods = KubeResourceManager.getKubeClient().getClient().pods()
+            var pods = KubeResourceManager.get().kubeClient().getClient().pods()
                     .inNamespace(namespace)
                     .withLabel("app.kubernetes.io/instance", name)
                     .list().getItems();
@@ -169,7 +159,7 @@ public class DebeziumServerResource implements ResourceType<DebeziumServer> {
                         });
                     }
 
-                    var events = KubeResourceManager.getKubeClient().getClient().v1().events()
+                    var events = KubeResourceManager.get().kubeClient().getClient().v1().events()
                             .inNamespace(namespace)
                             .withField("involvedObject.name", pod.getMetadata().getName())
                             .list().getItems();
@@ -195,7 +185,7 @@ public class DebeziumServerResource implements ResourceType<DebeziumServer> {
 
                                 try {
                                     logger.warn("  Recent logs from container {}:", cs.getName());
-                                    String logs = KubeResourceManager.getKubeClient().getClient().pods()
+                                    String logs = KubeResourceManager.get().kubeClient().getClient().pods()
                                             .inNamespace(namespace)
                                             .withName(pod.getMetadata().getName())
                                             .inContainer(cs.getName())
@@ -224,127 +214,5 @@ public class DebeziumServerResource implements ResourceType<DebeziumServer> {
         catch (Exception e) {
             logger.error("Failed to collect diagnostics", e);
         }
-    }
-
-    @Override
-    public boolean waitForDeletion(DebeziumServer debeziumServer) {
-        if (debeziumServer == null) {
-            return true;
-        }
-
-        String namespace = debeziumServer.getMetadata().getNamespace();
-        String name = debeziumServer.getMetadata().getName();
-
-        Stopwatch stopwatch = Stopwatch.reusable().start();
-        ElapsedTimeStrategy diagnosticsTimer = ElapsedTimeStrategy.constant(Clock.SYSTEM, Duration.ofSeconds(30));
-        ElapsedTimeStrategy forceDeleteTimer = ElapsedTimeStrategy.constant(Clock.SYSTEM, Duration.ofSeconds(120));
-        final boolean[] diagnosticsLogged = { false };
-
-        try {
-            await().atMost(Duration.ofSeconds(180)).pollInterval(Duration.ofSeconds(2))
-                    .until(() -> {
-                        DebeziumServer resource = client.inNamespace(namespace).withName(name).get();
-                        if (resource == null) {
-                            stopwatch.stop();
-                            return true;
-                        }
-
-                        // Log diagnostics after 30s (only once)
-                        if (!diagnosticsLogged[0] && diagnosticsTimer.hasElapsed()) {
-                            logDeletionDiagnostics(namespace, name, resource);
-                            diagnosticsLogged[0] = true;
-                        }
-
-                        // Force delete after 2 minutes
-                        if (forceDeleteTimer.hasElapsed()) {
-                            Duration elapsed = stopwatch.durations().statistics().getTotal();
-                            logger.warn("DebeziumServer {}/{} stuck in deletion for {}s, attempting force delete",
-                                    namespace, name, elapsed.toSeconds());
-                            forceDelete(namespace, name);
-                            return false; // Continue waiting after force delete
-                        }
-
-                        logger.info("Waiting for deletion of DebeziumServer {}/{}...", namespace, name);
-                        return false;
-                    });
-            return true;
-        }
-        catch (Exception e) {
-            stopwatch.stop();
-            logger.error("Error waiting for deletion of DebeziumServer {}/{}", namespace, name, e);
-            return false;
-        }
-    }
-
-    private void logDeletionDiagnostics(String namespace, String name, DebeziumServer resource) {
-        logger.warn("DebeziumServer {}/{} deletion is taking longer than expected", namespace, name);
-
-        try {
-            // Check finalizers
-            if (resource.getMetadata().getFinalizers() != null && !resource.getMetadata().getFinalizers().isEmpty()) {
-                logger.warn("Resource has finalizers: {}", resource.getMetadata().getFinalizers());
-            }
-
-            // Check deletion timestamp
-            logger.warn("Deletion timestamp: {}", resource.getMetadata().getDeletionTimestamp());
-
-            // Check owned resources
-            logger.warn("Checking for owned resources that might block deletion...");
-
-            // Check deployment
-            var deployment = KubeResourceManager.getKubeClient().getClient().apps().deployments()
-                    .inNamespace(namespace).withName(name).get();
-            if (deployment != null) {
-                logger.warn("  Deployment still exists: {}", deployment.getMetadata().getName());
-                if (deployment.getMetadata().getDeletionTimestamp() != null) {
-                    logger.warn("    Deployment is being deleted since: {}", deployment.getMetadata().getDeletionTimestamp());
-                }
-            }
-
-            // Check pods
-            var pods = KubeResourceManager.getKubeClient().getClient().pods()
-                    .inNamespace(namespace)
-                    .withLabel("app.kubernetes.io/instance", name)
-                    .list().getItems();
-            if (!pods.isEmpty()) {
-                logger.warn("  {} pod(s) still exist:", pods.size());
-                pods.forEach(pod -> {
-                    logger.warn("    - {}: Phase={}, DeletionTimestamp={}",
-                            pod.getMetadata().getName(),
-                            pod.getStatus().getPhase(),
-                            pod.getMetadata().getDeletionTimestamp());
-                });
-            }
-        }
-        catch (Exception e) {
-            logger.error("Failed to collect deletion diagnostics", e);
-        }
-    }
-
-    private void forceDelete(String namespace, String name) {
-        try {
-            logger.warn("Force deleting DebeziumServer {}/{}", namespace, name);
-            client.inNamespace(namespace).withName(name).withGracePeriod(0).delete();
-
-            // Also try to remove finalizers if present
-            try {
-                var resource = client.inNamespace(namespace).withName(name).get();
-                if (resource != null && resource.getMetadata().getFinalizers() != null) {
-                    logger.warn("Removing finalizers from DebeziumServer {}/{}", namespace, name);
-                    resource.getMetadata().setFinalizers(null);
-                    client.inNamespace(namespace).resource(resource).update();
-                }
-            }
-            catch (Exception e) {
-                logger.debug("Could not remove finalizers (resource may already be deleted)", e);
-            }
-        }
-        catch (Exception e) {
-            logger.error("Failed to force delete DebeziumServer {}/{}", namespace, name, e);
-        }
-    }
-
-    public DebeziumServer loadResource(InputStream is) {
-        return (DebeziumServer) ((HasMetadataOperationsImpl<?, ?>) this.client.load(is)).getItem();
     }
 }

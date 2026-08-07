@@ -20,7 +20,7 @@ import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.LocalPortForward;
-import io.skodjob.testframe.resources.KubeResourceManager;
+import io.skodjob.kubetest4j.resources.KubeResourceManager;
 
 public class DmtResource implements DeployableResourceGroup {
     private Deployment deployment;
@@ -40,27 +40,26 @@ public class DmtResource implements DeployableResourceGroup {
 
     @Override
     public void deploy() {
-        KubeResourceManager.getInstance().createResourceWithoutWait(this.configMap, this.service);
-        KubeResourceManager.getInstance().createResourceWithWait(this.deployment);
+        KubeResourceManager.get().createResourceWithoutWait(this.configMap, this.service);
+        KubeResourceManager.get().createResourceWithWait(this.deployment);
     }
 
-    // TODO: The port should be configurable
-    public LocalPortForward portForward(int port, String namespace) {
+    public LocalPortForward portForward(String namespace) {
         Map<String, String> labels = new HashMap<>();
         labels.put("app.kubernetes.io/name", "database-manipulation-tool");
-        List<String> names = KubeResourceManager.getKubeClient().getClient().pods().inNamespace(namespace)
+        List<String> names = KubeResourceManager.get().kubeClient().getClient().pods().inNamespace(namespace)
                 .withLabels(labels).list().getItems()
                 .stream().map(p -> p.getMetadata().getName()).toList();
 
         if (names.size() == 1) {
             try {
-                int cp = KubeResourceManager.getKubeClient().getClient()
+                int cp = KubeResourceManager.get().kubeClient().getClient()
                         .pods().inNamespace(namespace)
                         .withName(names.get(0)).get().getSpec().getContainers().get(0).getPorts().get(0).getContainerPort();
 
-                return KubeResourceManager.getKubeClient().getClient()
+                return KubeResourceManager.get().kubeClient().getClient()
                         .pods().inNamespace(namespace)
-                        .withName(names.get(0)).portForward(cp, InetAddress.getByAddress(new byte[]{ 127, 0, 0, 1 }), port);
+                        .withName(names.get(0)).portForward(cp, InetAddress.getByAddress(new byte[]{ 127, 0, 0, 1 }), 0);
             }
             catch (UnknownHostException e) {
                 throw new RuntimeException(e);
