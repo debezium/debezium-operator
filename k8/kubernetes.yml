@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   annotations:
-    app.quarkus.io/quarkus-version: 3.37.4
+    app.quarkus.io/quarkus-version: 3.38.0
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -158,7 +158,7 @@ apiVersion: v1
 kind: Service
 metadata:
   annotations:
-    app.quarkus.io/quarkus-version: 3.37.4
+    app.quarkus.io/quarkus-version: 3.38.0
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -177,7 +177,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
-    app.quarkus.io/quarkus-version: 3.37.4
+    app.quarkus.io/quarkus-version: 3.38.0
   labels:
     app.kubernetes.io/name: debezium-operator
     app.kubernetes.io/managed-by: quarkus
@@ -190,7 +190,7 @@ spec:
   template:
     metadata:
       annotations:
-        app.quarkus.io/quarkus-version: 3.37.4
+        app.quarkus.io/quarkus-version: 3.38.0
       labels:
         app.kubernetes.io/managed-by: quarkus
         app.kubernetes.io/name: debezium-operator
@@ -229,7 +229,7 @@ spec:
               value: "60000"
             - name: QUARKUS_OTEL_RESOURCE_ATTRIBUTES
               value: service.name=debezium-operator
-          image: quay.io/debezium/operator:nightly
+          image: quay.io/debezium/operator:3.7.0-SNAPSHOT
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
