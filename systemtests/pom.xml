@@ -18,7 +18,7 @@
         <assertj.version>3.27.7</assertj.version>
         <kubetest4j.version>1.3.0</kubetest4j.version>
         <dmt.version>0.0.1-alpha1</dmt.version>
-        <okhttp.version>5.4.0</okhttp.version>
+        <okhttp.version>5.5.0</okhttp.version>
         <awaitility.version>4.3.0</awaitility.version>
         <jackson.version>2.22.1</jackson.version>
         <apache.commons.lang.version>3.20.0</apache.commons.lang.version>
