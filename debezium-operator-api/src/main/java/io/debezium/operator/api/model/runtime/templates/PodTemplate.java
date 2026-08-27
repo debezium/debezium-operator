@@ -55,6 +55,7 @@ public class PodTemplate implements HasMetadataTemplate, Serializable {
 
     @JsonPropertyDescription("Name of the priority class used to assign a priority to the pod.")
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Documented.Field(type = "String", k8Ref = "priorityclass-v1-scheduling-k8s-io")
     private String priorityClassName;
 
     @Override
