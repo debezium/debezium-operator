@@ -51,7 +51,7 @@ import io.quarkiverse.operatorsdk.annotations.RBACRule;
 import io.quarkiverse.operatorsdk.annotations.RBACVerbs;
 import io.quarkus.logging.Log;
 
-@ControllerConfiguration(name = "debeziumserver", informer = @Informer(namespaces = Constants.WATCH_CURRENT_NAMESPACE))
+@ControllerConfiguration(name = "debeziumserver", generationAwareEventProcessing = false, informer = @Informer(namespaces = Constants.WATCH_CURRENT_NAMESPACE, onUpdateFilter = DebeziumServerUpdateFilter.class))
 @Workflow(dependents = {
         @Dependent(name = "service-account", type = ServiceAccountDependent.class, reconcilePrecondition = CreateServiceAccount.class),
         @Dependent(name = "pvc", type = PvcDependent.class, reconcilePrecondition = CreatePvc.class),
