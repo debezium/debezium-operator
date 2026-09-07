@@ -63,6 +63,30 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <!-- The `imagePullSecrets: [{}]` placeholder exists only so that the Helm chart can turn the field
+                             into a value, see debezium-operator-core/src/main/kubernetes/kubernetes.yml. Outside the chart it
+                             is noise that makes the API server warn about an empty secret name, so it is stripped here. -->
+                        <id>olm-bundle-strip-image-pull-secrets-placeholder</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <replaceregexp match="[ \t]*imagePullSecrets:[ \t]*\R[ \t]*- \{\}[ \t]*\R" replace="" flags="g">
+                                    <fileset dir="${project.build.directory}/olm/bundles" includes="**/manifests/*.clusterserviceversion.yaml"/>
+                                </replaceregexp>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -122,6 +146,26 @@
                                             <directory>${dist.api.docs.source.dir}</directory>
                                         </resource>
                                     </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <!-- Same reason as olm-bundle-strip-image-pull-secrets-placeholder above. -->
+                                <id>k8-strip-image-pull-secrets-placeholder</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <replaceregexp file="${basedir}/../k8/kubernetes.yml" match="[ \t]*imagePullSecrets:[ \t]*\R[ \t]*- \{\}[ \t]*\R" replace="" flags="g"/>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
