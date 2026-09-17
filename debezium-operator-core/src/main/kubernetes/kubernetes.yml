@@ -1,0 +1,23 @@
+---
+# Baseline for the generated Deployment, merged by the Quarkus Kubernetes extension.
+# See https://quarkus.io/guides/deploying-to-kubernetes#using-existing-resources
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Must match `quarkus.kubernetes.name`, otherwise a second Deployment is generated.
+  name: debezium-operator
+  # The generated ClusterRole copies the labels of the Deployment at the moment it is created,
+  # which happens before Quarkus adds its own labels to this baseline.
+  # Without this label the ClusterRole would end up with no labels at all.
+  labels:
+    app.kubernetes.io/name: debezium-operator
+spec:
+  template:
+    spec:
+      # quarkus-helm can only turn a field into a Helm value if the field already exists in the generated resource.
+      # An empty list `[]` does not survive the generation,
+      # because the fabric8 model marks `PodSpec.imagePullSecrets` with `@JsonInclude(NON_EMPTY)`.
+      # A list with one null element does survive.
+      # `src/main/helm/values.yaml` replaces the resulting Helm default with a real empty list.
+      # See https://github.com/quarkiverse/quarkus-helm/issues/453
+      imagePullSecrets: [~]
