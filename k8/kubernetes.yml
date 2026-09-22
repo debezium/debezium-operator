@@ -229,7 +229,7 @@ spec:
               value: "60000"
             - name: QUARKUS_OTEL_RESOURCE_ATTRIBUTES
               value: service.name=debezium-operator
-          image: quay.io/debezium/operator:3.7.0-SNAPSHOT
+          image: quay.io/debezium/operator:nightly
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
