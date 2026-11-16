@@ -148,6 +148,15 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>${google.json.simple.version}</version>
+            <exclusions>
+                <!-- json-simple 1.1.1 leaks junit:junit:4.10 at compile scope (broken POM),
+                     which makes Surefire >= 3.6 fail with
+                     "Surefire is not compatible with JUnit 4.11 or older" -->
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
