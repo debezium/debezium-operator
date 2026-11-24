@@ -8,12 +8,12 @@ package io.debezium.operator.core;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 
+import io.debezium.operator.api.model.CommonLabels;
 import io.debezium.operator.api.model.DebeziumServer;
-import io.debezium.operator.api.model.status.Condition;
 import io.debezium.operator.api.model.status.DebeziumServerStatus;
+import io.debezium.operator.api.model.status.ServerFailedCondition;
 import io.debezium.operator.api.model.status.ServerNotReadyCondition;
 import io.debezium.operator.api.model.status.ServerReadyCondition;
 import io.debezium.operator.api.model.status.ServerRunningCondition;
@@ -71,6 +71,7 @@ import io.quarkus.logging.Log;
 })
 @CSVMetadata(name = OperatorConstants.CSV_INTERNAL_BUNDLE_NAME)
 @RBACRule(verbs = { RBACVerbs.GET, RBACVerbs.LIST, RBACVerbs.WATCH }, apiGroups = "", resources = "secrets")
+@RBACRule(verbs = { RBACVerbs.GET, RBACVerbs.LIST, RBACVerbs.WATCH }, apiGroups = "", resources = "pods")
 public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
 
     @Override
@@ -86,7 +87,7 @@ public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
                     else {
                         var delay = Duration.ofSeconds(10);
                         Log.infof("Server %s not ready yet, rescheduling after %d seconds", name, delay.toSeconds());
-                        initializeNotReadyStatus(name, debeziumServer);
+                        initializeNotReadyStatus(name, debeziumServer, context);
                         return UpdateControl.patchStatus(debeziumServer).rescheduleAfter(delay);
                     }
                 }).orElseThrow();
@@ -101,11 +102,31 @@ public class DebeziumServerReconciler implements Reconciler<DebeziumServer> {
         debeziumServer.setStatus(status);
     }
 
-    private void initializeNotReadyStatus(String name, DebeziumServer debeziumServer) {
-        var condition = new ServerNotReadyCondition(name);
-        List<Condition> list = Collections.singletonList(condition);
+    private void initializeNotReadyStatus(String name, DebeziumServer debeziumServer, Context<DebeziumServer> context) {
         var status = new DebeziumServerStatus();
-        status.setConditions(list);
+        status.addToConditions(new ServerNotReadyCondition(name));
+
+        // A stopped server is scaled to zero replicas and must keep its stopped semantics. While
+        // terminating, the old pod may still report an error state, which must not be reported as
+        // a failure of the requested stopped state.
+        if (!debeziumServer.isStopped()) {
+            detectPodFailure(debeziumServer, context)
+                    .ifPresent(failure -> status.addToConditions(
+                            new ServerFailedCondition(name, failure.reason(), failure.message())));
+        }
+
+        status.setObservedGeneration(debeziumServer.getMetadata().getGeneration());
         debeziumServer.setStatus(status);
+    }
+
+    private Optional<PodFailureDetector.Failure> detectPodFailure(DebeziumServer debeziumServer, Context<DebeziumServer> context) {
+        var namespace = Optional.ofNullable(debeziumServer.getMetadata().getNamespace())
+                .orElseGet(() -> context.getClient().getNamespace());
+        var selector = CommonLabels.serverComponent(debeziumServer.getMetadata().getName()).getMap();
+        return PodFailureDetector.detect(context.getClient().pods()
+                .inNamespace(namespace)
+                .withLabels(selector)
+                .list()
+                .getItems());
     }
 }
